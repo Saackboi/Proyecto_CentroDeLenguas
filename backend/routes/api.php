@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\SolicitudesController;
+use App\Http\Controllers\Api\Estudiante\PasswordController as EstudiantePasswordController;
 use App\Http\Controllers\Api\Estudiante\NotificacionesController as EstudianteNotificacionesController;
 use App\Http\Controllers\Api\NotificacionesController;
 use App\Http\Controllers\Api\Public\AbonoController;
+use App\Http\Controllers\Api\Public\EstudiantePasswordResetController;
 use App\Http\Controllers\Api\Public\PruebaUbicacionController;
 use App\Http\Controllers\Api\Public\RegistroEstudianteController;
 use App\Http\Controllers\Api\Public\VeranoController;
@@ -45,6 +47,7 @@ Route::middleware('auth:api')->prefix('estudiante')->group(function () {
     Route::patch('notificaciones/leer-todas', [EstudianteNotificacionesController::class, 'marcarTodasLeidas']);
     Route::delete('notificaciones/{id}', [EstudianteNotificacionesController::class, 'eliminar']);
     Route::delete('notificaciones', [EstudianteNotificacionesController::class, 'eliminarTodas']);
+    Route::patch('password', [EstudiantePasswordController::class, 'cambiar']);
 });
 
 Route::prefix('public')->group(function () {
@@ -52,4 +55,6 @@ Route::prefix('public')->group(function () {
     Route::post('abono', [AbonoController::class, 'store']);
     Route::post('inscripcion/verano', [VeranoController::class, 'store']);
     Route::post('estudiante/registro', [RegistroEstudianteController::class, 'store']);
+    Route::post('estudiante/password/solicitar', [EstudiantePasswordResetController::class, 'solicitar']);
+    Route::post('estudiante/password/reset', [EstudiantePasswordResetController::class, 'resetear']);
 });

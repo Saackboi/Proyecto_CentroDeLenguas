@@ -30,6 +30,10 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
 - Cuentas de estudiantes:
   - Se crean automaticamente al aprobar ubicacion o verano.
   - Se envia correo con credenciales temporales (Office365 SMTP).
+- Recuperacion y cambio de contrasena (estudiante):
+  - `POST /api/public/estudiante/password/solicitar`
+  - `POST /api/public/estudiante/password/reset`
+  - `PATCH /api/estudiante/password`
 
 ## Email
 - HTML adaptado con estilo de `CrearEmail.php`.
