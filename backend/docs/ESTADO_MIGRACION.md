@@ -35,6 +35,11 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
   - `POST /api/public/estudiante/password/solicitar`
   - `POST /api/public/estudiante/password/reset`
   - `PATCH /api/estudiante/password`
+- Modulo profesor (API con tipo `regular|verano`):
+  - `GET /api/profesor/curso-activo`
+  - `GET /api/profesor/curso-activo/estudiantes`
+  - `POST /api/profesor/curso-activo/notas`
+  - `PATCH /api/profesor/password`
 
 ## Email
 - HTML adaptado con estilo de `CrearEmail.php`.
@@ -50,13 +55,10 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
 
 ## Pendiente
 - Recuperacion de contrasena para estudiantes (reset flow).
-- Modulo profesor:
-  - grupo activo
-  - carga de notas
-  - cambio de contrasena
 - Reportes admin y exportacion.
 - Frontend Angular + NgRx.
 - Servicios/refactor del controller admin (opcional).
+- Pruebas de backend (modulo profesor).
 
 ## Credenciales semilla
 - Admin:

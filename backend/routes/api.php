@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\SolicitudesController;
 use App\Http\Controllers\Api\Estudiante\PasswordController as EstudiantePasswordController;
 use App\Http\Controllers\Api\Estudiante\NotificacionesController as EstudianteNotificacionesController;
 use App\Http\Controllers\Api\NotificacionesController;
+use App\Http\Controllers\Api\Profesor\CursoController as ProfesorCursoController;
 use App\Http\Controllers\Api\Public\AbonoController;
 use App\Http\Controllers\Api\Public\EstudiantePasswordResetController;
 use App\Http\Controllers\Api\Public\PruebaUbicacionController;
@@ -48,6 +49,13 @@ Route::middleware('auth:api')->prefix('estudiante')->group(function () {
     Route::delete('notificaciones/{id}', [EstudianteNotificacionesController::class, 'eliminar']);
     Route::delete('notificaciones', [EstudianteNotificacionesController::class, 'eliminarTodas']);
     Route::patch('password', [EstudiantePasswordController::class, 'cambiar']);
+});
+
+Route::middleware('auth:api')->prefix('profesor')->group(function () {
+    Route::get('curso-activo', [ProfesorCursoController::class, 'listarCursos']);
+    Route::get('curso-activo/estudiantes', [ProfesorCursoController::class, 'listarEstudiantes']);
+    Route::post('curso-activo/notas', [ProfesorCursoController::class, 'guardarNotas']);
+    Route::patch('password', [ProfesorCursoController::class, 'cambiarPassword']);
 });
 
 Route::prefix('public')->group(function () {
