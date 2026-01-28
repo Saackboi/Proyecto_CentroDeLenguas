@@ -6,6 +6,7 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
 
 ## Backend listo
 - Autenticacion JWT funcionando (admin y estudiante).
+- Login estudiante.
 - Base de datos `celdb_v2` migrada con tablas del esquema original.
 - Endpoints publicos:
   - `POST /api/public/inscripcion/ubicacion`
@@ -48,7 +49,7 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
   - `es_estudiante = NO` -> 100.00
 
 ## Pendiente
-- Login/recuperacion de contrasena para estudiantes (reset flow).
+- Recuperacion de contrasena para estudiantes (reset flow).
 - Modulo profesor:
   - grupo activo
   - carga de notas
