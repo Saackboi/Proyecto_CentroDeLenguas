@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Acceso al portal de estudiantes</title>
+    <title>Acceso al portal de {{ $portal }}</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -53,8 +53,8 @@
         class="header-img"
       />
 
-      <h3>Estimado estudiante,</h3>
-      <p>Le informamos que su cuenta de estudiante ha sido creada correctamente.</p>
+      <h3>Estimado {{ $rol }},</h3>
+      <p>Le informamos que su cuenta de {{ $rol }} ha sido creada correctamente.</p>
 
       <p>A continuación, encontrará sus credenciales temporales para acceder al sistema:</p>
 
@@ -63,7 +63,7 @@
         <p><strong>Contraseña:</strong> {{ $contrasenaTemporal }}</p>
       </div>
 
-      <p>Puede iniciar sesión en el portal de estudiantes desde el siguiente enlace:</p>
+      <p>Puede iniciar sesion en el portal de {{ $portal }} desde el siguiente enlace:</p>
       <p><a href="{{ config('app.url') }}">{{ config('app.url') }}</a></p>
 
       <p><em>Por seguridad, cambie su contraseña al ingresar.</em></p>

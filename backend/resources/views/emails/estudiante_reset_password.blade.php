@@ -55,7 +55,7 @@
         class="header-img"
       />
 
-      <h3>Estimado estudiante,</h3>
+      <h3>Estimado {{ $rol ?? 'estudiante' }},</h3>
       <p>Hemos recibido una solicitud para restablecer su contrasena.</p>
 
       <p>Haga clic en el siguiente enlace para continuar:</p>

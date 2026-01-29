@@ -13,11 +13,11 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $table = 'usuarios';
-    protected $primaryKey = 'correo';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    public $timestamps = false;
+    protected $table = 'users';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -25,10 +25,9 @@ class User extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $fillable = [
-        'correo',
-        'id_estudiante',
-        'contrasena',
-        'tipo_usuario',
+        'email',
+        'password',
+        'role',
     ];
 
     /**
@@ -37,7 +36,7 @@ class User extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $hidden = [
-        'contrasena',
+        'password',
     ];
 
     /**
@@ -48,13 +47,13 @@ class User extends Authenticatable implements JWTSubject
     protected function casts(): array
     {
         return [
-            'contrasena' => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
     public function getAuthPassword(): string
     {
-        return $this->contrasena;
+        return $this->password;
     }
 
     public function getJWTIdentifier(): mixed

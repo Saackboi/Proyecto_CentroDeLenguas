@@ -1,6 +1,6 @@
 Hola,
 
-Tu cuenta de estudiante ha sido creada.
+Tu cuenta de {{ $rol }} ha sido creada.
 
 Correo: {{ $correo }}
 Contrasena temporal: {{ $contrasenaTemporal }}

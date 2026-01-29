@@ -12,7 +12,9 @@ class EstudianteResetPasswordMail extends Mailable
 
     public function __construct(
         public string $correo,
-        public string $link
+        public string $link,
+        public string $rol = 'estudiante',
+        public string $portal = 'estudiantes'
     ) {
     }
 

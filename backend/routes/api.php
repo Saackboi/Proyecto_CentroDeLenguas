@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\SolicitudesController;
+use App\Http\Controllers\Api\Admin\PromocionesController;
 use App\Http\Controllers\Api\Estudiante\PasswordController as EstudiantePasswordController;
 use App\Http\Controllers\Api\Estudiante\NotificacionesController as EstudianteNotificacionesController;
 use App\Http\Controllers\Api\NotificacionesController;
@@ -40,6 +41,34 @@ Route::middleware('auth:api')->prefix('admin')->group(function () {
 
     Route::post('abono/aprobar', [SolicitudesController::class, 'aprobarAbono']);
     Route::post('abono/rechazar', [SolicitudesController::class, 'rechazarAbono']);
+
+    Route::post('profesores', [SolicitudesController::class, 'crearProfesor']);
+    Route::patch('profesores/{id}', [SolicitudesController::class, 'actualizarProfesor']);
+
+    Route::post('grupos', [SolicitudesController::class, 'crearGrupo']);
+    Route::patch('grupos/{id}', [SolicitudesController::class, 'actualizarGrupo']);
+    Route::post('grupos/{id}/retiro/preview', [SolicitudesController::class, 'previsualizarAjusteRetiro']);
+    Route::post('grupos/{id}/retiro/confirm', [SolicitudesController::class, 'confirmarAjusteRetiro']);
+    Route::get('grupos', [SolicitudesController::class, 'listarGrupos']);
+    Route::get('grupos/{id}', [SolicitudesController::class, 'detalleGrupo']);
+    Route::get('grupos/{id}/estudiantes', [SolicitudesController::class, 'listarEstudiantesGrupo']);
+    Route::get('estudiantes/disponibles', [SolicitudesController::class, 'listarEstudiantesDisponibles']);
+    Route::patch('estudiantes/{id}', [SolicitudesController::class, 'actualizarEstudiante']);
+    Route::patch('estudiantes-verano/{id}', [SolicitudesController::class, 'actualizarEstudianteVerano']);
+
+    Route::get('dashboard/estudiantes', [SolicitudesController::class, 'dashboardEstudiantes']);
+    Route::get('dashboard/profesores', [SolicitudesController::class, 'dashboardProfesores']);
+    Route::get('dashboard/grupos', [SolicitudesController::class, 'dashboardGrupos']);
+
+    Route::get('estudiantes/{id}', [SolicitudesController::class, 'detalleEstudiante']);
+    Route::get('profesores/{id}', [SolicitudesController::class, 'detalleProfesor']);
+
+    Route::get('reportes', [SolicitudesController::class, 'reportes']);
+    Route::get('reportes/export', [SolicitudesController::class, 'exportarReportePdf']);
+
+    Route::get('promociones/elegibles', [PromocionesController::class, 'elegibles']);
+    Route::post('promociones/aplicar', [PromocionesController::class, 'aplicar']);
+    Route::post('promociones/revertir', [PromocionesController::class, 'revertir']);
 });
 
 Route::middleware('auth:api')->prefix('estudiante')->group(function () {
@@ -65,4 +94,6 @@ Route::prefix('public')->group(function () {
     Route::post('estudiante/registro', [RegistroEstudianteController::class, 'store']);
     Route::post('estudiante/password/solicitar', [EstudiantePasswordResetController::class, 'solicitar']);
     Route::post('estudiante/password/reset', [EstudiantePasswordResetController::class, 'resetear']);
+    Route::post('profesor/password/solicitar', [EstudiantePasswordResetController::class, 'solicitarProfesor']);
+    Route::post('profesor/password/reset', [EstudiantePasswordResetController::class, 'resetearProfesor']);
 });
