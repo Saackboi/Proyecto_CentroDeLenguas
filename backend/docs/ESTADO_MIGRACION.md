@@ -52,13 +52,52 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
 - Deuda/saldo base si no se pasa:
   - `es_estudiante = SI` -> 90.00
   - `es_estudiante = NO` -> 100.00
+- En rechazos (ubicacion, verano, abono) el motivo es obligatorio y se incluye en la notificacion.
+
+## Pruebas
+- Endpoints probados manualmente con Postman:
+  - Autenticacion:
+    - `POST /api/auth/login`
+    - `POST /api/auth/logout`
+    - `POST /api/auth/refresh`
+    - `GET /api/auth/me`
+  - Publicos:
+    - `POST /api/public/inscripcion/ubicacion`
+    - `POST /api/public/abono`
+    - `POST /api/public/inscripcion/verano`
+    - `POST /api/public/estudiante/registro`
+    - `POST /api/public/estudiante/password/solicitar`
+    - `POST /api/public/estudiante/password/reset`
+  - Admin:
+    - `GET /api/admin/solicitudes/ubicacion`
+    - `GET /api/admin/solicitudes/verano`
+    - `GET /api/admin/solicitudes/abonos`
+    - `POST /api/admin/ubicacion/aprobar`
+    - `POST /api/admin/ubicacion/rechazar`
+    - `POST /api/admin/verano/aprobar`
+    - `POST /api/admin/verano/rechazar`
+    - `POST /api/admin/abono/aprobar`
+    - `POST /api/admin/abono/rechazar`
+    - `POST /api/admin/notificaciones`
+    - `GET /api/admin/notificaciones`
+    - `PATCH /api/admin/notificaciones/{id}/leer`
+  - Estudiante:
+    - `GET /api/estudiante/notificaciones`
+    - `PATCH /api/estudiante/notificaciones/{id}/leer`
+    - `PATCH /api/estudiante/notificaciones/leer-todas`
+    - `DELETE /api/estudiante/notificaciones/{id}`
+    - `DELETE /api/estudiante/notificaciones`
+    - `PATCH /api/estudiante/password`
+  - Profesor:
+    - `GET /api/profesor/curso-activo`
+    - `GET /api/profesor/curso-activo/estudiantes`
+    - `POST /api/profesor/curso-activo/notas`
+    - `PATCH /api/profesor/password`
 
 ## Pendiente
-- Recuperacion de contrasena para estudiantes (reset flow).
 - Reportes admin y exportacion.
 - Frontend Angular + NgRx.
 - Servicios/refactor del controller admin (opcional).
-- Pruebas de backend (modulo profesor).
 
 ## Credenciales semilla
 - Admin:
@@ -68,3 +107,13 @@ Backend en `C:\Users\Practica Profesional\Downloads\ProyectoWEB_CEL_NUEVO\backen
 - Si el mail no envia, revisar `.env`:
   - `MAIL_MAILER=smtp`
   - limpiar cache: `php artisan config:clear`
+
+## Contexto operativo (para continuidad)
+- El flujo admin de solicitudes ya esta implementado (listar/aprobar/rechazar).
+- En rechazos (ubicacion, verano, abono) el motivo es obligatorio y se incluye en la notificacion.
+- Promociones de nivel se definieron como futuras (admin masivo), no automatico por profesor.
+- Regla de aprobacion: nota >= 75; para regulares, saldo pendiente = 0; verano no tiene control de pagos.
+- Pendientes actuales:
+  - Reportes admin y exportacion.
+  - Frontend Angular + NgRx.
+  - Servicios/refactor del controller admin (opcional).

@@ -211,7 +211,10 @@ class SolicitudesController extends Controller
 
         $validated = $request->validate([
             'id_estudiante' => ['required', 'string', 'max:30'],
+            'motivo' => ['required', 'string', 'max:255'],
         ]);
+
+        $motivo = trim($validated['motivo']);
 
         DB::beginTransaction();
         $credencialesEnviadas = false;
@@ -238,7 +241,7 @@ class SolicitudesController extends Controller
             $this->crearNotificacion(
                 $validated['id_estudiante'],
                 'Solicitud rechazada',
-                'Tu solicitud de prueba de ubicacion fue rechazada.',
+                'Tu solicitud de prueba de ubicacion fue rechazada. Motivo: ' . $motivo,
                 'estado'
             );
 
@@ -422,7 +425,10 @@ class SolicitudesController extends Controller
 
         $validated = $request->validate([
             'id_estudiante' => ['required', 'string', 'max:30'],
+            'motivo' => ['required', 'string', 'max:255'],
         ]);
+
+        $motivo = trim($validated['motivo']);
 
         $actualizadas = DB::table('estudiante_verano')
             ->where('id_estudiante', $validated['id_estudiante'])
@@ -435,7 +441,7 @@ class SolicitudesController extends Controller
         $this->crearNotificacion(
             $validated['id_estudiante'],
             'Solicitud de verano rechazada',
-            'Tu solicitud para cursos de verano fue rechazada.',
+            'Tu solicitud para cursos de verano fue rechazada. Motivo: ' . $motivo,
             'verano'
         );
 
@@ -512,7 +518,10 @@ class SolicitudesController extends Controller
 
         $validated = $request->validate([
             'id_estudiante' => ['required', 'string', 'max:30'],
+            'motivo' => ['required', 'string', 'max:255'],
         ]);
+
+        $motivo = trim($validated['motivo']);
 
         DB::beginTransaction();
 
@@ -536,7 +545,7 @@ class SolicitudesController extends Controller
             $this->crearNotificacion(
                 $validated['id_estudiante'],
                 'Abono rechazado',
-                'Tu abono fue rechazado.',
+                'Tu abono fue rechazado. Motivo: ' . $motivo,
                 'abono'
             );
 
