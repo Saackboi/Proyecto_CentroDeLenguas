@@ -6,6 +6,7 @@ use App\Mail\EstudianteCredencialesMail;
 use App\Mail\EstudianteResetPasswordMail;
 use App\Services\AdminReportService;
 use App\Services\SaldoService;
+use App\Support\ApiResponse;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,7 @@ class AdminSolicitudesService
     {
         $usuario = auth('api')->user();
         if (!$usuario || $usuario->role !== 'Admin') {
-            return response()->json(['message' => 'No autorizado.'], 403);
+            return ApiResponse::forbidden('No autorizado.');
         }
 
         return null;
@@ -105,7 +106,7 @@ class AdminSolicitudesService
         $estado = $validated['estado'] ?? 'Activo';
 
         if (DB::table('users')->where('email', $correo)->exists()) {
-            return response()->json(['message' => 'El correo ya esta registrado.'], 409);
+            return ApiResponse::error('El correo ya esta registrado.', 409, null, 'conflict');
         }
 
         DB::beginTransaction();
@@ -165,17 +166,14 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al crear el profesor. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al crear el profesor. Intente nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Profesor creado.',
+        return ApiResponse::success([
             'id_profesor' => $teacherId,
             'correo' => $correo,
             'recuperacion_enviada' => $recuperacionEnviada,
-        ], 201);
+        ], 'Profesor creado.', 201);
     }
 
     public function actualizarProfesor(Request $request, string $id)
@@ -199,7 +197,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$profesor) {
-            return response()->json(['message' => 'Profesor no encontrado.'], 404);
+            return ApiResponse::notFound('Profesor no encontrado.');
         }
 
         $nuevoCorreo = strtolower(trim($validated['correo']));
@@ -210,7 +208,7 @@ class AdminSolicitudesService
                 ->where('email', $nuevoCorreo)
                 ->exists();
             if ($correoEnUso) {
-                return response()->json(['message' => 'El correo ya esta en uso.'], 409);
+                return ApiResponse::error('El correo ya esta en uso.', 409, null, 'conflict');
             }
         }
 
@@ -244,12 +242,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar el profesor. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar el profesor. Intente nuevamente.');
         }
 
-        return response()->json(['message' => 'Profesor actualizado.']);
+        return ApiResponse::success(null, 'Profesor actualizado.');
     }
 
     public function crearGrupo(Request $request)
@@ -281,9 +277,7 @@ class AdminSolicitudesService
             ->count();
 
         if ($totalEstudiantes !== count($idsEstudiantes)) {
-            return response()->json([
-                'message' => 'Hay estudiantes que no existen en el sistema.',
-            ], 422);
+            return ApiResponse::error('Hay estudiantes que no existen en el sistema.', 422, null, 'validation_error');
         }
 
         $profesor = DB::table('teachers')
@@ -292,7 +286,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$profesor) {
-            return response()->json(['message' => 'Profesor no encontrado.'], 404);
+            return ApiResponse::notFound('Profesor no encontrado.');
         }
 
         $idGrupo = $this->generarIdGrupo();
@@ -348,15 +342,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al crear el grupo. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al crear el grupo. Intente nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Grupo creado.',
-            'id_grupo' => $idGrupo,
-        ], 201);
+        return ApiResponse::success(['id_grupo' => $idGrupo], 'Grupo creado.', 201);
     }
 
     public function actualizarGrupo(Request $request, string $id)
@@ -383,7 +372,7 @@ class AdminSolicitudesService
             ->exists();
 
         if (!$grupoExiste) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $groupSession = DB::table('group_sessions')
@@ -392,7 +381,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$groupSession) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $idsAgregar = collect($validated['estudiantes_agregar'] ?? [])
@@ -412,9 +401,7 @@ class AdminSolicitudesService
                 ->where('type', $validated['tipo'])
                 ->count();
             if ($totalAgregar !== count($idsAgregar)) {
-                return response()->json([
-                    'message' => 'Hay estudiantes para agregar que no existen en el sistema.',
-                ], 422);
+                return ApiResponse::error('Hay estudiantes para agregar que no existen en el sistema.', 422, null, 'validation_error');
             }
         }
 
@@ -503,17 +490,14 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar el grupo. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar el grupo. Intente nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Grupo actualizado.',
+        return ApiResponse::success([
             'agregados' => count($idsAgregar),
             'eliminados' => count($idsEliminar),
             'ajustes_pendientes' => $ajustesPendientes,
-        ]);
+        ], 'Grupo actualizado.');
     }
 
     public function previsualizarAjusteRetiro(Request $request, string $id)
@@ -528,12 +512,12 @@ class AdminSolicitudesService
         ]);
 
         if ($validated['tipo'] !== 'regular') {
-            return response()->json(['message' => 'Los ajustes aplican solo a estudiantes regulares.'], 422);
+            return ApiResponse::error('Los ajustes aplican solo a estudiantes regulares.', 422, null, 'validation_error');
         }
 
         $existeGrupo = DB::table('groups')->where('id', $id)->exists();
         if (!$existeGrupo) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $groupSession = DB::table('group_sessions')
@@ -542,7 +526,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$groupSession) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $enGrupo = DB::table('enrollments')
@@ -551,14 +535,14 @@ class AdminSolicitudesService
             ->exists();
 
         if (!$enGrupo) {
-            return response()->json(['message' => 'Estudiante no pertenece al grupo.'], 404);
+            return ApiResponse::notFound('Estudiante no pertenece al grupo.');
         }
 
         $monto = $this->saldoService->obtenerMontoMatricula($validated['id_estudiante']);
         $saldoActual = $this->saldoService->calcularSaldo($validated['id_estudiante']);
         $saldoNuevo = max(0.00, $saldoActual - $monto);
 
-        return response()->json([
+        return ApiResponse::success([
             'id_estudiante' => $validated['id_estudiante'],
             'id_grupo' => $id,
             'monto_sugerido' => $monto,
@@ -579,7 +563,7 @@ class AdminSolicitudesService
         ]);
 
         if ($validated['tipo'] !== 'regular') {
-            return response()->json(['message' => 'Los ajustes aplican solo a estudiantes regulares.'], 422);
+            return ApiResponse::error('Los ajustes aplican solo a estudiantes regulares.', 422, null, 'validation_error');
         }
 
         $groupSession = DB::table('group_sessions')
@@ -588,7 +572,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$groupSession) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $enGrupo = DB::table('enrollments')
@@ -597,9 +581,7 @@ class AdminSolicitudesService
             ->exists();
 
         if ($enGrupo) {
-            return response()->json([
-                'message' => 'Debe retirar al estudiante del grupo antes de aplicar el ajuste.',
-            ], 409);
+            return ApiResponse::error('Debe retirar al estudiante del grupo antes de aplicar el ajuste.', 409, null, 'conflict');
         }
 
         $yaAjustado = DB::table('balance_movements')
@@ -610,9 +592,7 @@ class AdminSolicitudesService
             ->exists();
 
         if ($yaAjustado) {
-            return response()->json([
-                'message' => 'El ajuste de retiro ya fue aplicado.',
-            ], 409);
+            return ApiResponse::error('El ajuste de retiro ya fue aplicado.', 409, null, 'conflict');
         }
 
         $monto = $this->saldoService->obtenerMontoMatricula($validated['id_estudiante']);
@@ -636,15 +616,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al aplicar el ajuste. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al aplicar el ajuste. Intente nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Ajuste aplicado.',
-            'monto' => $montoAjuste,
-        ]);
+        return ApiResponse::success(['monto' => $montoAjuste], 'Ajuste aplicado.');
     }
 
     public function listarGrupos(Request $request)
@@ -729,12 +704,12 @@ class AdminSolicitudesService
             ->first();
 
         if (!$grupo) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $estudiantes = $this->listarEstudiantesGrupoInterno($grupo->id_sesion, $validated['tipo']);
 
-        return response()->json([
+        return ApiResponse::success([
             'grupo' => array_merge((array) $grupo, [
                 'tipo' => $validated['tipo'],
                 'aula' => $grupo->aula,
@@ -759,12 +734,12 @@ class AdminSolicitudesService
             ->first();
 
         if (!$groupSession) {
-            return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado.');
         }
 
         $estudiantes = $this->listarEstudiantesGrupoInterno($groupSession->id, $validated['tipo']);
 
-        return response()->json($estudiantes);
+        return ApiResponse::success($estudiantes);
     }
 
     private function listarEstudiantesGrupoInterno(int $idSesion, string $tipo)
@@ -859,7 +834,7 @@ class AdminSolicitudesService
                 })->whereNull('e.student_id');
             }
 
-            return response()->json($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
+            return ApiResponse::success($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
         }
 
         $saldos = DB::table('balance_movements')
@@ -893,7 +868,7 @@ class AdminSolicitudesService
             })->whereNull('e.student_id');
         }
 
-        return response()->json($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
+        return ApiResponse::success($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
     }
 
     public function detalleEstudiante(Request $request, string $id)
@@ -942,10 +917,10 @@ class AdminSolicitudesService
                 ->first();
 
             if (!$datos) {
-                return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+                return ApiResponse::notFound('Estudiante no encontrado.');
             }
 
-            return response()->json(['tipo' => 'verano', 'data' => $datos]);
+            return ApiResponse::success(['tipo' => 'verano', 'data' => $datos]);
         }
 
         $datos = DB::table('students as s')
@@ -968,12 +943,12 @@ class AdminSolicitudesService
             ->first();
 
         if (!$datos) {
-            return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+            return ApiResponse::notFound('Estudiante no encontrado.');
         }
 
         $saldo = $this->saldoService->calcularSaldo($id);
 
-        return response()->json([
+        return ApiResponse::success([
             'tipo' => 'regular',
             'data' => array_merge((array) $datos, [
                 'saldo_pendiente' => $saldo,
@@ -1004,10 +979,10 @@ class AdminSolicitudesService
             ->first();
 
         if (!$profesor) {
-            return response()->json(['message' => 'Profesor no encontrado.'], 404);
+            return ApiResponse::notFound('Profesor no encontrado.');
         }
 
-        return response()->json($profesor);
+        return ApiResponse::success($profesor);
     }
 
     public function dashboardEstudiantes(Request $request)
@@ -1137,7 +1112,7 @@ class AdminSolicitudesService
 
         $config = $this->reportService->configurarReporte($request);
         if (isset($config['error'])) {
-            return response()->json(['message' => $config['error']], 422);
+            return ApiResponse::error($config['error'], 422, null, 'validation_error');
         }
 
         return $this->reportService->datatableResponse(
@@ -1155,9 +1130,18 @@ class AdminSolicitudesService
             return $response;
         }
 
+        if (!class_exists('Barryvdh\\DomPDF\\Facade\\Pdf')) {
+            return ApiResponse::error(
+                'Exportar PDF no disponible. Instale barryvdh/laravel-dompdf.',
+                503,
+                null,
+                'service_unavailable'
+            );
+        }
+
         $config = $this->reportService->configurarReporte($request);
         if (isset($config['error'])) {
-            return response()->json(['message' => $config['error']], 422);
+            return ApiResponse::error($config['error'], 422, null, 'validation_error');
         }
 
         $rows = $config['query']->get();
@@ -1213,7 +1197,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$estudiante) {
-            return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+            return ApiResponse::notFound('Estudiante no encontrado.');
         }
 
         $correoPersonal = strtolower(trim($validated['correo_personal']));
@@ -1252,7 +1236,7 @@ class AdminSolicitudesService
 
                 if ($existeCorreo) {
                     DB::rollBack();
-                    return response()->json(['message' => 'El correo ya esta en uso.'], 409);
+                    return ApiResponse::error('El correo ya esta en uso.', 409, null, 'conflict');
                 }
 
                 DB::table('users')
@@ -1287,12 +1271,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar el estudiante. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar el estudiante. Intente nuevamente.');
         }
 
-        return response()->json(['message' => 'Estudiante actualizado.']);
+        return ApiResponse::success(null, 'Estudiante actualizado.');
     }
 
     public function actualizarEstudianteVerano(Request $request, string $id)
@@ -1333,7 +1315,7 @@ class AdminSolicitudesService
             ->first();
 
         if (!$estudiante) {
-            return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+            return ApiResponse::notFound('Estudiante no encontrado.');
         }
 
         DB::beginTransaction();
@@ -1400,12 +1382,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar el estudiante. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar el estudiante. Intente nuevamente.');
         }
 
-        return response()->json(['message' => 'Estudiante actualizado.']);
+        return ApiResponse::success(null, 'Estudiante actualizado.');
     }
 
     public function aprobarUbicacion(Request $request)
@@ -1444,7 +1424,7 @@ class AdminSolicitudesService
 
             if (!$estudiante) {
                 DB::rollBack();
-                return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+                return ApiResponse::notFound('Estudiante no encontrado.');
             }
 
             DB::table('people')
@@ -1520,15 +1500,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar los datos. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar los datos. Inténtelo nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'OK',
-            'credenciales_enviadas' => $credencialesEnviadas,
-        ]);
+        return ApiResponse::success(['credenciales_enviadas' => $credencialesEnviadas], 'OK');
     }
 
     public function listarUbicacion()
@@ -1566,7 +1541,7 @@ class AdminSolicitudesService
             ->orderBy('s.id')
             ->get();
 
-        return response()->json($registros);
+        return ApiResponse::success($registros);
     }
 
     public function rechazarUbicacion(Request $request)
@@ -1596,7 +1571,7 @@ class AdminSolicitudesService
 
             if ($actualizadas === 0) {
                 DB::rollBack();
-                return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+                return ApiResponse::notFound('Estudiante no encontrado.');
             }
 
             DB::table('payments')
@@ -1620,12 +1595,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar los datos. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar los datos. Inténtelo nuevamente.');
         }
 
-        return response()->json(['message' => 'NOregistro']);
+        return ApiResponse::success(null, 'NOregistro');
     }
 
     public function aprobarVerano(Request $request)
@@ -1671,7 +1644,7 @@ class AdminSolicitudesService
 
             if (!$estudiante) {
                 DB::rollBack();
-                return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+                return ApiResponse::notFound('Estudiante no encontrado.');
             }
 
             DB::table('people')
@@ -1754,15 +1727,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar datos del estudiante. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar datos del estudiante. Inténtelo nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'OK',
-            'credenciales_enviadas' => $credencialesEnviadas,
-        ]);
+        return ApiResponse::success(['credenciales_enviadas' => $credencialesEnviadas], 'OK');
     }
 
     public function listarVerano()
@@ -1808,7 +1776,7 @@ class AdminSolicitudesService
             ->orderBy('s.id')
             ->get();
 
-        return response()->json($registros);
+        return ApiResponse::success($registros);
     }
 
     public function rechazarVerano(Request $request)
@@ -1833,7 +1801,7 @@ class AdminSolicitudesService
             ]);
 
         if ($actualizadas === 0) {
-            return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+            return ApiResponse::notFound('Estudiante no encontrado.');
         }
 
         $this->crearNotificacion(
@@ -1843,7 +1811,7 @@ class AdminSolicitudesService
             'verano'
         );
 
-        return response()->json(['message' => 'NOregistro']);
+        return ApiResponse::success(null, 'NOregistro');
     }
 
     public function aprobarAbono(Request $request)
@@ -1870,7 +1838,7 @@ class AdminSolicitudesService
 
             if (!$pago) {
                 DB::rollBack();
-                return response()->json(['message' => 'No hay abono pendiente que aceptar.'], 404);
+                return ApiResponse::notFound('No hay abono pendiente que aceptar.');
             }
 
             DB::table('payments')
@@ -1909,12 +1877,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar el abono. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar el abono. Inténtelo nuevamente.');
         }
 
-        return response()->json(['message' => 'OKabono']);
+        return ApiResponse::success(null, 'OKabono');
     }
 
     public function rechazarAbono(Request $request)
@@ -1942,7 +1908,7 @@ class AdminSolicitudesService
 
             if (!$pago) {
                 DB::rollBack();
-                return response()->json(['message' => 'No hay abono pendiente que rechazar.'], 404);
+                return ApiResponse::notFound('No hay abono pendiente que rechazar.');
             }
 
             DB::table('payments')
@@ -1963,12 +1929,10 @@ class AdminSolicitudesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al actualizar el abono. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al actualizar el abono. Inténtelo nuevamente.');
         }
 
-        return response()->json(['message' => 'NOabono']);
+        return ApiResponse::success(null, 'NOabono');
     }
 
     public function listarAbonos()
@@ -2002,6 +1966,6 @@ class AdminSolicitudesService
             ->orderBy('pay.paid_at', 'desc')
             ->get();
 
-        return response()->json($registros);
+        return ApiResponse::success($registros);
     }
 }

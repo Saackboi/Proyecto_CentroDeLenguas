@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,7 +11,7 @@ class AdminReportService
     public function datatableResponse(Request $request, $query, array $searchColumns, array $orderableMap, array $defaultOrder = []): \Illuminate\Http\JsonResponse
     {
         if (!$request->has('draw')) {
-            return response()->json($query->get());
+            return ApiResponse::success($query->get());
         }
 
         $draw = (int) $request->input('draw');
@@ -66,7 +67,7 @@ class AdminReportService
                 $nivel = (string) $request->input('nivel');
                 $verano = $this->parseBoolean($request->input('verano'));
                 if ($nivel === '') {
-                    return ['error' => 'Debe indicar el nivel.'];
+                    $nivel = (string) ($this->obtenerNivelDefault($verano) ?? '');
                 }
 
                 $query = DB::table('students as s')
@@ -100,7 +101,7 @@ class AdminReportService
                 $estado = (string) $request->input('estado');
                 $verano = $this->parseBoolean($request->input('verano'));
                 if ($estado === '') {
-                    return ['error' => 'Debe indicar el status.'];
+                    $estado = (string) ($this->obtenerStatusDefault($verano) ?? '');
                 }
 
                 $query = DB::table('students as s')
@@ -179,7 +180,7 @@ class AdminReportService
             case 'nivelProfesor':
                 $nivel = (string) $request->input('nivel');
                 if ($nivel === '') {
-                    return ['error' => 'Debe indicar el nivel.'];
+                    $nivel = (string) ($this->obtenerNivelProfesorDefault() ?? '');
                 }
 
                 $query = DB::table('group_sessions as gs')
@@ -234,5 +235,30 @@ class AdminReportService
         }
         $v = strtolower((string) $value);
         return in_array($v, ['1', 'true', 'on', 'yes'], true);
+    }
+
+    private function obtenerNivelDefault(bool $verano): ?string
+    {
+        return DB::table('students')
+            ->where('type', $verano ? 'verano' : 'regular')
+            ->whereNotNull('level')
+            ->orderBy('level')
+            ->value('level');
+    }
+
+    private function obtenerStatusDefault(bool $verano): ?string
+    {
+        return DB::table('students')
+            ->where('type', $verano ? 'verano' : 'regular')
+            ->orderBy('status')
+            ->value('status');
+    }
+
+    private function obtenerNivelProfesorDefault(): ?string
+    {
+        return DB::table('groups')
+            ->whereNotNull('level')
+            ->orderBy('level')
+            ->value('level');
     }
 }

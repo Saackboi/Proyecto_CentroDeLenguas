@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -41,15 +42,11 @@ class VeranoService
         ]);
 
         if (empty($validated['nombre_padre']) && empty($validated['nombre_madre'])) {
-            return response()->json([
-                'message' => 'Debe ingresar al menos el nombre del padre o madre.',
-            ], 422);
+            return ApiResponse::error('Debe ingresar al menos el nombre del padre o madre.', 422, null, 'validation_error');
         }
 
         if (empty($validated['celular_padre']) && empty($validated['celular_madre'])) {
-            return response()->json([
-                'message' => 'Debe ingresar al menos un celular del padre o madre.',
-            ], 422);
+            return ApiResponse::error('Debe ingresar al menos un celular del padre o madre.', 422, null, 'validation_error');
         }
 
         $idEstudiante = trim($validated['cedula']);
@@ -59,9 +56,7 @@ class VeranoService
             ->exists();
 
         if ($existe) {
-            return response()->json([
-                'message' => 'El número de identificación ya pertenece a un estudiante.',
-            ], 409);
+            return ApiResponse::error('El número de identificación ya pertenece a un estudiante.', 409, null, 'conflict');
         }
 
         $archivoFirma = $request->file('firma_familiar');
@@ -155,13 +150,9 @@ class VeranoService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al enviar datos del estudiante. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al enviar datos del estudiante. Inténtelo nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Formulario enviado exitosamente.',
-        ]);
+        return ApiResponse::success(null, 'Formulario enviado exitosamente.');
     }
 }

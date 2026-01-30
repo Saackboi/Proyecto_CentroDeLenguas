@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\EstudianteResetPasswordMail;
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -25,9 +26,7 @@ class PasswordResetService
             ->first();
 
         if (!$usuario) {
-            return response()->json([
-                'message' => 'Si el correo existe, recibiras instrucciones de recuperacion.',
-            ]);
+            return ApiResponse::success(null, 'Si el correo existe, recibiras instrucciones de recuperacion.');
         }
 
         $token = Str::random(64);
@@ -44,9 +43,7 @@ class PasswordResetService
 
         Mail::to($correo)->send(new EstudianteResetPasswordMail($correo, $link, strtolower($tipoUsuario), $portal));
 
-        return response()->json([
-            'message' => 'Si el correo existe, recibiras instrucciones de recuperacion.',
-        ]);
+        return ApiResponse::success(null, 'Si el correo existe, recibiras instrucciones de recuperacion.');
     }
 
     public function resetear(Request $request, string $tipoUsuario)
@@ -62,11 +59,11 @@ class PasswordResetService
             ->first();
 
         if (!$usuario) {
-            return response()->json(['message' => 'Token invalido.'], 400);
+            return ApiResponse::error('Token invalido.', 400, null, 'invalid_token');
         }
 
         if ($usuario->expiracion_token && now()->greaterThan($usuario->expiracion_token)) {
-            return response()->json(['message' => 'Token expirado.'], 400);
+            return ApiResponse::error('Token expirado.', 400, null, 'token_expired');
         }
 
         DB::table('users')
@@ -77,6 +74,6 @@ class PasswordResetService
                 'expiracion_token' => null,
             ]);
 
-        return response()->json(['message' => 'Contrasena actualizada.']);
+        return ApiResponse::success(null, 'Contrasena actualizada.');
     }
 }

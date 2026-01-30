@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -26,9 +27,7 @@ class PruebaUbicacionService
 
         if ($validated['tipo_pago'] === 'banco') {
             if (empty($validated['nombre_banco']) || empty($validated['dueno_cuenta'])) {
-                return response()->json([
-                    'message' => 'Debe ingresar el banco y el dueño de la cuenta.',
-                ], 422);
+                return ApiResponse::error('Debe ingresar el banco y el dueño de la cuenta.', 422, null, 'validation_error');
             }
         }
 
@@ -42,15 +41,11 @@ class PruebaUbicacionService
 
         if ($estudiante) {
             if ($estudiante->status === 'En proceso') {
-                return response()->json([
-                    'message' => 'Tu solicitud se encuentra en proceso. Por favor, estar pendiente al correo electrónico.',
-                ], 409);
+                return ApiResponse::error('Tu solicitud se encuentra en proceso. Por favor, estar pendiente al correo electrónico.', 409, null, 'conflict');
             }
 
             if ($estudiante->status !== 'Inactivo') {
-                return response()->json([
-                    'message' => 'El número de identificación ya se encuentra registrado en nuestro sistema.',
-                ], 409);
+                return ApiResponse::error('El número de identificación ya se encuentra registrado en nuestro sistema.', 409, null, 'conflict');
             }
 
             $existe = true;
@@ -133,11 +128,9 @@ class PruebaUbicacionService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al enviar datos del estudiante. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al enviar datos del estudiante. Inténtelo nuevamente.');
         }
 
-        return response()->json(['message' => 'OK']);
+        return ApiResponse::success(null, 'OK');
     }
 }

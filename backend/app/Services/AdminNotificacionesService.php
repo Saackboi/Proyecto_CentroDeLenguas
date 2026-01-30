@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +12,7 @@ class AdminNotificacionesService
     {
         $usuario = auth('api')->user();
         if (!$usuario || $usuario->role !== 'Admin') {
-            return response()->json(['message' => 'No autorizado.'], 403);
+            return ApiResponse::forbidden('No autorizado.');
         }
 
         $validated = $request->validate([
@@ -34,17 +35,14 @@ class AdminNotificacionesService
             'updated_at' => now(),
         ]);
 
-        return response()->json([
-            'message' => 'Notificacion creada.',
-            'id_notificacion' => $id,
-        ], 201);
+        return ApiResponse::success(['id_notificacion' => $id], 'Notificacion creada.', 201);
     }
 
     public function index(Request $request)
     {
         $usuario = auth('api')->user();
         if (!$usuario || $usuario->role !== 'Admin') {
-            return response()->json(['message' => 'No autorizado.'], 403);
+            return ApiResponse::forbidden('No autorizado.');
         }
 
         $validated = $request->validate([
@@ -63,14 +61,14 @@ class AdminNotificacionesService
             $query->whereNull('read_at');
         }
 
-        return response()->json($query->get());
+        return ApiResponse::success($query->get());
     }
 
     public function marcarLeida(string $id)
     {
         $usuario = auth('api')->user();
         if (!$usuario || $usuario->role !== 'Admin') {
-            return response()->json(['message' => 'No autorizado.'], 403);
+            return ApiResponse::forbidden('No autorizado.');
         }
 
         $actualizadas = DB::table('notifications')
@@ -81,9 +79,9 @@ class AdminNotificacionesService
             ]);
 
         if ($actualizadas === 0) {
-            return response()->json(['message' => 'Notificacion no encontrada.'], 404);
+            return ApiResponse::notFound('Notificacion no encontrada.');
         }
 
-        return response()->json(['message' => 'Notificacion marcada como leida.']);
+        return ApiResponse::success(null, 'Notificacion marcada como leida.');
     }
 }

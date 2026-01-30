@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,7 @@ class AuthService
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Datos de inicio de sesion invalidos', 'errors' => $validator->errors()], 422);
+            return ApiResponse::validation($validator->errors()->toArray(), 'Datos de inicio de sesion invalidos');
         }
 
         $correo = (string) $request->input('correo', $request->input('email'));
@@ -29,7 +30,7 @@ class AuthService
         ]);
 
         if (!$token) {
-            return response()->json(['message' => 'Credenciales invalidas'], 401);
+            return ApiResponse::unauthorized('Credenciales invalidas');
         }
 
         return $this->respondWithToken($token);
@@ -37,14 +38,14 @@ class AuthService
 
     public function me()
     {
-        return response()->json(auth('api')->user());
+        return ApiResponse::success(auth('api')->user());
     }
 
     public function logout()
     {
         auth('api')->logout();
 
-        return response()->json(['message' => 'Sesion cerrada']);
+        return ApiResponse::success(null, 'Sesion cerrada');
     }
 
     public function refresh()
@@ -54,7 +55,7 @@ class AuthService
 
     private function respondWithToken(string $token)
     {
-        return response()->json([
+        return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,

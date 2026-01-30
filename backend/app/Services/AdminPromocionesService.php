@@ -2,33 +2,96 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminPromocionesService
 {
-    private function asegurarAdmin()
+    private function asegurarAdmin(): array
     {
         $usuario = auth('api')->user();
-        if (!$usuario || $usuario->tipo_usuario !== 'Admin') {
-            return [null, response()->json(['message' => 'No autorizado.'], 403)];
+        if (!$usuario || $usuario->role !== 'Admin') {
+            return [null, ApiResponse::forbidden('No autorizado.')];
         }
 
         return [$usuario, null];
     }
 
-    private function ultimaInscripcionSubquery(string $tablaGrupo): string
+    private function saldosSubquery()
     {
-        return "(
-            SELECT t1.id_estudiante, t1.id_grupo, t1.fecha_cierre
-            FROM {$tablaGrupo} t1
-            INNER JOIN (
-                SELECT id_estudiante, MAX(fecha_cierre) AS max_cierre
-                FROM {$tablaGrupo}
-                WHERE fecha_cierre IS NOT NULL
-                GROUP BY id_estudiante
-            ) t2 ON t1.id_estudiante = t2.id_estudiante AND t1.fecha_cierre = t2.max_cierre
-        ) as ult";
+        return DB::table('balance_movements')
+            ->select(
+                'student_id',
+                DB::raw("sum(case when movement_type in ('charge','adjustment') then amount else 0 end) - sum(case when movement_type = 'payment' then amount else 0 end) as saldo")
+            )
+            ->groupBy('student_id');
+    }
+
+    private function obtenerElegiblesPorTipo(string $tipo)
+    {
+        $subquery = DB::table('enrollments as e')
+            ->join('group_sessions as gs', 'gs.id', '=', 'e.group_session_id')
+            ->select('e.student_id', DB::raw('max(gs.end_date) as max_end_date'))
+            ->whereNotNull('gs.end_date')
+            ->groupBy('e.student_id');
+
+        $base = DB::table('enrollments as e')
+            ->join('group_sessions as gs', 'gs.id', '=', 'e.group_session_id')
+            ->joinSub($subquery, 'ult', function ($join) {
+                $join->on('e.student_id', '=', 'ult.student_id')
+                    ->on('gs.end_date', '=', 'ult.max_end_date');
+            })
+            ->join('students as s', 's.id', '=', 'e.student_id')
+            ->join('people as p', 'p.id', '=', 's.person_id')
+            ->join('groups as g', 'g.id', '=', 'gs.group_id')
+            ->leftJoin('promotions as pr', function ($join) {
+                $join->on('pr.student_id', '=', 's.id')
+                    ->on('pr.group_session_id', '=', 'gs.id')
+                    ->whereNull('pr.reverted_at');
+            })
+            ->whereNull('pr.id')
+            ->where('s.type', $tipo)
+            ->whereNotNull('e.final_grade')
+            ->where('e.final_grade', '>=', 75)
+            ->whereRaw('CAST(COALESCE(g.level, 0) AS UNSIGNED) < 12');
+
+        if ($tipo === 'regular') {
+            $saldos = $this->saldosSubquery();
+            $base->leftJoinSub($saldos, 'saldo', function ($join) {
+                $join->on('saldo.student_id', '=', 's.id');
+            })->whereRaw('COALESCE(saldo.saldo, 0) <= 0');
+        }
+
+        return $base->select(
+            's.id as id_estudiante',
+            DB::raw("concat(p.first_name, ' ', p.last_name) as estudiante"),
+            'g.level as nivel',
+            'e.final_grade as nota_final',
+            'gs.id as group_session_id',
+            'g.id as id_grupo',
+            'gs.end_date as fecha_cierre'
+        )
+            ->orderBy('estudiante')
+            ->get();
+    }
+
+    private function resolverGroupSessionId(string $idEstudiante, ?string $idGrupo, ?int $idSesion): ?int
+    {
+        if ($idSesion) {
+            return $idSesion;
+        }
+
+        if (!$idGrupo) {
+            return null;
+        }
+
+        return DB::table('enrollments as e')
+            ->join('group_sessions as gs', 'gs.id', '=', 'e.group_session_id')
+            ->where('e.student_id', $idEstudiante)
+            ->where('gs.group_id', $idGrupo)
+            ->orderByDesc('gs.end_date')
+            ->value('gs.id');
     }
 
     public function elegibles(Request $request)
@@ -46,71 +109,14 @@ class AdminPromocionesService
         $respuesta = [];
 
         if ($tipo === null || $tipo === 'regular') {
-            $subquery = $this->ultimaInscripcionSubquery('grupos_estudiantes');
-            $base = DB::table(DB::raw($subquery))
-                ->join('grupos_estudiantes as ge', function ($join) {
-                    $join->on('ge.id_estudiante', '=', 'ult.id_estudiante')
-                        ->on('ge.id_grupo', '=', 'ult.id_grupo')
-                        ->on('ge.fecha_cierre', '=', 'ult.fecha_cierre');
-                })
-                ->join('estudiantes as e', 'e.id_estudiante', '=', 'ge.id_estudiante')
-                ->join('grupos as g', 'g.id_grupo', '=', 'ge.id_grupo')
-                ->leftJoin('promociones as pr', function ($join) {
-                    $join->on('pr.id_estudiante', '=', 'ge.id_estudiante')
-                        ->on('pr.id_grupo', '=', 'ge.id_grupo')
-                        ->where('pr.tipo', '=', 'regular')
-                        ->whereNull('pr.revertido_en');
-                })
-                ->whereNull('pr.id')
-                ->whereNotNull('ge.nota_final')
-                ->where('ge.nota_final', '>=', 75)
-                ->whereRaw('COALESCE(e.saldo_pendiente, 0) <= 0')
-                ->whereRaw('CAST(COALESCE(g.nivel, 0) AS UNSIGNED) < 12')
-                ->select(
-                    'e.id_estudiante',
-                    DB::raw("concat(e.nombre, ' ', e.apellido) as estudiante"),
-                    'g.nivel',
-                    'ge.nota_final',
-                    'ge.id_grupo',
-                    'ge.fecha_cierre'
-                );
-
-            $respuesta['regular'] = $base->orderBy('estudiante')->get();
+            $respuesta['regular'] = $this->obtenerElegiblesPorTipo('regular');
         }
 
         if ($tipo === null || $tipo === 'verano') {
-            $subquery = $this->ultimaInscripcionSubquery('grupos_estudiante_verano');
-            $base = DB::table(DB::raw($subquery))
-                ->join('grupos_estudiante_verano as ge', function ($join) {
-                    $join->on('ge.id_estudiante', '=', 'ult.id_estudiante')
-                        ->on('ge.id_grupo', '=', 'ult.id_grupo')
-                        ->on('ge.fecha_cierre', '=', 'ult.fecha_cierre');
-                })
-                ->join('estudiante_verano as e', 'e.id_estudiante', '=', 'ge.id_estudiante')
-                ->join('grupos as g', 'g.id_grupo', '=', 'ge.id_grupo')
-                ->leftJoin('promociones as pr', function ($join) {
-                    $join->on('pr.id_estudiante', '=', 'ge.id_estudiante')
-                        ->on('pr.id_grupo', '=', 'ge.id_grupo')
-                        ->where('pr.tipo', '=', 'verano')
-                        ->whereNull('pr.revertido_en');
-                })
-                ->whereNull('pr.id')
-                ->whereNotNull('ge.nota_final')
-                ->where('ge.nota_final', '>=', 75)
-                ->whereRaw('CAST(COALESCE(g.nivel, 0) AS UNSIGNED) < 12')
-                ->select(
-                    'e.id_estudiante',
-                    'e.nombre_completo as estudiante',
-                    'g.nivel',
-                    'ge.nota_final',
-                    'ge.id_grupo',
-                    'ge.fecha_cierre'
-                );
-
-            $respuesta['verano'] = $base->orderBy('estudiante')->get();
+            $respuesta['verano'] = $this->obtenerElegiblesPorTipo('verano');
         }
 
-        return response()->json($respuesta);
+        return ApiResponse::success($respuesta);
     }
 
     public function aplicar(Request $request)
@@ -124,12 +130,12 @@ class AdminPromocionesService
             'tipo' => ['required', 'in:regular,verano'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id_estudiante' => ['required', 'string', 'max:30'],
-            'items.*.id_grupo' => ['required', 'string', 'max:10'],
+            'items.*.id_grupo' => ['nullable', 'string', 'max:10'],
+            'items.*.group_session_id' => ['nullable', 'integer', 'exists:group_sessions,id'],
         ]);
 
         $tipo = $validated['tipo'];
-        /** @var object $usuario */
-        $adminCorreo = $usuario ? $usuario->correo : null;
+        $adminCorreo = $usuario ? $usuario->email : null;
         $resultados = [
             'promovidos' => [],
             'omitidos' => [],
@@ -140,13 +146,20 @@ class AdminPromocionesService
         try {
             foreach ($validated['items'] as $item) {
                 $idEstudiante = $item['id_estudiante'];
-                $idGrupo = $item['id_grupo'];
+                $idGrupo = $item['id_grupo'] ?? null;
+                $idSesion = isset($item['group_session_id']) ? (int) $item['group_session_id'] : null;
 
-                $yaExiste = DB::table('promociones')
-                    ->where('id_estudiante', $idEstudiante)
-                    ->where('id_grupo', $idGrupo)
-                    ->where('tipo', $tipo)
-                    ->whereNull('revertido_en')
+                $groupSessionId = $this->resolverGroupSessionId($idEstudiante, $idGrupo, $idSesion);
+
+                if (!$groupSessionId) {
+                    $resultados['omitidos'][] = ['id_estudiante' => $idEstudiante, 'razon' => 'grupo_no_valido'];
+                    continue;
+                }
+
+                $yaExiste = DB::table('promotions')
+                    ->where('student_id', $idEstudiante)
+                    ->where('group_session_id', $groupSessionId)
+                    ->whereNull('reverted_at')
                     ->exists();
 
                 if ($yaExiste) {
@@ -154,32 +167,36 @@ class AdminPromocionesService
                     continue;
                 }
 
-                $tablaGrupo = $tipo === 'verano' ? 'grupos_estudiante_verano' : 'grupos_estudiantes';
-                $tablaEstudiante = $tipo === 'verano' ? 'estudiante_verano' : 'estudiantes';
-
-                $registro = DB::table($tablaGrupo . ' as ge')
-                    ->join('grupos as g', 'g.id_grupo', '=', 'ge.id_grupo')
-                    ->where('ge.id_grupo', $idGrupo)
-                    ->where('ge.id_estudiante', $idEstudiante)
-                    ->select('ge.nota_final', 'g.nivel')
+                $registro = DB::table('enrollments as e')
+                    ->join('group_sessions as gs', 'gs.id', '=', 'e.group_session_id')
+                    ->join('groups as g', 'g.id', '=', 'gs.group_id')
+                    ->join('students as s', 's.id', '=', 'e.student_id')
+                    ->select('e.final_grade', 'g.level', 's.type', 's.level as nivel_estudiante')
+                    ->where('e.group_session_id', $groupSessionId)
+                    ->where('e.student_id', $idEstudiante)
                     ->first();
 
-                if (!$registro || $registro->nota_final === null || (int) $registro->nota_final < 75) {
+                if (!$registro || $registro->type !== $tipo) {
+                    $resultados['omitidos'][] = ['id_estudiante' => $idEstudiante, 'razon' => 'no_elegible'];
+                    continue;
+                }
+
+                if ($registro->final_grade === null || (int) $registro->final_grade < 75) {
                     $resultados['omitidos'][] = ['id_estudiante' => $idEstudiante, 'razon' => 'no_elegible'];
                     continue;
                 }
 
                 if ($tipo === 'regular') {
-                    $saldo = (float) DB::table('estudiantes')
-                        ->where('id_estudiante', $idEstudiante)
-                        ->value('saldo_pendiente');
+                    $saldo = (float) $this->saldosSubquery()
+                        ->where('student_id', $idEstudiante)
+                        ->value('saldo');
                     if ($saldo > 0) {
                         $resultados['omitidos'][] = ['id_estudiante' => $idEstudiante, 'razon' => 'saldo_pendiente'];
                         continue;
                     }
                 }
 
-                $nivelActual = (int) ($registro->nivel ?? 0);
+                $nivelActual = (int) ($registro->nivel_estudiante ?? $registro->level ?? 0);
                 if ($nivelActual >= 12) {
                     $resultados['omitidos'][] = ['id_estudiante' => $idEstudiante, 'razon' => 'nivel_maximo'];
                     continue;
@@ -187,17 +204,16 @@ class AdminPromocionesService
 
                 $nivelNuevo = (string) min(12, $nivelActual + 1);
 
-                DB::table($tablaEstudiante)
-                    ->where('id_estudiante', $idEstudiante)
-                    ->update(['nivel' => $nivelNuevo]);
+                DB::table('students')
+                    ->where('id', $idEstudiante)
+                    ->update(['level' => $nivelNuevo]);
 
-                DB::table('promociones')->insert([
-                    'id_estudiante' => $idEstudiante,
-                    'id_grupo' => $idGrupo,
-                    'tipo' => $tipo,
-                    'nivel_anterior' => (string) $nivelActual,
-                    'nivel_nuevo' => $nivelNuevo,
-                    'aprobado_por' => $adminCorreo,
+                DB::table('promotions')->insert([
+                    'student_id' => $idEstudiante,
+                    'group_session_id' => $groupSessionId,
+                    'old_level' => (string) $nivelActual,
+                    'new_level' => $nivelNuevo,
+                    'approved_by' => $adminCorreo,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -206,6 +222,7 @@ class AdminPromocionesService
                     'id_estudiante' => $idEstudiante,
                     'nivel_anterior' => (string) $nivelActual,
                     'nivel_nuevo' => $nivelNuevo,
+                    'group_session_id' => $groupSessionId,
                 ];
             }
 
@@ -213,12 +230,10 @@ class AdminPromocionesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al aplicar promociones. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al aplicar promociones. Intente nuevamente.');
         }
 
-        return response()->json($resultados);
+        return ApiResponse::success($resultados);
     }
 
     public function revertir(Request $request)
@@ -232,32 +247,29 @@ class AdminPromocionesService
             'id_promocion' => ['required', 'integer'],
         ]);
 
-        /** @var object $usuario */
-        $adminCorreo = $usuario ? $usuario->correo : null;
+        $adminCorreo = $usuario ? $usuario->email : null;
 
-        $promocion = DB::table('promociones')
+        $promocion = DB::table('promotions')
             ->where('id', $validated['id_promocion'])
-            ->whereNull('revertido_en')
+            ->whereNull('reverted_at')
             ->first();
 
         if (!$promocion) {
-            return response()->json(['message' => 'Promocion no encontrada.'], 404);
+            return ApiResponse::notFound('Promocion no encontrada.');
         }
-
-        $tablaEstudiante = $promocion->tipo === 'verano' ? 'estudiante_verano' : 'estudiantes';
 
         DB::beginTransaction();
 
         try {
-            DB::table($tablaEstudiante)
-                ->where('id_estudiante', $promocion->id_estudiante)
-                ->update(['nivel' => $promocion->nivel_anterior]);
+            DB::table('students')
+                ->where('id', $promocion->student_id)
+                ->update(['level' => $promocion->old_level]);
 
-            DB::table('promociones')
+            DB::table('promotions')
                 ->where('id', $promocion->id)
                 ->update([
-                    'revertido_en' => now(),
-                    'revertido_por' => $adminCorreo,
+                    'reverted_at' => now(),
+                    'reverted_by' => $adminCorreo,
                     'updated_at' => now(),
                 ]);
 
@@ -265,11 +277,9 @@ class AdminPromocionesService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al revertir promocion. Intente nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al revertir promocion. Intente nuevamente.');
         }
 
-        return response()->json(['message' => 'Promocion revertida.']);
+        return ApiResponse::success(null, 'Promocion revertida.');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -26,15 +27,11 @@ class RegistroEstudianteService
             ->first();
 
         if (!$estudiante) {
-            return response()->json([
-                'message' => 'No existe un registro de estudiante con esa identificación.',
-            ], 404);
+            return ApiResponse::notFound('No existe un registro de estudiante con esa identificación.');
         }
 
         if ($estudiante->status === 'Inactivo') {
-            return response()->json([
-                'message' => 'El estudiante está inactivo y no puede crear una cuenta.',
-            ], 409);
+            return ApiResponse::error('El estudiante está inactivo y no puede crear una cuenta.', 409, null, 'conflict');
         }
 
         $correosValidos = array_filter([
@@ -43,16 +40,12 @@ class RegistroEstudianteService
         ]);
 
         if (!in_array($correo, $correosValidos, true)) {
-            return response()->json([
-                'message' => 'El correo no coincide con el registro del estudiante.',
-            ], 409);
+            return ApiResponse::error('El correo no coincide con el registro del estudiante.', 409, null, 'conflict');
         }
 
         $existeUsuario = DB::table('users')->where('email', $correo)->exists();
         if ($existeUsuario) {
-            return response()->json([
-                'message' => 'Ya existe una cuenta con ese correo.',
-            ], 409);
+            return ApiResponse::error('Ya existe una cuenta con ese correo.', 409, null, 'conflict');
         }
 
         DB::table('users')->insert([
@@ -65,8 +58,6 @@ class RegistroEstudianteService
             'updated_at' => now(),
         ]);
 
-        return response()->json([
-            'message' => 'Cuenta creada correctamente. Ya puede iniciar sesion.',
-        ], 201);
+        return ApiResponse::success(null, 'Cuenta creada correctamente. Ya puede iniciar sesion.', 201);
     }
 }

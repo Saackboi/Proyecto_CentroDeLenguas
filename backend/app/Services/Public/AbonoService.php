@@ -2,6 +2,7 @@
 
 namespace App\Services\Public;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -30,28 +31,20 @@ class AbonoService
             ->first();
 
         if (!$estudiante) {
-            return response()->json([
-                'message' => 'El estudiante no está registrado.',
-            ], 404);
+            return ApiResponse::notFound('El estudiante no está registrado.');
         }
 
         if (strcasecmp($estudiante->first_name, $validated['nombre']) !== 0
             || strcasecmp($estudiante->last_name, $validated['apellido']) !== 0) {
-            return response()->json([
-                'message' => 'El nombre o apellido no coinciden con el estudiante.',
-            ], 409);
+            return ApiResponse::error('El nombre o apellido no coinciden con el estudiante.', 409, null, 'conflict');
         }
 
         if ($estudiante->status !== 'Activo') {
-            return response()->json([
-                'message' => 'El estudiante no está activo y no puede registrar abonos.',
-            ], 409);
+            return ApiResponse::error('El estudiante no está activo y no puede registrar abonos.', 409, null, 'conflict');
         }
 
         if ($estudiante->type !== 'regular') {
-            return response()->json([
-                'message' => 'Solo estudiantes regulares pueden registrar abonos.',
-            ], 409);
+            return ApiResponse::error('Solo estudiantes regulares pueden registrar abonos.', 409, null, 'conflict');
         }
 
         $abonoPendiente = DB::table('payments')
@@ -61,9 +54,7 @@ class AbonoService
             ->exists();
 
         if ($abonoPendiente) {
-            return response()->json([
-                'message' => 'Ya tiene un abono pendiente. Debe esperar a que sea procesado.',
-            ], 409);
+            return ApiResponse::error('Ya tiene un abono pendiente. Debe esperar a que sea procesado.', 409, null, 'conflict');
         }
 
         $archivo = $request->file('comprobante_pago');
@@ -100,13 +91,9 @@ class AbonoService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al enviar datos del pago. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al enviar datos del pago. Inténtelo nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Abono registrado correctamente.',
-        ]);
+        return ApiResponse::success(null, 'Abono registrado correctamente.');
     }
 }

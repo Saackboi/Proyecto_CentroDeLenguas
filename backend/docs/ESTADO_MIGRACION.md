@@ -147,6 +147,11 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
     - `GET /api/admin/dashboard/profesores`
     - `GET /api/admin/dashboard/grupos`
     - `GET /api/admin/reportes?tipo=nivelEstudiante`
+    - `GET /api/admin/reportes?tipo=nivelEstudiante&nivel=...`
+    - `GET /api/admin/reportes?tipo=statusEstudiante`
+    - `GET /api/admin/reportes?tipo=statusEstudiante&estado=...`
+    - `GET /api/admin/reportes?tipo=nivelProfesor`
+    - `GET /api/admin/reportes?tipo=nivelProfesor&nivel=...`
   - Estudiante:
     - `GET /api/estudiante/notificaciones`
     - `PATCH /api/estudiante/notificaciones/{id}/leer`
@@ -163,6 +168,19 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 ## Pendiente
 - Frontend Angular + NgRx.
 
+## Estado
+- Backend migrado al esquema normalizado y con endpoints verificados en entorno demo.
+
+## Ajustes recientes
+- Reportes admin aceptan defaults si faltan parametros requeridos:
+  - `nivelEstudiante`: usa el primer nivel disponible segun el tipo.
+  - `statusEstudiante`: usa el primer estado disponible segun el tipo.
+  - `nivelProfesor`: usa el primer nivel disponible en grupos.
+- Respuestas API estandarizadas:
+  - Exitos: `{ message, data }`.
+  - Errores: `{ message, code, errors? }` (centralizado en `ApiResponse`).
+- Exportar PDF requiere `barryvdh/laravel-dompdf` instalado; si no existe, devuelve `503`.
+
 ## Checkpoint 2026-01-29 (para continuidad)
 - AdminReportService fue reescrito para el esquema normalizado (reports con `students/people`, saldos por `balance_movements`, y profesores por `group_sessions`).
 - AdminNotificacionesService se actualizo a `notifications` y a `role = Admin` (antes usaba `tipo_usuario`).
@@ -171,13 +189,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Migracion ejecutada con `php artisan migrate:fresh` en entorno local (dev).
 
 ### Pendiente real (schema normalizado)
-- Actualizar servicios restantes al nuevo esquema:
-  - `AdminPromocionesService`
-  - `ProfesorCursoService`
-  - `EstudianteNotificacionesService`
-  - `EstudiantePasswordService`
-  - `PasswordResetService`
-- Crear seeders minimos (admin, language, teacher, student, group_session, enrollment, payment, balance_movement) para pruebas rapidas.
+- Ejecutar `php artisan db:seed` para cargar los datos demo.
 - Revisar contratos del frontend si algun endpoint aun devuelve columnas del esquema viejo.
 
 ## Credenciales semilla

@@ -12,9 +12,9 @@ class CursosIdiomasSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('cursos_idiomas')->insert([
-            'id_idioma' => 'ING-1',
-            'nombre' => 'Ingles',
-        ]);
+        DB::table('languages')->updateOrInsert(
+            ['id' => 'ING-1'],
+            ['name' => 'Ingles']
+        );
     }
 }

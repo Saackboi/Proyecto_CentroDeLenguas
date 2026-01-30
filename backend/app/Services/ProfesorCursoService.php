@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,8 +13,8 @@ class ProfesorCursoService
     private function asegurarProfesor()
     {
         $usuario = auth('api')->user();
-        if (!$usuario || $usuario->tipo_usuario !== 'Profesor') {
-            return [null, response()->json(['message' => 'No autorizado.'], 403)];
+        if (!$usuario || $usuario->role !== 'Profesor') {
+            return [null, ApiResponse::forbidden('No autorizado.')];
         }
 
         return [$usuario, null];
@@ -28,19 +29,16 @@ class ProfesorCursoService
         return $validated['tipo'];
     }
 
-    private function obtenerProfesorId(string $correo): ?string
+    private function obtenerProfesorPorCorreo(string $correo): ?object
     {
-        $profesor = DB::table('profesores')
-            ->select('id_profesor')
-            ->where('correo', $correo)
+        return DB::table('teachers as t')
+            ->join('people as p', 'p.id', '=', 't.person_id')
+            ->where(function ($query) use ($correo) {
+                $query->where('p.email_personal', $correo)
+                    ->orWhere('p.email_institucional', $correo);
+            })
+            ->select('t.id', 'p.first_name', 'p.last_name')
             ->first();
-
-        return $profesor?->id_profesor;
-    }
-
-    private function tablaGrupoPorTipo(string $tipo): string
-    {
-        return $tipo === 'verano' ? 'grupos_estudiante_verano' : 'grupos_estudiantes';
     }
 
     private function estadoCurso(array $curso): array
@@ -82,29 +80,40 @@ class ProfesorCursoService
         ];
     }
 
-    private function buscarCurso(string $correoProfesor, string $tipo, string $idGrupo): ?array
+    private function buscarCurso(int $profesorId, string $tipo, ?string $idGrupo, ?int $idSesion): ?array
     {
-        $tablaGrupo = $this->tablaGrupoPorTipo($tipo);
+        $fechaLimite = Carbon::now('America/Panama')->subDays(6)->toDateString();
 
-        $curso = DB::table("{$tablaGrupo} as ge")
-            ->join('grupo_profesor as gp', 'gp.id_grupo', '=', 'ge.id_grupo')
-            ->join('profesores as p', 'p.id_profesor', '=', 'gp.id_profesor')
-            ->join('grupos as g', 'g.id_grupo', '=', 'gp.id_grupo')
-            ->leftJoin('cursos_idiomas as ci', 'ci.id_idioma', '=', 'g.id_idioma')
-            ->where('p.correo', $correoProfesor)
-            ->where('ge.id_grupo', $idGrupo)
-            ->whereNotNull('ge.fecha_cierre')
-            ->whereRaw('DATE_ADD(ge.fecha_cierre, INTERVAL 6 DAY) > CURDATE()')
-            ->distinct()
+        $query = DB::table('group_sessions as gs')
+            ->join('groups as g', 'g.id', '=', 'gs.group_id')
+            ->join('teachers as t', 't.id', '=', 'gs.teacher_id')
+            ->join('people as p', 'p.id', '=', 't.person_id')
+            ->leftJoin('languages as l', 'l.id', '=', 'g.language_id')
+            ->join('enrollments as e', 'e.group_session_id', '=', 'gs.id')
+            ->join('students as s', 's.id', '=', 'e.student_id')
+            ->where('t.id', $profesorId)
+            ->where('s.type', $tipo)
+            ->whereNotNull('gs.end_date')
+            ->whereDate('gs.end_date', '>=', $fechaLimite);
+
+        if ($idSesion) {
+            $query->where('gs.id', $idSesion);
+        } elseif ($idGrupo) {
+            $query->where('gs.group_id', $idGrupo)
+                ->orderByDesc('gs.end_date');
+        }
+
+        $curso = $query
             ->select(
-                'ge.id_grupo',
-                'ge.fecha_inicio',
-                'ge.fecha_cierre',
-                'ge.aula',
-                'p.correo',
-                DB::raw("concat(p.nombre, ' ', p.apellido) as profesor"),
-                DB::raw('ci.nombre as curso'),
-                'g.nivel'
+                'g.id as id_grupo',
+                'gs.id as group_session_id',
+                'gs.start_date as fecha_inicio',
+                'gs.end_date as fecha_cierre',
+                'gs.classroom as aula',
+                DB::raw("coalesce(p.email_institucional, p.email_personal) as correo"),
+                DB::raw("concat(p.first_name, ' ', p.last_name) as profesor"),
+                DB::raw('l.name as curso'),
+                'g.level as nivel'
             )
             ->first();
 
@@ -123,44 +132,42 @@ class ProfesorCursoService
         }
 
         $tipo = $this->resolverTipo($request);
-        $profesorId = $this->obtenerProfesorId($usuario->correo);
+        $profesor = $this->obtenerProfesorPorCorreo($usuario->email);
 
-        if (!$profesorId) {
-            return response()->json([
-                'message' => 'Profesor no encontrado.',
-                'cursos' => [],
-            ], 404);
+        if (!$profesor) {
+            return ApiResponse::notFound('Profesor no encontrado.');
         }
 
-        $tablaGrupo = $this->tablaGrupoPorTipo($tipo);
+        $fechaLimite = Carbon::now('America/Panama')->subDays(6)->toDateString();
 
-        $cursos = DB::table("{$tablaGrupo} as ge")
-            ->join('grupo_profesor as gp', 'gp.id_grupo', '=', 'ge.id_grupo')
-            ->join('profesores as p', 'p.id_profesor', '=', 'gp.id_profesor')
-            ->join('grupos as g', 'g.id_grupo', '=', 'gp.id_grupo')
-            ->leftJoin('cursos_idiomas as ci', 'ci.id_idioma', '=', 'g.id_idioma')
-            ->where('p.correo', $usuario->correo)
-            ->whereNotNull('ge.fecha_cierre')
-            ->whereRaw('DATE_ADD(ge.fecha_cierre, INTERVAL 6 DAY) > CURDATE()')
+        $cursos = DB::table('group_sessions as gs')
+            ->join('groups as g', 'g.id', '=', 'gs.group_id')
+            ->join('teachers as t', 't.id', '=', 'gs.teacher_id')
+            ->join('people as p', 'p.id', '=', 't.person_id')
+            ->leftJoin('languages as l', 'l.id', '=', 'g.language_id')
+            ->join('enrollments as e', 'e.group_session_id', '=', 'gs.id')
+            ->join('students as s', 's.id', '=', 'e.student_id')
+            ->where('t.id', $profesor->id)
+            ->where('s.type', $tipo)
+            ->whereNotNull('gs.end_date')
+            ->whereDate('gs.end_date', '>=', $fechaLimite)
             ->distinct()
             ->select(
-                'ge.id_grupo',
-                'ge.fecha_inicio',
-                'ge.fecha_cierre',
-                'ge.aula',
-                'p.correo',
-                DB::raw("concat(p.nombre, ' ', p.apellido) as profesor"),
-                DB::raw('ci.nombre as curso'),
-                'g.nivel'
+                'g.id as id_grupo',
+                'gs.id as group_session_id',
+                'gs.start_date as fecha_inicio',
+                'gs.end_date as fecha_cierre',
+                'gs.classroom as aula',
+                DB::raw("coalesce(p.email_institucional, p.email_personal) as correo"),
+                DB::raw("concat(p.first_name, ' ', p.last_name) as profesor"),
+                DB::raw('l.name as curso'),
+                'g.level as nivel'
             )
-            ->orderByDesc('ge.fecha_cierre')
+            ->orderByDesc('gs.end_date')
             ->get();
 
         if ($cursos->isEmpty()) {
-            return response()->json([
-                'message' => 'No tiene ningún grupo activo en este momento.',
-                'cursos' => [],
-            ]);
+            return ApiResponse::success(['cursos' => []], 'No tiene ningún grupo activo en este momento.');
         }
 
         $respuesta = $cursos->map(function ($curso) {
@@ -176,9 +183,7 @@ class ProfesorCursoService
             ]);
         })->values();
 
-        return response()->json([
-            'cursos' => $respuesta,
-        ]);
+        return ApiResponse::success(['cursos' => $respuesta]);
     }
 
     public function listarEstudiantes(Request $request)
@@ -190,48 +195,46 @@ class ProfesorCursoService
 
         $validated = $request->validate([
             'tipo' => ['required', 'in:regular,verano'],
-            'id_grupo' => ['required', 'string', 'max:10'],
+            'id_grupo' => ['required_without:group_session_id', 'string', 'max:10'],
+            'group_session_id' => ['required_without:id_grupo', 'integer', 'exists:group_sessions,id'],
         ]);
 
-        $curso = $this->buscarCurso($usuario->correo, $validated['tipo'], $validated['id_grupo']);
-        if (!$curso) {
-            return response()->json(['message' => 'Grupo no encontrado o no disponible.'], 404);
+        $profesor = $this->obtenerProfesorPorCorreo($usuario->email);
+        if (!$profesor) {
+            return ApiResponse::notFound('Profesor no encontrado.');
         }
 
-        if ($validated['tipo'] === 'verano') {
-            $estudiantes = DB::table('grupos_estudiante_verano as ge')
-                ->join('estudiante_verano as ev', 'ev.id_estudiante', '=', 'ge.id_estudiante')
-                ->select(
-                    DB::raw("ev.nombre_completo as estudiante"),
-                    'ev.id_estudiante',
-                    'ge.id_grupo',
-                    'ge.nota_final',
-                    'ge.fecha_cierre'
-                )
-                ->where('ge.id_grupo', $validated['id_grupo'])
-                ->whereRaw('DATE_ADD(ge.fecha_cierre, INTERVAL 6 DAY) > CURDATE()')
-                ->get();
-        } else {
-            $estudiantes = DB::table('grupos_estudiantes as ge')
-                ->join('estudiantes as e', 'e.id_estudiante', '=', 'ge.id_estudiante')
-                ->select(
-                    DB::raw("concat(e.nombre, ' ', e.apellido) as estudiante"),
-                    'e.id_estudiante',
-                    'ge.id_grupo',
-                    'ge.nota_final',
-                    'ge.fecha_cierre'
-                )
-                ->where('ge.id_grupo', $validated['id_grupo'])
-                ->whereRaw('DATE_ADD(ge.fecha_cierre, INTERVAL 6 DAY) > CURDATE()')
-                ->get();
+        $curso = $this->buscarCurso(
+            $profesor->id,
+            $validated['tipo'],
+            $validated['id_grupo'] ?? null,
+            $validated['group_session_id'] ?? null
+        );
+        if (!$curso) {
+            return ApiResponse::notFound('Grupo no encontrado o no disponible.');
         }
+
+        $estudiantes = DB::table('enrollments as e')
+            ->join('students as s', 's.id', '=', 'e.student_id')
+            ->join('people as p', 'p.id', '=', 's.person_id')
+            ->where('e.group_session_id', $curso['group_session_id'])
+            ->where('s.type', $validated['tipo'])
+            ->select(
+                DB::raw("concat(p.first_name, ' ', p.last_name) as estudiante"),
+                's.id as id_estudiante',
+                DB::raw("'{$curso['id_grupo']}' as id_grupo"),
+                'e.final_grade as nota_final'
+            )
+            ->orderBy('p.first_name')
+            ->orderBy('p.last_name')
+            ->get();
 
         $notasEnviadas = $estudiantes->contains(function ($estudiante) {
             $nota = $estudiante->nota_final;
             return $nota !== null && (int) $nota !== 0;
         });
 
-        return response()->json([
+        return ApiResponse::success([
             'curso' => $curso,
             'notas_enviadas' => $notasEnviadas,
             'estudiantes' => $estudiantes,
@@ -247,15 +250,26 @@ class ProfesorCursoService
 
         $validated = $request->validate([
             'tipo' => ['required', 'in:regular,verano'],
-            'id_grupo' => ['required', 'string', 'max:10'],
+            'id_grupo' => ['required_without:group_session_id', 'string', 'max:10'],
+            'group_session_id' => ['required_without:id_grupo', 'integer', 'exists:group_sessions,id'],
             'notas' => ['required', 'array', 'min:1'],
             'notas.*.id_estudiante' => ['required', 'string', 'max:30'],
             'notas.*.nota' => ['required', 'integer', 'min:0', 'max:100'],
         ]);
 
-        $curso = $this->buscarCurso($usuario->correo, $validated['tipo'], $validated['id_grupo']);
+        $profesor = $this->obtenerProfesorPorCorreo($usuario->email);
+        if (!$profesor) {
+            return ApiResponse::notFound('Profesor no encontrado.');
+        }
+
+        $curso = $this->buscarCurso(
+            $profesor->id,
+            $validated['tipo'],
+            $validated['id_grupo'] ?? null,
+            $validated['group_session_id'] ?? null
+        );
         if (!$curso) {
-            return response()->json(['message' => 'Grupo no encontrado o no disponible.'], 404);
+            return ApiResponse::notFound('Grupo no encontrado o no disponible.');
         }
 
         $now = Carbon::now('America/Panama');
@@ -263,23 +277,17 @@ class ProfesorCursoService
         $limite = $cierre->copy()->addDays(6);
 
         if ($now->lte($cierre) || $now->gte($limite)) {
-            return response()->json([
-                'message' => 'Fuera del período permitido para enviar notas.',
-            ], 422);
+            return ApiResponse::error('Fuera del período permitido para enviar notas.', 422, null, 'periodo_invalido');
         }
 
-        $tablaGrupo = $this->tablaGrupoPorTipo($validated['tipo']);
-
-        $yaEnviadas = DB::table($tablaGrupo)
-            ->where('id_grupo', $validated['id_grupo'])
-            ->whereNotNull('nota_final')
-            ->where('nota_final', '!=', 0)
+        $yaEnviadas = DB::table('enrollments')
+            ->where('group_session_id', $curso['group_session_id'])
+            ->whereNotNull('final_grade')
+            ->where('final_grade', '!=', 0)
             ->exists();
 
         if ($yaEnviadas) {
-            return response()->json([
-                'message' => 'Las notas ya fueron enviadas para este grupo.',
-            ], 409);
+            return ApiResponse::error('Las notas ya fueron enviadas para este grupo.', 409, null, 'conflict');
         }
 
         DB::beginTransaction();
@@ -288,14 +296,14 @@ class ProfesorCursoService
 
         try {
             foreach ($validated['notas'] as $nota) {
-                $affected = DB::table($tablaGrupo)
-                    ->where('id_grupo', $validated['id_grupo'])
-                    ->where('id_estudiante', $nota['id_estudiante'])
+                $affected = DB::table('enrollments')
+                    ->where('group_session_id', $curso['group_session_id'])
+                    ->where('student_id', $nota['id_estudiante'])
                     ->where(function ($query) {
-                        $query->whereNull('nota_final')
-                            ->orWhere('nota_final', 0);
+                        $query->whereNull('final_grade')
+                            ->orWhere('final_grade', 0);
                     })
-                    ->update(['nota_final' => $nota['nota']]);
+                    ->update(['final_grade' => $nota['nota']]);
 
                 if ($affected === 0) {
                     $noActualizados[] = $nota['id_estudiante'];
@@ -306,44 +314,39 @@ class ProfesorCursoService
 
             if ($actualizados === 0) {
                 DB::rollBack();
-                return response()->json([
-                    'message' => 'No se encontraron registros para actualizar.',
-                ], 404);
+                return ApiResponse::notFound('No se encontraron registros para actualizar.');
             }
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Error al guardar las notas. Inténtelo nuevamente.',
-            ], 500);
+            return ApiResponse::serverError('Error al guardar las notas. Inténtelo nuevamente.');
         }
 
-        return response()->json([
-            'message' => 'Notas guardadas correctamente.',
+        return ApiResponse::success([
             'actualizados' => $actualizados,
             'no_actualizados' => $noActualizados,
-        ]);
+        ], 'Notas guardadas correctamente.');
     }
 
     public function cambiarPassword(Request $request)
     {
         $usuario = auth('api')->user();
-        if (!$usuario || $usuario->tipo_usuario !== 'Profesor') {
-            return response()->json(['message' => 'No autorizado.'], 403);
+        if (!$usuario || $usuario->role !== 'Profesor') {
+            return ApiResponse::forbidden('No autorizado.');
         }
 
         $validated = $request->validate([
             'contrasena_nueva' => ['required', 'string', 'min:8'],
         ]);
 
-        DB::table('usuarios')
-            ->where('correo', $usuario->correo)
+        DB::table('users')
+            ->where('id', $usuario->id)
             ->update([
-                'contrasena' => Hash::make($validated['contrasena_nueva']),
+                'password' => Hash::make($validated['contrasena_nueva']),
             ]);
 
-        return response()->json(['message' => 'Contrasena actualizada.']);
+        return ApiResponse::success(null, 'Contrasena actualizada.');
     }
 }

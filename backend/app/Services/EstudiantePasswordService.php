@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -11,8 +12,8 @@ class EstudiantePasswordService
     public function cambiar(Request $request)
     {
         $usuario = auth('api')->user();
-        if (!$usuario || $usuario->tipo_usuario !== 'Estudiante') {
-            return response()->json(['message' => 'No autorizado.'], 403);
+        if (!$usuario || $usuario->role !== 'Estudiante') {
+            return ApiResponse::forbidden('No autorizado.');
         }
 
         $validated = $request->validate([
@@ -20,16 +21,16 @@ class EstudiantePasswordService
             'contrasena_nueva' => ['required', 'string', 'min:8'],
         ]);
 
-        if (!Hash::check($validated['contrasena_actual'], $usuario->contrasena)) {
-            return response()->json(['message' => 'Contrasena actual incorrecta.'], 400);
+        if (!Hash::check($validated['contrasena_actual'], $usuario->password)) {
+            return ApiResponse::error('Contrasena actual incorrecta.', 400, null, 'invalid_password');
         }
 
-        DB::table('usuarios')
-            ->where('correo', $usuario->correo)
+        DB::table('users')
+            ->where('id', $usuario->id)
             ->update([
-                'contrasena' => Hash::make($validated['contrasena_nueva']),
+                'password' => Hash::make($validated['contrasena_nueva']),
             ]);
 
-        return response()->json(['message' => 'Contrasena actualizada.']);
+        return ApiResponse::success(null, 'Contrasena actualizada.');
     }
 }

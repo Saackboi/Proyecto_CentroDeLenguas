@@ -13,11 +13,13 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('usuarios')->updateOrInsert(
-            ['correo' => 'admin@gmail.com'],
+        DB::table('users')->updateOrInsert(
+            ['email' => 'admin@gmail.com'],
             [
-                'contrasena' => Hash::make('Admin12345'),
-                'tipo_usuario' => 'Admin',
+                'password' => Hash::make('Admin12345'),
+                'role' => 'Admin',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         );
     }
