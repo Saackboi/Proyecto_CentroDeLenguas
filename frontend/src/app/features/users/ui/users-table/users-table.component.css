@@ -1,0 +1,9 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.users-table {
+  @apply w-full;
+}

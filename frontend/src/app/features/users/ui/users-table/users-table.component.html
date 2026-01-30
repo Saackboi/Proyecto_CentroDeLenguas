@@ -1,0 +1,21 @@
+<nz-table
+  class="users-table"
+  [nzData]="users"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false"
+>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Email</th>
+      <th>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users; trackBy: trackById">
+      <td>{{ user.id }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.role }}</td>
+    </tr>
+  </tbody>
+</nz-table>
