@@ -1,3 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+@import "ng-zorro-antd/ng-zorro-antd.min.css";
+
+:root {
+  --color-primary: #00609c;
+  --color-accent: #fdb913;
+  --color-background-light: #f3f4f6;
+  --color-background-dark: #111827;
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #1f2937;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-background-light);
+  @apply text-gray-700 antialiased transition-colors duration-300;
+}

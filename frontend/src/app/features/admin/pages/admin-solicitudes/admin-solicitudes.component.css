@@ -1,0 +1,82 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.admin-solicitudes {
+  @apply px-8 py-8 grid gap-6;
+}
+
+.admin-solicitudes__header h1 {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.admin-solicitudes__header p {
+  @apply text-sm text-slate-500;
+}
+
+.admin-solicitudes__filters {
+  @apply grid gap-3 md:grid-cols-[minmax(0,1fr)_200px_200px] items-center;
+}
+
+.admin-solicitudes__search {
+  @apply flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm;
+}
+
+.admin-solicitudes__search span {
+  @apply text-slate-400;
+}
+
+.admin-solicitudes__search input {
+  @apply border-none p-0 text-sm;
+}
+
+.admin-solicitudes__select,
+.admin-solicitudes__date {
+  @apply w-full;
+}
+
+.admin-solicitudes__date nz-date-picker,
+.admin-solicitudes__date .ant-picker {
+  width: 100%;
+  min-width: 180px;
+}
+
+@media (max-width: 767px) {
+  .admin-solicitudes__filters {
+    @apply grid-cols-1;
+  }
+}
+
+.admin-solicitudes__tabs {
+  @apply bg-white rounded-xl p-4 border border-slate-200;
+}
+
+.admin-solicitudes__table {
+  @apply mt-4;
+}
+
+.admin-solicitudes__student {
+  @apply flex flex-col;
+}
+
+.admin-solicitudes__student small {
+  @apply text-xs text-slate-500;
+}
+
+.admin-solicitudes__actions {
+  @apply flex flex-wrap gap-2;
+}
+
+.admin-solicitudes__actions button {
+  @apply flex items-center gap-1;
+}
+
+.admin-solicitudes__reject {
+  @apply text-red-500 border-red-200;
+}
+
+.admin-solicitudes__placeholder {
+  @apply py-10 text-center text-slate-500;
+}

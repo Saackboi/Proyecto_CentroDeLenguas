@@ -1,0 +1,174 @@
+<section class="admin-dashboard">
+  <header class="admin-hero">
+    <div class="admin-hero__pattern"></div>
+    <div class="admin-hero__content">
+      <div class="admin-hero__copy">
+        <div class="admin-hero__badge">
+          <span></span>
+          Sistema de gestion academica
+        </div>
+        <h1>
+          Bienvenida, Licda. <span>Sheila Bultron</span>
+        </h1>
+        <p>
+          "¡Buenos dias Sheila! Tienes la fuerza y la capacidad para lograrlo todo. Tu gestion
+          impulsa el exito de nuestros estudiantes."
+        </p>
+      </div>
+      @if (cards$ | async; as cards) {
+        <div class="admin-hero__cards">
+          <div class="admin-hero__card" *ngFor="let card of cards">
+            <p>{{ card.label }}</p>
+            <div>
+              <span>{{ card.value }}</span>
+              <span class="material-icons-round">{{ card.icon }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </header>
+
+  <section class="admin-content">
+    <div class="admin-content__main">
+      <div class="admin-section__header">
+        <h2>
+          <span class="material-icons-round">dashboard</span>
+          Modulos de Gestion
+        </h2>
+        <button type="button">
+          <span class="material-icons-round">tune</span>
+          Configurar
+        </button>
+      </div>
+
+      <div class="admin-modules">
+        <a class="admin-module" routerLink="/admin/solicitudes">
+          <div class="admin-module__icon admin-module__icon--primary">
+            <span class="material-icons-round">assignment</span>
+          </div>
+          <h3>Gestion de Solicitudes</h3>
+          <p>Aprueba o rechaza solicitudes de ubicacion, verano y abonos.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+        <a class="admin-module" routerLink="/admin/estudiantes">
+          <div class="admin-module__icon admin-module__icon--primary">
+            <span class="material-icons-round">school</span>
+          </div>
+          <h3>Gestion de Estudiantes</h3>
+          <p>Actualiza perfiles, estado academico y datos del estudiante.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+        <a class="admin-module" routerLink="/admin/profesores">
+          <div class="admin-module__icon admin-module__icon--accent">
+            <span class="material-icons-round">history_edu</span>
+          </div>
+          <h3>Gestion de Profesores</h3>
+          <p>Administra profesores, asignaciones y estado.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+        <a class="admin-module" routerLink="/admin/grupos">
+          <div class="admin-module__icon admin-module__icon--indigo">
+            <span class="material-icons-round">groups</span>
+          </div>
+          <h3>Gestion de Grupos</h3>
+          <p>Crea grupos, gestiona cupos y estudiantes por grupo.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+        <a class="admin-module" routerLink="/admin/promociones">
+          <div class="admin-module__icon admin-module__icon--indigo">
+            <span class="material-icons-round">school</span>
+          </div>
+          <h3>Promocion de Estudiantes</h3>
+          <p>Revisa elegibles, aplica o revierte promociones.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+        <a class="admin-module" routerLink="/admin/reportes">
+          <div class="admin-module__icon admin-module__icon--accent">
+            <span class="material-icons-round">analytics</span>
+          </div>
+          <h3>Gestion de Reportes</h3>
+          <p>Consulta reportes y exporta informacion institucional.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+        <a class="admin-module" routerLink="/admin/notificaciones">
+          <div class="admin-module__icon admin-module__icon--primary">
+            <span class="material-icons-round">notifications</span>
+          </div>
+          <h3>Gestion de Notificaciones</h3>
+          <p>Envia avisos directos a estudiantes y grupos.</p>
+          <div>
+            <span>Acceder</span>
+            <span class="material-icons-round">arrow_forward</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <aside class="admin-content__side">
+      @if (notices$ | async; as notices) {
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h3>
+              <span class="material-icons-round">notifications</span>
+              Avisos recientes
+            </h3>
+            <a class="admin-panel__link" routerLink="/admin/solicitudes">Ver todo</a>
+          </div>
+          @if (notices.length) {
+            <div class="admin-panel__list admin-panel__list--scroll">
+              <div class="admin-panel__item" *ngFor="let notice of notices">
+                <span class="admin-panel__dot" [ngClass]="noticeDotClass(notice.type)"></span>
+                <div class="admin-panel__content">
+                  <p nz-tooltip [nzTooltipTitle]="notice.tooltip">{{ notice.title }}</p>
+                  <span>{{ notice.subtitle }}</span>
+                  <small>{{ notice.timeLabel }}</small>
+                </div>
+                <button type="button" class="admin-panel__dismiss" (click)="dismissNotice(notice.id)">
+                  <span class="material-icons-round">close</span>
+                </button>
+              </div>
+            </div>
+          } @else {
+            <p class="admin-panel__empty">No hay avisos nuevos.</p>
+          }
+        </div>
+      }
+
+      <div class="admin-panel admin-panel--support">
+        <div class="admin-panel__support-icon">
+          <span class="material-icons-round">support_agent</span>
+        </div>
+        <div class="admin-panel__support-content">
+          <h3>
+            <span class="material-icons-round">help_center</span>
+            Soporte Tecnico
+          </h3>
+          <p>¿Problemas con la plataforma? Contacta al equipo tecnico.</p>
+          <div>
+            <button type="button">Crear Ticket</button>
+            <button type="button">Chat en Vivo</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+</section>

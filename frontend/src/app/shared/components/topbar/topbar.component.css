@@ -1,0 +1,116 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.inicio-nav {
+  @apply sticky top-0 z-50 border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur-md;
+}
+
+.inicio-nav__container {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+.inicio-nav__content {
+  @apply flex h-20 items-center justify-between;
+}
+
+.inicio-nav__brand {
+  @apply flex items-center gap-3;
+}
+
+.inicio-nav__logo {
+  @apply flex h-10 w-10 items-center justify-center rounded-full text-xl font-bold text-white shadow-lg;
+  background-color: var(--color-primary);
+}
+
+.inicio-nav__brand-text {
+  @apply flex flex-col;
+}
+
+.inicio-nav__brand-title {
+  @apply leading-tight text-gray-900 font-bold;
+}
+
+.inicio-nav__brand-subtitle {
+  @apply text-xs text-gray-500;
+}
+
+.inicio-nav__links {
+  @apply hidden items-center space-x-8 md:flex;
+}
+
+.inicio-nav__link {
+  @apply font-medium text-gray-600 transition;
+}
+
+.inicio-nav__link:hover {
+  color: var(--color-primary);
+}
+
+.inicio-nav__link--active {
+  @apply font-bold;
+  color: var(--color-primary);
+}
+
+.inicio-nav__link--login {
+  @apply inline-flex items-center gap-2;
+}
+
+.inicio-nav__cta-group {
+  @apply relative;
+}
+
+.inicio-nav__cta {
+  @apply flex items-center gap-1 rounded-full px-6 py-2.5 font-bold text-gray-900 shadow-md transition transform hover:-translate-y-0.5 hover:bg-yellow-400 hover:shadow-lg;
+  background-color: var(--color-accent);
+}
+
+.inicio-nav__cta-icon {
+  @apply text-sm transition-transform duration-200;
+}
+
+.inicio-nav__cta-menu {
+  @apply invisible absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white opacity-0 shadow-xl ring-1 ring-black/5 transition-all duration-200;
+}
+
+.inicio-nav__cta-menu-inner {
+  @apply overflow-hidden rounded-xl;
+}
+
+.inicio-nav__cta-item {
+  @apply flex items-center gap-3 border-b border-gray-100 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50;
+}
+
+.inicio-nav__cta-item:hover {
+  color: var(--color-primary);
+}
+
+.inicio-nav__cta-item:last-child {
+  @apply border-b-0;
+}
+
+.inicio-nav__cta-group:hover .inicio-nav__cta-menu {
+  @apply visible opacity-100;
+}
+
+.inicio-nav__cta-group:hover .inicio-nav__cta-icon {
+  @apply rotate-180;
+}
+
+.inicio-nav__mobile {
+  @apply flex items-center md:hidden;
+}
+
+.inicio-nav__mobile-button {
+  @apply text-gray-600 transition;
+}
+
+.inicio-nav__mobile-button:hover {
+  color: var(--color-primary);
+}
+
+.inicio-nav__mobile-button span {
+  @apply text-3xl;
+}

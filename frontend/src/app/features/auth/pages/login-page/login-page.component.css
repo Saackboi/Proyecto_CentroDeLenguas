@@ -1,0 +1,172 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.login-shell {
+  @apply relative flex flex-1 items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 lg:py-20;
+}
+
+.login-shell__glow {
+  @apply pointer-events-none absolute h-96 w-96 rounded-full blur-3xl;
+}
+
+.login-shell__glow--primary {
+  @apply -right-20 -top-20;
+  background-color: rgba(0, 96, 156, 0.1);
+}
+
+.login-shell__glow--accent {
+  @apply -bottom-20 -left-20;
+  background-color: rgba(253, 185, 19, 0.1);
+}
+
+.login-card {
+  @apply relative flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-2xl md:min-h-[600px] md:flex-row;
+}
+
+.login-card__form {
+  @apply flex w-full flex-col justify-center p-8 lg:p-12 md:w-1/2;
+}
+
+.login-header {
+  @apply mb-8 text-center md:text-left;
+}
+
+.login-header__icon {
+  @apply mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-2xl md:mx-0;
+  color: var(--color-primary);
+}
+
+.login-header h2 {
+  @apply text-3xl font-bold tracking-tight text-gray-900;
+}
+
+.login-header p {
+  @apply mt-2 text-sm text-gray-600;
+}
+
+.login-alert {
+  @apply mb-6;
+}
+
+.login-form {
+  @apply space-y-6;
+}
+
+.login-field {
+  @apply space-y-2;
+}
+
+.login-field__label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.login-field__control {
+  @apply flex items-center gap-3 rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition;
+}
+
+.login-field__control span {
+  @apply text-lg text-gray-400;
+}
+
+.login-field__control input {
+  @apply flex-1 border-none bg-transparent p-0 text-sm text-gray-900 outline-none;
+}
+
+.login-field__control:focus-within {
+  @apply ring-2 ring-blue-200;
+  border-color: var(--color-primary);
+}
+
+.login-field__control--error {
+  @apply border-red-400 ring-1 ring-red-200;
+}
+
+.login-field__error {
+  @apply text-xs text-red-600;
+}
+
+.login-links {
+  @apply flex items-center justify-between;
+}
+
+.login-link {
+  @apply text-sm font-medium transition;
+  color: var(--color-primary);
+}
+
+.login-link:hover {
+  color: #1d4ed8;
+}
+
+.login-submit {
+  @apply w-full rounded-lg font-bold shadow-sm transition-transform hover:-translate-y-0.5 flex items-center justify-center;
+  background-color: var(--color-primary);
+  border-color: transparent;
+  padding: 0.75rem 1rem;
+}
+
+.login-submit:hover {
+  background-color: #1d4ed8;
+}
+
+.login-footer {
+  @apply mt-8 border-t border-gray-100 pt-6 text-center;
+}
+
+.login-footer p {
+  @apply text-xs text-gray-500;
+}
+
+.login-footer a {
+  @apply font-bold;
+  color: var(--color-primary);
+}
+
+.login-card__visual {
+  @apply relative hidden w-1/2 bg-gray-900 md:block;
+}
+
+.login-card__visual img {
+  @apply absolute inset-0 h-full w-full object-cover opacity-90;
+}
+
+.login-card__visual-overlay {
+  @apply absolute inset-0;
+  background-image: linear-gradient(
+    180deg,
+    rgba(0, 96, 156, 0.9) 0%,
+    rgba(0, 96, 156, 0.4) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
+.login-card__visual-content {
+  @apply relative z-10 flex h-full flex-col items-center justify-center p-12 text-center text-white;
+}
+
+.login-card__visual-icon {
+  @apply mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-white/30 bg-white/20 text-5xl shadow-xl backdrop-blur-md;
+}
+
+.login-card__visual-content h3 {
+  @apply mb-4 text-3xl font-bold drop-shadow-lg;
+}
+
+.login-card__visual-content p {
+  @apply max-w-sm text-lg text-blue-100 leading-relaxed drop-shadow-md;
+}
+
+.login-card__visual-ring {
+  @apply absolute rounded-full border border-white/10;
+}
+
+.login-card__visual-ring--top {
+  @apply right-10 top-10 h-20 w-20 border-4;
+}
+
+.login-card__visual-ring--bottom {
+  @apply left-10 bottom-10 h-32 w-32 border-8;
+}

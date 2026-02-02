@@ -1,0 +1,105 @@
+<section class="admin-solicitudes">
+  <header class="admin-solicitudes__header">
+    <div>
+      <h1>Solicitudes</h1>
+      <p>Gestiona solicitudes de ubicacion, abonos y verano.</p>
+    </div>
+  </header>
+
+  <div class="admin-solicitudes__filters">
+    <div class="admin-solicitudes__search">
+      <span class="material-icons-round">search</span>
+      <input
+        nz-input
+        type="text"
+        placeholder="Buscar por nombre o correo"
+        [formControl]="filtrosForm.controls.search"
+      >
+    </div>
+    <nz-select
+      class="admin-solicitudes__select"
+      [formControl]="filtrosForm.controls.estado"
+      nzPlaceHolder="Estado"
+    >
+      <nz-option nzLabel="Todos" nzValue=""></nz-option>
+      <nz-option nzLabel="Pendiente" nzValue="Pendiente"></nz-option>
+      <nz-option nzLabel="Aceptado" nzValue="Aceptado"></nz-option>
+      <nz-option nzLabel="Rechazado" nzValue="Rechazado"></nz-option>
+      <nz-option nzLabel="Sin estado" nzValue="Sin estado"></nz-option>
+    </nz-select>
+    <nz-date-picker
+      class="admin-solicitudes__date"
+      [formControl]="filtrosForm.controls.fecha"
+      nzPlaceHolder="Fecha"
+      [nzInputReadOnly]="true"
+      nzFormat="yyyy-MM-dd"
+      
+    ></nz-date-picker>
+  </div>
+  <!--[nzGetPopupContainer]="getPopupContainer"-->
+  <nz-tabs class="admin-solicitudes__tabs" nzType="card">
+    <nz-tab nzTitle="Ubicacion">
+      <div class="admin-solicitudes__table" *ngIf="ubicacionFiltrada$ | async as ubicacion">
+        <nz-table
+          [nzData]="ubicacion"
+          [nzFrontPagination]="true"
+          [nzShowPagination]="true"
+          [nzPageSize]="8"
+        >
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Telefono</th>
+              <th>Fecha registro</th>
+              <th>Estado pago</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of ubicacion">
+              <td>
+                <div class="admin-solicitudes__student">
+                  <span>{{ item.nombreCompleto }}</span>
+                  <small>{{ item.correo }}</small>
+                </div>
+              </td>
+              <td>{{ item.telefono }}</td>
+              <td>{{ item.fechaRegistro }}</td>
+              <td>
+                <nz-tag [nzColor]="item.estadoPago === 'Pendiente' ? 'orange' : item.estadoPago === 'Aceptado' ? 'green' : item.estadoPago === 'Rechazado' ? 'red' : 'default'">
+                  {{ item.estadoPago }}
+                </nz-tag>
+              </td>
+              <td>
+                <div class="admin-solicitudes__actions">
+                  <button nz-button nzType="default" (click)="onVerComprobante(item)">
+                    <span class="material-icons-round">visibility</span>
+                    Ver
+                  </button>
+                  <button nz-button nzType="primary" (click)="onAprobar(item)">
+                    <span class="material-icons-round">check_circle</span>
+                    Aprobar
+                  </button>
+                  <button nz-button nzType="default" class="admin-solicitudes__reject" (click)="onRechazar(item)">
+                    <span class="material-icons-round">cancel</span>
+                    Rechazar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-tab>
+    <nz-tab nzTitle="Abonos">
+      <div class="admin-solicitudes__placeholder">
+        <p>Modulo de abonos en preparacion.</p>
+      </div>
+    </nz-tab>
+    <nz-tab nzTitle="Verano">
+      <div class="admin-solicitudes__placeholder">
+        <p>Modulo de verano en preparacion.</p>
+      </div>
+    </nz-tab>
+  </nz-tabs>
+</section>

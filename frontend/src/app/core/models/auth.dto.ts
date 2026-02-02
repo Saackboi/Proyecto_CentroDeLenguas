@@ -8,3 +8,9 @@ export interface AuthTokenDto {
   token_type: string;
   expires_in: number;
 }
+
+export interface AuthMeDto {
+  id: number;
+  email: string;
+  role: 'Admin' | 'Profesor' | 'Estudiante';
+}

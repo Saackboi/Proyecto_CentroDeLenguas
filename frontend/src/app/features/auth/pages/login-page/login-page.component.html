@@ -1,0 +1,120 @@
+<app-topbar [links]="navLinks"></app-topbar>
+
+<section class="login-shell">
+  <div class="login-shell__glow login-shell__glow--primary"></div>
+  <div class="login-shell__glow login-shell__glow--accent"></div>
+
+  <div class="login-card" *ngIf="loginState$ | async as state">
+    <div class="login-card__form">
+      <div class="login-header">
+        <div class="login-header__icon">
+          <span class="material-icons-round">lock</span>
+        </div>
+        <div>
+          <h2>Iniciar Sesion</h2>
+          <p>Bienvenido de nuevo a la plataforma CEL</p>
+        </div>
+      </div>
+
+      <nz-alert
+        *ngIf="(roleAlert$ | async) as roleAlert"
+        [nzMessage]="roleAlert"
+        nzType="info"
+        nzShowIcon
+        nzCloseable
+        class="login-alert"
+        (nzOnClose)="onRoleAlertClose()"
+        [hidden]="!roleAlert || !isRoleAlertVisible"
+      ></nz-alert>
+
+      <nz-alert
+        *ngIf="state.status === 'error' && isAlertVisible"
+        nzType="error"
+        nzShowIcon
+        nzCloseable
+        (nzOnClose)="onAlertClose()"
+        class="login-alert"
+        [nzMessage]="state.error ?? ''"
+      ></nz-alert>
+
+      <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="login-field">
+          <label class="login-field__label" for="correo">Correo de usuario</label>
+          <div class="login-field__control" [class.login-field__control--error]="isInvalid('correo')">
+            <span class="material-icons-round">mail</span>
+            <input
+              nz-input
+              id="correo"
+              formControlName="correo"
+              type="email"
+              placeholder="usuario@ejemplo.com"
+            >
+          </div>
+          <p class="login-field__error" *ngIf="isInvalid('correo')">
+            Ingresa un correo valido.
+          </p>
+        </div>
+
+        <div class="login-field">
+          <label class="login-field__label" for="contrasena">Contrasena</label>
+          <div class="login-field__control" [class.login-field__control--error]="isInvalid('contrasena')">
+            <span class="material-icons-round">vpn_key</span>
+            <input
+              nz-input
+              id="contrasena"
+              formControlName="contrasena"
+              type="password"
+              placeholder="••••••••"
+            >
+          </div>
+          <p class="login-field__error" *ngIf="isInvalid('contrasena')">
+            Ingresa tu contrasena.
+          </p>
+        </div>
+
+        <div class="login-links">
+          <a class="login-link" routerLink="/recuperar">¿Olvido su contrasena?</a>
+        </div>
+
+        <button
+          nz-button
+          nzType="primary"
+          class="login-submit"
+          [disabled]="loginForm.invalid || state.status === 'loading'"
+          [nzLoading]="state.status === 'loading'"
+        >
+          Acceder
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <p>
+          ¿No tienes una cuenta?
+          <a routerLink="/contacto">Contactar Soporte</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="login-card__visual">
+      <img
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPIbav0OT4ukGHe8pGvj1GfaWvhxlIDc3l7jDY7X_T7-1N-AMPYnf6Vz_qI2KgbU3gpdFCy8c1Jxc_zpnCa1oKWTq0hMl_HLBB2EhWSGRNyspLg9ybGJ3WWhtveo280Wuo94XUemEn4B_O_kgk7dgjjwYcXCqAncGRTLRcn1j6LCFqevAv7AXmKHrX3J-CMHp-B4ylsiTLOJS-MBeWazAax_iBXJ2tKo2G72silY-IZtvx_aH3Rhre_5DiPFfD9oR_5u_DbD-Hw8Q"
+        alt="Laboratorio de Idiomas"
+      >
+      <div class="login-card__visual-overlay"></div>
+      <div class="login-card__visual-content">
+        <div class="login-card__visual-icon">
+          <span class="material-icons-round">school</span>
+        </div>
+        <h3>Centro Especializado de Lenguas</h3>
+        <p>
+          Accede a tus recursos de aprendizaje y gestiona tu progreso academico en nuestra
+          plataforma digital.
+        </p>
+      </div>
+      <span class="login-card__visual-ring login-card__visual-ring--top"></span>
+      <span class="login-card__visual-ring login-card__visual-ring--bottom"></span>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>

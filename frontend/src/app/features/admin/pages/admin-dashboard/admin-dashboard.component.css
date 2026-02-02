@@ -1,0 +1,292 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.admin-dashboard {
+  @apply flex min-h-screen flex-col;
+}
+
+.admin-hero {
+  @apply relative overflow-hidden;
+  background-color: var(--color-primary);
+}
+
+.admin-hero__pattern {
+  @apply absolute inset-0 opacity-20;
+  background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.admin-hero__content {
+  @apply relative z-10 flex flex-col gap-6 px-8 py-8 lg:flex-row lg:items-center lg:justify-between;
+}
+
+.admin-hero__copy {
+  @apply max-w-xl;
+}
+
+.admin-hero__badge {
+  @apply mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white;
+}
+
+.admin-hero__badge span {
+  @apply h-1.5 w-1.5 rounded-full;
+  background-color: var(--color-accent);
+}
+
+.admin-hero__copy h1 {
+  @apply mb-1 text-2xl font-bold text-white;
+}
+
+.admin-hero__copy h1 span {
+  color: var(--color-accent);
+}
+
+.admin-hero__copy p {
+  @apply max-w-lg text-xs italic text-blue-100/80;
+}
+
+.admin-hero__cards {
+  @apply grid w-full grid-cols-2 gap-3 md:grid-cols-4 lg:w-auto;
+}
+
+.admin-hero__card {
+  @apply min-w-[120px] rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm;
+}
+
+.admin-hero__card p {
+  @apply mb-1 text-[9px] font-bold uppercase tracking-tighter text-blue-200;
+}
+
+.admin-hero__card div {
+  @apply flex items-center justify-between;
+}
+
+.admin-hero__card span:first-child {
+  @apply text-lg font-bold text-white;
+}
+
+.admin-hero__card span:last-child {
+  @apply text-sm;
+  color: var(--color-accent);
+}
+
+.admin-content {
+  @apply flex flex-1 flex-col gap-8 px-8 py-8 lg:flex-row;
+}
+
+.admin-content__main {
+  @apply flex-1;
+}
+
+.admin-section__header {
+  @apply mb-6 flex items-center justify-between;
+}
+
+.admin-section__header h2 {
+  @apply flex items-center gap-2 text-lg font-bold text-slate-900;
+}
+
+.admin-section__header h2 span {
+  color: var(--color-primary);
+}
+
+.admin-section__header button {
+  @apply flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-slate-500 transition;
+}
+
+.admin-section__header button:hover {
+  color: var(--color-primary);
+}
+
+.admin-modules {
+  @apply grid gap-6 xl:grid-cols-3;
+}
+
+.admin-module {
+  @apply rounded-xl border border-slate-200 bg-white p-6 transition-all hover:shadow-lg;
+}
+
+.admin-module__icon {
+  @apply mb-4 flex h-12 w-12 items-center justify-center rounded-lg;
+}
+
+.admin-module__icon--primary {
+  @apply bg-blue-50;
+  color: var(--color-primary);
+}
+
+.admin-module__icon--accent {
+  @apply bg-yellow-50;
+  color: var(--color-accent);
+}
+
+.admin-module__icon--indigo {
+  @apply bg-indigo-50 text-indigo-600;
+}
+
+.admin-module h3 {
+  @apply mb-2 font-bold text-slate-900;
+}
+
+.admin-module p {
+  @apply mb-4 text-xs text-slate-600;
+}
+
+.admin-module div {
+  @apply flex items-center text-[11px] font-bold uppercase tracking-wider;
+  color: var(--color-primary);
+}
+
+.admin-module:hover h3 {
+  color: var(--color-primary);
+}
+
+.admin-module:hover div span:last-child {
+  @apply translate-x-1 transition-transform;
+}
+
+.admin-content__side {
+  @apply flex w-full flex-col gap-6 lg:w-80;
+}
+
+.admin-panel {
+  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm;
+}
+
+.admin-panel__header {
+  @apply mb-4 flex items-center justify-between;
+}
+
+.admin-panel__header h3 {
+  @apply flex items-center gap-2 text-sm font-bold text-slate-900;
+}
+
+.admin-panel__header span {
+  @apply text-lg text-slate-400;
+}
+
+.admin-panel__link {
+  @apply text-[10px] font-bold uppercase tracking-wider;
+  color: var(--color-primary);
+}
+
+.admin-panel__list {
+  @apply space-y-4;
+}
+
+.admin-panel__list--scroll {
+  @apply pr-2;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.admin-panel__list--scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-panel__list--scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 96, 156, 0.35);
+  border-radius: 999px;
+}
+
+.admin-panel__list--scroll::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.06);
+  border-radius: 999px;
+}
+
+.admin-panel__item {
+  @apply flex items-start gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0;
+}
+
+.admin-panel__content {
+  @apply flex-1;
+}
+
+.admin-panel__content p {
+  @apply text-xs font-semibold text-slate-800;
+}
+
+.admin-panel__content span {
+  @apply block text-[10px] font-medium text-slate-500;
+}
+
+.admin-panel__content small {
+  @apply block text-[10px] text-slate-400;
+}
+
+.admin-panel__dismiss {
+  @apply text-slate-400 transition hover:text-slate-700;
+}
+
+.admin-panel__empty {
+  @apply text-xs text-slate-500;
+}
+
+.admin-panel__dot {
+  @apply mt-1.5 h-1.5 w-1.5 rounded-full;
+}
+
+.admin-panel__dot--danger {
+  @apply bg-red-500;
+}
+
+.admin-panel__dot--accent {
+  background-color: var(--color-accent);
+}
+
+.admin-panel__dot--success {
+  @apply bg-green-500;
+}
+
+.admin-panel--support {
+  @apply relative overflow-hidden bg-linear-to-br from-slate-900 to-slate-800 text-white;
+}
+
+.admin-panel__support-icon {
+  @apply pointer-events-none absolute -bottom-4 -right-4 opacity-10;
+}
+
+.admin-panel__support-icon span {
+  @apply text-7xl;
+}
+
+.admin-panel__support-content {
+  @apply relative z-10;
+}
+
+.admin-panel__support-content h3 {
+  @apply mb-2 flex items-center gap-2 text-sm font-bold;
+}
+
+.admin-panel__support-content h3 span {
+  @apply text-lg;
+  color: var(--color-accent);
+}
+
+.admin-panel__support-content p {
+  @apply mb-4 text-[11px] text-slate-300;
+}
+
+.admin-panel__support-content div {
+  @apply flex flex-col gap-2;
+}
+
+.admin-panel__support-content button:first-child {
+  @apply rounded-lg bg-white/10 py-2 text-[10px] font-bold uppercase tracking-widest text-white transition;
+}
+
+.admin-panel__support-content button:first-child:hover {
+  @apply bg-white/20;
+}
+
+.admin-panel__support-content button:last-child {
+  @apply rounded-lg py-2 text-[10px] font-bold uppercase tracking-widest text-slate-900 transition;
+  background-color: var(--color-accent);
+}
+
+.admin-panel__support-content button:last-child:hover {
+  @apply bg-yellow-400;
+}

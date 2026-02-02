@@ -1,0 +1,57 @@
+<nav class="inicio-nav">
+  <div class="inicio-nav__container">
+    <div class="inicio-nav__content">
+      <div class="inicio-nav__brand">
+        <div class="inicio-nav__logo">
+          <span class="material-icons-round">school</span>
+        </div>
+        <div class="inicio-nav__brand-text">
+          <span class="inicio-nav__brand-title">CEL</span>
+          <span class="inicio-nav__brand-subtitle">Centro Especializado de Lenguas</span>
+        </div>
+      </div>
+      <div class="inicio-nav__links">
+        <a
+          *ngFor="let link of links"
+          class="inicio-nav__link"
+          [class.inicio-nav__link--active]="activeSection === link.id"
+          [routerLink]="link.path"
+          [fragment]="link.fragment"
+        >
+          {{ link.label }}
+        </a>
+        <div class="inicio-nav__cta-group">
+          <button class="inicio-nav__cta">
+            Inscribirse Ahora
+            <span class="material-icons-round inicio-nav__cta-icon">expand_more</span>
+          </button>
+          <div class="inicio-nav__cta-menu">
+            <div class="inicio-nav__cta-menu-inner">
+              <a class="inicio-nav__cta-item" href="#">
+                <span class="material-icons-round">payments</span>
+                Pago de Abono
+              </a>
+              <a class="inicio-nav__cta-item" href="#">
+                <span class="material-icons-round">child_care</span>
+                Verano - Niños
+              </a>
+              <a class="inicio-nav__cta-item" href="#">
+                <span class="material-icons-round">quiz</span>
+                Prueba de Ubicación
+              </a>
+            </div>
+          </div>
+        </div>
+        <a class="inicio-nav__link inicio-nav__link--login" routerLink="/login">
+          <span class="material-icons-round">login</span>
+          Login
+        </a>
+      </div>
+      <div class="inicio-nav__mobile">
+        <button class="inicio-nav__mobile-button">
+          <span class="material-icons-round">menu</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

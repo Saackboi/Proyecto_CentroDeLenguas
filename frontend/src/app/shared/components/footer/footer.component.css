@@ -1,0 +1,101 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.inicio-footer {
+  @apply border-t border-gray-800 bg-gray-900 text-white;
+}
+
+.inicio-footer__container {
+  @apply mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8;
+}
+
+.inicio-footer--compact .inicio-footer__container {
+  @apply py-6;
+}
+
+.inicio-footer__grid {
+  @apply grid gap-8 md:grid-cols-4;
+}
+
+.inicio-footer__brand {
+  @apply md:col-span-2;
+}
+
+.inicio-footer__brand-title {
+  @apply mb-4 flex items-center gap-3 text-xl font-bold;
+}
+
+.inicio-footer--compact .inicio-footer__brand-title {
+  @apply text-lg mb-3;
+}
+
+.inicio-footer__brand-title span {
+  @apply flex h-8 w-8 items-center justify-center rounded-full text-sm text-white;
+  background-color: var(--color-primary);
+}
+
+.inicio-footer__brand p {
+  @apply max-w-md text-sm text-gray-400 leading-relaxed;
+}
+
+.inicio-footer--compact .inicio-footer__brand p {
+  @apply text-xs;
+}
+
+.inicio-footer__links h4,
+.inicio-footer__contact h4 {
+  @apply mb-4 text-lg font-bold;
+  color: var(--color-primary);
+}
+
+.inicio-footer--compact .inicio-footer__links h4,
+.inicio-footer--compact .inicio-footer__contact h4 {
+  @apply text-base mb-3;
+}
+
+.inicio-footer__links ul {
+  @apply space-y-2 text-sm text-gray-400;
+}
+
+.inicio-footer--compact .inicio-footer__links ul {
+  @apply text-xs;
+}
+
+.inicio-footer__links a {
+  @apply transition hover:text-white;
+}
+
+.inicio-footer__contact ul {
+  @apply space-y-3 text-sm text-gray-400;
+}
+
+.inicio-footer--compact .inicio-footer__contact ul {
+  @apply text-xs;
+}
+
+.inicio-footer__contact li {
+  @apply flex items-center gap-2;
+}
+
+.inicio-footer__contact li span {
+  @apply text-gray-500;
+}
+
+.inicio-footer__social {
+  @apply mt-4 flex gap-4;
+}
+
+.inicio-footer__social a {
+  @apply text-gray-400 transition hover:text-white;
+}
+
+.inicio-footer__bottom {
+  @apply mt-12 border-t border-gray-800 pt-8 text-center text-xs text-gray-500;
+}
+
+.inicio-footer--compact .inicio-footer__bottom {
+  @apply mt-6 pt-4 text-[11px];
+}
