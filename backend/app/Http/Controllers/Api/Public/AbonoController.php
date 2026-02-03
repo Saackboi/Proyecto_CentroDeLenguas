@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de abonos públicos
+// Permite crear nuevos abonos.
+
 namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;

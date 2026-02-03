@@ -1,5 +1,9 @@
 <?php
 
+// Servicio para la gestión de saldos de estudiantes
+// Proporciona funcionalidades para obtener montos de matrícula,
+// crear movimientos de saldo, calcular saldos y actualizar cachés.
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;

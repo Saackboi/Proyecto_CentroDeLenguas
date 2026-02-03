@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de restablecimiento de contraseñas de estudiantes y profesores
+// Permite solicitar y resetear contraseñas.
+
 namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;

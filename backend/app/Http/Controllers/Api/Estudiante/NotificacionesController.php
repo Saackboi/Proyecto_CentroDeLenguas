@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de notificaciones de estudiantes
+// Permite listar, marcar como leídas y eliminar notificaciones.
+
 namespace App\Http\Controllers\Api\Estudiante;
 
 use App\Http\Controllers\Controller;

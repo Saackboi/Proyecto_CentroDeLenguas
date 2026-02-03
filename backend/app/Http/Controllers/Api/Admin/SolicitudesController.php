@@ -1,5 +1,9 @@
 <?php
 
+// Controlador para la gestión de solicitudes administrativas
+// Incluye funcionalidades para crear y actualizar profesores y grupos,
+// gestionar ajustes de retiro, listar estudiantes y profesores, y generar reportes.
+
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;

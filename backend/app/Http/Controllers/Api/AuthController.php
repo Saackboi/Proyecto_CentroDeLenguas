@@ -1,5 +1,9 @@
 <?php
 
+// Controlador para la gestión de autenticación
+// Permite iniciar sesión, obtener información del usuario autenticado,
+// cerrar sesión y refrescar tokens.
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;

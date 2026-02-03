@@ -109,10 +109,22 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Reportes/DataTables centralizados en `AdminReportService`.
 - Auth en `AuthService`.
 - Admin en `AdminSolicitudesService` y `AdminNotificacionesService`.
+- Abonos admin extraidos a `app/Services/AdminSolicitudes/AbonosService`.
+- Ubicacion admin extraido a `app/Services/AdminSolicitudes/UbicacionService`.
+- Verano admin extraido a `app/Services/AdminSolicitudes/VeranoService`.
+- Profesores admin extraido a `app/Services/AdminSolicitudes/ProfesoresService`.
+- Grupos admin extraido a `app/Services/AdminSolicitudes/GruposService`.
+- Estudiantes admin extraido a `app/Services/AdminSolicitudes/EstudiantesService`.
+- Dashboards admin extraido a `app/Services/AdminSolicitudes/DashboardsService`.
+- Reportes admin extraido a `app/Services/AdminSolicitudes/ReportesService`.
+- Rutas y servicios de notificaciones admin manuales eliminados (queda solo notificacion automatica por acciones).
+- `AdminSolicitudesService` fue dividido por modulo en `app/Services/AdminSolicitudes` (sin cambiar endpoints).
 - Estudiante en `EstudianteNotificacionesService` y `EstudiantePasswordService`.
 - Profesor (cursos, notas, password) en `ProfesorCursoService`.
 - Password reset en `PasswordResetService`.
 - Publicos en `RegistroEstudianteService`, `VeranoService`, `PruebaUbicacionService`, `Public/AbonoService`.
+
+- AdminSolicitudesService dividido por modulo en `app/Services/AdminSolicitudes` (sin cambiar endpoints).
 
 ## Pruebas
 - Endpoints probados manualmente con Postman:

@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\Admin\SolicitudesController;
 use App\Http\Controllers\Api\Admin\PromocionesController;
 use App\Http\Controllers\Api\Estudiante\PasswordController as EstudiantePasswordController;
 use App\Http\Controllers\Api\Estudiante\NotificacionesController as EstudianteNotificacionesController;
-use App\Http\Controllers\Api\NotificacionesController;
 use App\Http\Controllers\Api\Profesor\CursoController as ProfesorCursoController;
 use App\Http\Controllers\Api\Public\AbonoController;
 use App\Http\Controllers\Api\Public\EstudiantePasswordResetController;
@@ -25,10 +24,6 @@ Route::middleware('auth:api')->prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:api')->prefix('admin')->group(function () {
-    Route::post('notificaciones', [NotificacionesController::class, 'store']);
-    Route::get('notificaciones', [NotificacionesController::class, 'index']);
-    Route::patch('notificaciones/{id}/leer', [NotificacionesController::class, 'marcarLeida']);
-
     Route::get('solicitudes/ubicacion', [SolicitudesController::class, 'listarUbicacion']);
     Route::get('solicitudes/verano', [SolicitudesController::class, 'listarVerano']);
     Route::get('solicitudes/abonos', [SolicitudesController::class, 'listarAbonos']);

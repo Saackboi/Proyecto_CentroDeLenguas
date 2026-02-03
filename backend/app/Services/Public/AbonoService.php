@@ -1,5 +1,8 @@
 <?php
 
+// Servicio para la gestión de abonos públicos
+// Permite registrar nuevos abonos de estudiantes.
+
 namespace App\Services\Public;
 
 use App\Support\ApiResponse;

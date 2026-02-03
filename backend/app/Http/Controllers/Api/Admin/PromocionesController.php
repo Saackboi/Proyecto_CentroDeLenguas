@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de promociones por parte del administrador
+// Incluye funcionalidades para listar estudiantes elegibles, aplicar y revertir promociones.
+
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;

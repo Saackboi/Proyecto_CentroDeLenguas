@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de cursos de verano públicos
+// Permite crear nuevos cursos de verano.
+
 namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;

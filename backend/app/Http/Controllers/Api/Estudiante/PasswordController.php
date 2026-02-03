@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de contraseñas de estudiantes
+// Permite a los estudiantes cambiar su contraseña.
+
 namespace App\Http\Controllers\Api\Estudiante;
 
 use App\Http\Controllers\Controller;

@@ -1,5 +1,8 @@
 <?php
 
+// Controlador para la gestión de cursos por parte del profesor
+// Incluye funcionalidades para listar cursos, estudiantes, guardar notas y cambiar contraseñas.
+
 namespace App\Http\Controllers\Api\Profesor;
 
 use App\Http\Controllers\Controller;
