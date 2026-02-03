@@ -118,7 +118,7 @@ class VeranoService
                 ]
             );
 
-            $passwordTemporal = $this->crearCuentaEstudiante($validated['id_estudiante'], $validated['correo']);
+            $passwordTemporal = $this->crearCuentaEstudiante($validated['correo']);
             if ($passwordTemporal) {
                 try {
                     Mail::to($validated['correo'])->send(
@@ -199,10 +199,7 @@ class VeranoService
             return $response;
         }
 
-        $validated = $request->validate([
-            'id_estudiante' => ['required', 'string', 'max:30'],
-            'motivo' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $this->validarRechazo($request);
 
         $motivo = trim($validated['motivo']);
 

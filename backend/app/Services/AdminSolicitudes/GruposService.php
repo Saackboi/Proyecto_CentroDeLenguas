@@ -9,7 +9,6 @@ use App\Services\SaldoService;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class GruposService
 {
@@ -44,13 +43,12 @@ class GruposService
             ->values()
             ->all();
 
-        $totalEstudiantes = DB::table('students')
-            ->whereIn('id', $idsEstudiantes)
-            ->where('type', $validated['tipo'])
-            ->count();
-
-        if ($totalEstudiantes !== count($idsEstudiantes)) {
-            return ApiResponse::error('Hay estudiantes que no existen en el sistema.', 422, null, 'validation_error');
+        if ($response = $this->validarEstudiantesPorTipo(
+            $idsEstudiantes,
+            $validated['tipo'],
+            'Hay estudiantes que no existen en el sistema.'
+        )) {
+            return $response;
         }
 
         $profesor = DB::table('teachers')
@@ -148,10 +146,7 @@ class GruposService
             return ApiResponse::notFound('Grupo no encontrado.');
         }
 
-        $groupSession = DB::table('group_sessions')
-            ->where('group_id', $id)
-            ->orderByDesc('start_date')
-            ->first();
+        $groupSession = $this->obtenerSesionActual($id);
 
         if (!$groupSession) {
             return ApiResponse::notFound('Grupo no encontrado.');
@@ -169,12 +164,12 @@ class GruposService
             ->all();
 
         if ($idsAgregar) {
-            $totalAgregar = DB::table('students')
-                ->whereIn('id', $idsAgregar)
-                ->where('type', $validated['tipo'])
-                ->count();
-            if ($totalAgregar !== count($idsAgregar)) {
-                return ApiResponse::error('Hay estudiantes para agregar que no existen en el sistema.', 422, null, 'validation_error');
+            if ($response = $this->validarEstudiantesPorTipo(
+                $idsAgregar,
+                $validated['tipo'],
+                'Hay estudiantes para agregar que no existen en el sistema.'
+            )) {
+                return $response;
             }
         }
 
@@ -279,10 +274,7 @@ class GruposService
             return $response;
         }
 
-        $validated = $request->validate([
-            'tipo' => ['required', 'in:regular,verano'],
-            'id_estudiante' => ['required', 'string', 'max:30'],
-        ]);
+        $validated = $this->validarTipoIdEstudiante($request);
 
         if ($validated['tipo'] !== 'regular') {
             return ApiResponse::error('Los ajustes aplican solo a estudiantes regulares.', 422, null, 'validation_error');
@@ -293,10 +285,7 @@ class GruposService
             return ApiResponse::notFound('Grupo no encontrado.');
         }
 
-        $groupSession = DB::table('group_sessions')
-            ->where('group_id', $id)
-            ->orderByDesc('start_date')
-            ->first();
+        $groupSession = $this->obtenerSesionActual($id);
 
         if (!$groupSession) {
             return ApiResponse::notFound('Grupo no encontrado.');
@@ -330,19 +319,13 @@ class GruposService
             return $response;
         }
 
-        $validated = $request->validate([
-            'tipo' => ['required', 'in:regular,verano'],
-            'id_estudiante' => ['required', 'string', 'max:30'],
-        ]);
+        $validated = $this->validarTipoIdEstudiante($request);
 
         if ($validated['tipo'] !== 'regular') {
             return ApiResponse::error('Los ajustes aplican solo a estudiantes regulares.', 422, null, 'validation_error');
         }
 
-        $groupSession = DB::table('group_sessions')
-            ->where('group_id', $id)
-            ->orderByDesc('start_date')
-            ->first();
+        $groupSession = $this->obtenerSesionActual($id);
 
         if (!$groupSession) {
             return ApiResponse::notFound('Grupo no encontrado.');
@@ -452,9 +435,7 @@ class GruposService
             return $response;
         }
 
-        $validated = $request->validate([
-            'tipo' => ['required', 'in:regular,verano'],
-        ]);
+        $validated = $this->validarTipo($request);
 
         $grupo = DB::table('group_sessions as gs')
             ->join('groups as g', 'g.id', '=', 'gs.group_id')
@@ -497,14 +478,9 @@ class GruposService
             return $response;
         }
 
-        $validated = $request->validate([
-            'tipo' => ['required', 'in:regular,verano'],
-        ]);
+        $validated = $this->validarTipo($request);
 
-        $groupSession = DB::table('group_sessions')
-            ->where('group_id', $id)
-            ->orderByDesc('start_date')
-            ->first();
+        $groupSession = $this->obtenerSesionActual($id);
 
         if (!$groupSession) {
             return ApiResponse::notFound('Grupo no encontrado.');
@@ -529,35 +505,47 @@ class GruposService
 
         $groupSessionId = null;
         if (!empty($validated['id_grupo'])) {
-            $groupSessionId = DB::table('group_sessions')
-                ->where('group_id', $validated['id_grupo'])
-                ->orderByDesc('start_date')
-                ->value('id');
+            $groupSession = $this->obtenerSesionActual($validated['id_grupo']);
+            $groupSessionId = $groupSession?->id;
         }
 
         if ($validated['tipo'] === 'verano') {
-            $query = DB::table('students as s')
-                ->join('people as p', 'p.id', '=', 's.person_id')
-                ->select(
-                    's.id as id_estudiante',
-                    DB::raw("concat(p.first_name, ' ', p.last_name) as estudiante"),
-                    's.level as nivel',
-                    's.status as estado'
-                )
-                ->where('s.type', 'verano')
-                ->where('s.level', $validated['nivel'])
-                ->whereNotIn('s.status', ['En proceso', 'En prueba']);
-
-            if ($groupSessionId) {
-                $query->leftJoin('enrollments as e', function ($join) use ($groupSessionId) {
-                    $join->on('e.student_id', '=', 's.id')
-                        ->where('e.group_session_id', '=', $groupSessionId);
-                })->whereNull('e.student_id');
-            }
+            $query = $this->obtenerQueryDisponiblesVerano($validated['nivel'], $groupSessionId);
 
             return ApiResponse::success($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
         }
 
+        $query = $this->obtenerQueryDisponiblesRegular($validated['nivel'], $groupSessionId);
+
+        return ApiResponse::success($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
+    }
+
+    private function obtenerQueryDisponiblesVerano(string $nivel, ?int $groupSessionId)
+    {
+        $query = DB::table('students as s')
+            ->join('people as p', 'p.id', '=', 's.person_id')
+            ->select(
+                's.id as id_estudiante',
+                DB::raw("concat(p.first_name, ' ', p.last_name) as estudiante"),
+                's.level as nivel',
+                's.status as estado'
+            )
+            ->where('s.type', 'verano')
+            ->where('s.level', $nivel)
+            ->whereNotIn('s.status', ['En proceso', 'En prueba']);
+
+        if ($groupSessionId) {
+            $query->leftJoin('enrollments as e', function ($join) use ($groupSessionId) {
+                $join->on('e.student_id', '=', 's.id')
+                    ->where('e.group_session_id', '=', $groupSessionId);
+            })->whereNull('e.student_id');
+        }
+
+        return $query;
+    }
+
+    private function obtenerQueryDisponiblesRegular(string $nivel, ?int $groupSessionId)
+    {
         $saldos = DB::table('balance_movements')
             ->select(
                 'student_id',
@@ -579,7 +567,7 @@ class GruposService
                 DB::raw('coalesce(saldo.saldo, 0) as saldo_pendiente')
             )
             ->where('s.type', 'regular')
-            ->where('s.level', $validated['nivel'])
+            ->where('s.level', $nivel)
             ->whereNotIn('s.status', ['En proceso', 'En prueba']);
 
         if ($groupSessionId) {
@@ -589,30 +577,58 @@ class GruposService
             })->whereNull('e.student_id');
         }
 
-        return ApiResponse::success($query->orderBy('p.first_name')->orderBy('p.last_name')->get());
+        return $query;
     }
 
     private function listarEstudiantesGrupoInterno(int $idSesion, string $tipo)
     {
         if ($tipo === 'verano') {
-            return DB::table('enrollments as e')
-                ->join('group_sessions as gs', 'gs.id', '=', 'e.group_session_id')
-                ->join('students as s', 's.id', '=', 'e.student_id')
-                ->join('people as p', 'p.id', '=', 's.person_id')
-                ->where('e.group_session_id', $idSesion)
-                ->where('s.type', 'verano')
-                ->select(
-                    's.id as id_estudiante',
-                    DB::raw("concat(p.first_name, ' ', p.last_name) as estudiante"),
-                    's.status as estado',
-                    'gs.classroom as aula',
-                    'e.final_grade as nota_final'
-                )
+            return $this->obtenerQueryEstudiantesGrupoVerano($idSesion)
                 ->orderBy('p.first_name')
                 ->orderBy('p.last_name')
                 ->get();
         }
 
+        return $this->obtenerQueryEstudiantesGrupoRegular($idSesion)
+            ->orderBy('p.first_name')
+            ->orderBy('p.last_name')
+            ->get();
+    }
+
+    private function validarTipo(Request $request): array
+    {
+        return $request->validate([
+            'tipo' => ['required', 'in:regular,verano'],
+        ]);
+    }
+
+    private function validarTipoIdEstudiante(Request $request): array
+    {
+        return $request->validate([
+            'tipo' => ['required', 'in:regular,verano'],
+            'id_estudiante' => ['required', 'string', 'max:30'],
+        ]);
+    }
+
+    private function obtenerQueryEstudiantesGrupoVerano(int $idSesion)
+    {
+        return DB::table('enrollments as e')
+            ->join('group_sessions as gs', 'gs.id', '=', 'e.group_session_id')
+            ->join('students as s', 's.id', '=', 'e.student_id')
+            ->join('people as p', 'p.id', '=', 's.person_id')
+            ->where('e.group_session_id', $idSesion)
+            ->where('s.type', 'verano')
+            ->select(
+                's.id as id_estudiante',
+                DB::raw("concat(p.first_name, ' ', p.last_name) as estudiante"),
+                's.status as estado',
+                'gs.classroom as aula',
+                'e.final_grade as nota_final'
+            );
+    }
+
+    private function obtenerQueryEstudiantesGrupoRegular(int $idSesion)
+    {
         $saldos = DB::table('balance_movements')
             ->select(
                 'student_id',
@@ -638,19 +654,33 @@ class GruposService
                 DB::raw('coalesce(saldo.saldo, 0) as saldo_pendiente'),
                 'gs.classroom as aula',
                 'e.final_grade as nota_final'
-            )
-            ->orderBy('p.first_name')
-            ->orderBy('p.last_name')
-            ->get();
+            );
     }
 
-    private function generarIdGrupo(): string
+    private function validarEstudiantesPorTipo(array $idsEstudiantes, string $tipo, string $mensajeError)
     {
-        do {
-            $id = 'GRP' . Str::upper(Str::random(7));
-            $existe = DB::table('groups')->where('id', $id)->exists();
-        } while ($existe);
+        if (!$idsEstudiantes) {
+            return null;
+        }
 
-        return $id;
+        $totalEstudiantes = DB::table('students')
+            ->whereIn('id', $idsEstudiantes)
+            ->where('type', $tipo)
+            ->count();
+
+        if ($totalEstudiantes !== count($idsEstudiantes)) {
+            return ApiResponse::error($mensajeError, 422, null, 'validation_error');
+        }
+
+        return null;
     }
+
+    private function obtenerSesionActual(string $idGrupo): ?object
+    {
+        return DB::table('group_sessions')
+            ->where('group_id', $idGrupo)
+            ->orderByDesc('start_date')
+            ->first();
+    }
+
 }

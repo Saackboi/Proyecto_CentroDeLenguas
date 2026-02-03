@@ -30,7 +30,7 @@ class ProfesoresService
             'estado' => ['nullable', 'in:Activo,Inactivo'],
         ]);
 
-        $correo = strtolower(trim($validated['correo']));
+        $correo = $this->normalizarCorreo($validated['correo']);
         $estado = $validated['estado'] ?? 'Activo';
 
         if (DB::table('users')->where('email', $correo)->exists()) {
@@ -128,8 +128,8 @@ class ProfesoresService
             return ApiResponse::notFound('Profesor no encontrado.');
         }
 
-        $nuevoCorreo = strtolower(trim($validated['correo']));
-        $correoActual = strtolower(trim($profesor->email_personal ?? ''));
+        $nuevoCorreo = $this->normalizarCorreo($validated['correo']);
+        $correoActual = $this->normalizarCorreo($profesor->email_personal ?? '');
 
         if ($nuevoCorreo !== $correoActual) {
             $correoEnUso = DB::table('users')

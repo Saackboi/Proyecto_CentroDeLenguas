@@ -89,7 +89,7 @@ class UbicacionService
                 ]);
 
             $correoCuenta = $correoUtp ?: $correoPersonal;
-            $passwordTemporal = $this->crearCuentaEstudiante($validated['id_estudiante'], $correoCuenta);
+            $passwordTemporal = $this->crearCuentaEstudiante($correoCuenta);
             if ($passwordTemporal) {
                 try {
                     Mail::to($correoCuenta)->send(new EstudianteCredencialesMail($correoCuenta, $passwordTemporal));
@@ -181,10 +181,7 @@ class UbicacionService
             return $response;
         }
 
-        $validated = $request->validate([
-            'id_estudiante' => ['required', 'string', 'max:30'],
-            'motivo' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $this->validarRechazo($request);
 
         $motivo = trim($validated['motivo']);
 

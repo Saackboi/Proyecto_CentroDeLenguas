@@ -26,39 +26,7 @@ class EstudiantesService
         ]);
 
         if ($validated['tipo'] === 'verano') {
-            $datos = DB::table('students as s')
-                ->join('people as p', 'p.id', '=', 's.person_id')
-                ->leftJoin('student_profiles as sp', 'sp.student_id', '=', 's.id')
-                ->leftJoin('guardians as g', 'g.student_id', '=', 's.id')
-                ->leftJoin('student_contacts as sc', 'sc.student_id', '=', 's.id')
-                ->where('s.id', $id)
-                ->where('s.type', 'verano')
-                ->select(
-                    's.id as id_estudiante',
-                    DB::raw("concat(p.first_name, ' ', p.last_name) as nombre_completo"),
-                    's.status as estado',
-                    's.level as nivel',
-                    'p.phone as celular',
-                    'sp.birth_date as fecha_nacimiento',
-                    'sp.home_number as numero_casa',
-                    'sp.address as domicilio',
-                    'sp.gender as sexo',
-                    'p.email_personal as correo',
-                    'sp.school as colegio',
-                    'sc.allergies as alergias',
-                    'sc.blood_type as tipo_sangre',
-                    'sc.emergency_name as contacto_nombre',
-                    'sc.emergency_phone as contacto_telefono',
-                    'g.father_name as nombre_padre',
-                    'g.father_workplace as lugar_trabajo_padre',
-                    'g.father_work_phone as telefono_trabajo_padre',
-                    'g.father_phone as celular_padre',
-                    'g.mother_name as nombre_madre',
-                    'g.mother_workplace as lugar_trabajo_madre',
-                    'g.mother_work_phone as telefono_trabajo_madre',
-                    'g.mother_phone as celular_madre'
-                )
-                ->first();
+            $datos = $this->obtenerDetalleEstudianteVerano($id);
 
             if (!$datos) {
                 return ApiResponse::notFound('Estudiante no encontrado.');
@@ -67,7 +35,63 @@ class EstudiantesService
             return ApiResponse::success(['tipo' => 'verano', 'data' => $datos]);
         }
 
-        $datos = DB::table('students as s')
+        $datos = $this->obtenerDetalleEstudianteRegular($id);
+
+        if (!$datos) {
+            return ApiResponse::notFound('Estudiante no encontrado.');
+        }
+
+        $saldo = $this->saldoService->calcularSaldo($id);
+
+        return ApiResponse::success([
+            'tipo' => 'regular',
+            'data' => array_merge((array) $datos, [
+                'saldo_pendiente' => $saldo,
+                'deuda_total' => $saldo,
+            ]),
+        ]);
+    }
+
+    private function obtenerDetalleEstudianteVerano(string $id): ?object
+    {
+        return DB::table('students as s')
+            ->join('people as p', 'p.id', '=', 's.person_id')
+            ->leftJoin('student_profiles as sp', 'sp.student_id', '=', 's.id')
+            ->leftJoin('guardians as g', 'g.student_id', '=', 's.id')
+            ->leftJoin('student_contacts as sc', 'sc.student_id', '=', 's.id')
+            ->where('s.id', $id)
+            ->where('s.type', 'verano')
+            ->select(
+                's.id as id_estudiante',
+                DB::raw("concat(p.first_name, ' ', p.last_name) as nombre_completo"),
+                's.status as estado',
+                's.level as nivel',
+                'p.phone as celular',
+                'sp.birth_date as fecha_nacimiento',
+                'sp.home_number as numero_casa',
+                'sp.address as domicilio',
+                'sp.gender as sexo',
+                'p.email_personal as correo',
+                'sp.school as colegio',
+                'sc.allergies as alergias',
+                'sc.blood_type as tipo_sangre',
+                'sc.emergency_name as contacto_nombre',
+                'sc.emergency_phone as contacto_telefono',
+                'g.father_name as nombre_padre',
+                'g.father_workplace as lugar_trabajo_padre',
+                'g.father_work_phone as telefono_trabajo_padre',
+                'g.father_phone as celular_padre',
+                'g.mother_name as nombre_madre',
+                'g.mother_workplace as lugar_trabajo_madre',
+                'g.mother_work_phone as telefono_trabajo_madre',
+                'g.mother_phone as celular_madre'
+            )
+            ->first();
+    }
+
+    private function obtenerDetalleEstudianteRegular(string $id): ?object
+    {
+        return DB::table('students as s')
             ->join('people as p', 'p.id', '=', 's.person_id')
             ->where('s.id', $id)
             ->where('s.type', 'regular')
@@ -85,20 +109,6 @@ class EstudiantesService
                 DB::raw('null as deuda_total')
             )
             ->first();
-
-        if (!$datos) {
-            return ApiResponse::notFound('Estudiante no encontrado.');
-        }
-
-        $saldo = $this->saldoService->calcularSaldo($id);
-
-        return ApiResponse::success([
-            'tipo' => 'regular',
-            'data' => array_merge((array) $datos, [
-                'saldo_pendiente' => $saldo,
-                'deuda_total' => $saldo,
-            ]),
-        ]);
     }
 
     public function actualizarEstudiante(Request $request, string $id)
@@ -131,8 +141,8 @@ class EstudiantesService
             return ApiResponse::notFound('Estudiante no encontrado.');
         }
 
-        $correoPersonal = strtolower(trim($validated['correo_personal']));
-        $correoUtp = $validated['correo_utp'] ? strtolower(trim($validated['correo_utp'])) : null;
+        $correoPersonal = $this->normalizarCorreo($validated['correo_personal']);
+        $correoUtp = $validated['correo_utp'] ? $this->normalizarCorreo($validated['correo_utp']) : null;
         $isUtp = $validated['es_estudiante'] === 'SI';
 
         DB::beginTransaction();
@@ -159,7 +169,7 @@ class EstudiantesService
                 ]);
 
             $correoCuenta = $correoUtp ?: $correoPersonal;
-            $correoCuentaActual = strtolower(trim($estudiante->email_institucional ?? $estudiante->email_personal ?? ''));
+            $correoCuentaActual = $this->normalizarCorreo($estudiante->email_institucional ?? $estudiante->email_personal ?? '');
             if ($correoCuentaActual !== '' && $correoCuenta !== $correoCuentaActual) {
                 $existeCorreo = DB::table('users')
                     ->where('email', $correoCuenta)
@@ -258,7 +268,7 @@ class EstudiantesService
                     'first_name' => $validated['nombre_completo'],
                     'last_name' => '',
                     'phone' => $validated['celular'],
-                    'email_personal' => strtolower(trim($validated['correo'])),
+                    'email_personal' => $this->normalizarCorreo($validated['correo']),
                     'email_institucional' => null,
                     'updated_at' => now(),
                 ]);

@@ -102,6 +102,10 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Saldos ahora se calculan por movimientos (cargos/abonos/ajustes) y se cachean en `saldo_pendiente`.
 - Retiro de estudiantes en grupos regulares usa preview + confirm para ajustes.
 
+## TODO (refactor AdminSolicitudes)
+- Verificacion funcional realizada en entorno local con token admin.
+- Pendiente validar aprobar/rechazar ubicacion y verano (sin solicitudes en entorno local).
+
 ## Refactor servicios
 - Controllers delgados con delegacion a servicios.
 - Servicios separados: admin, profesor, estudiante, public, auth.
@@ -123,8 +127,6 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Profesor (cursos, notas, password) en `ProfesorCursoService`.
 - Password reset en `PasswordResetService`.
 - Publicos en `RegistroEstudianteService`, `VeranoService`, `PruebaUbicacionService`, `Public/AbonoService`.
-
-- AdminSolicitudesService dividido por modulo en `app/Services/AdminSolicitudes` (sin cambiar endpoints).
 
 ## Pruebas
 - Endpoints probados manualmente con Postman:
@@ -192,6 +194,21 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
   - Exitos: `{ message, data }`.
   - Errores: `{ message, code, errors? }` (centralizado en `ApiResponse`).
 - Exportar PDF requiere `barryvdh/laravel-dompdf` instalado; si no existe, devuelve `503`.
+
+## Changelog
+- 2026-02-03: AdminSolicitudes dividido por servicios (Abonos, Ubicacion, Verano, Profesores, Grupos, Estudiantes, Dashboards, Reportes).
+- 2026-02-03: Helpers comunes para admin (`asegurarAdmin`, `crearNotificacion`, `crearCuentaEstudiante`, `generarIdGrupo`, `normalizarCorreo`).
+- 2026-02-03: GruposService simplificado con `obtenerSesionActual` y validacion de estudiantes por tipo reutilizable.
+- 2026-02-03: EstudiantesService con helpers de detalle regular/verano sin cambiar respuestas.
+- 2026-02-03: ProfesoresService normaliza correo con helper comun.
+- 2026-02-03: EstudiantesService normaliza correo con helper comun.
+- 2026-02-03: GruposService reutiliza validaciones de tipo en helpers privados.
+- 2026-02-03: Validaciones de rechazo reutilizan helper comun en ubicacion/verano/abonos.
+- 2026-02-03: Rutas admin verificadas con `php artisan route:list` (sin pruebas funcionales).
+- 2026-02-03: Verificacion funcional admin OK (`/api/admin/estudiantes/ST-001?tipo=regular`, `/api/admin/estudiantes/SV-001?tipo=verano`, `/api/admin/grupos/G-001?tipo=regular`, `/api/admin/grupos/GV-001?tipo=verano`, estudiantes de grupo).
+- 2026-02-03: Verificacion funcional admin OK (`/api/admin/solicitudes/verano`, `/api/admin/solicitudes/abonos`).
+- 2026-02-03: Abono aprobado con token admin (`/api/admin/abono/aprobar`).
+- 2026-02-03: Fix crearCuentaEstudiante en UbicacionService/VeranoService (firma de helper actual).
 
 ## Checkpoint 2026-01-29 (para continuidad)
 - AdminReportService fue reescrito para el esquema normalizado (reports con `students/people`, saldos por `balance_movements`, y profesores por `group_sessions`).

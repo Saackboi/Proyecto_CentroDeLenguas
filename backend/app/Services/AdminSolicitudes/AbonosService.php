@@ -93,10 +93,7 @@ class AbonosService
             return $response;
         }
 
-        $validated = $request->validate([
-            'id_estudiante' => ['required', 'string', 'max:30'],
-            'motivo' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $this->validarRechazo($request);
 
         $motivo = trim($validated['motivo']);
 
