@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Subject, map, startWith, switchMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
-import { AdminDashboardService } from '../../data-access/services/admin-dashboard.service';
-import { DashboardCounts } from '../../data-access/models/admin-dashboard.model';
-import { AdminNoticesService } from '../../data-access/services/admin-notices.service';
-import { AdminNoticeType } from '../../data-access/models/admin-notice.model';
+import { AdminNoticeType } from '../../dashboard/data-access/models/admin-notice.model';
+import { AdminDashboardActions } from '../../dashboard/data-access/store/admin-dashboard.actions';
+import {
+  selectAdminDashboardCounts,
+  selectAdminDashboardNotices
+} from '../../dashboard/data-access/store/admin-dashboard.selectors';
 
 interface DashboardCard {
   label: string;
@@ -22,19 +25,10 @@ interface DashboardCard {
   styleUrls: ['./admin-dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AdminDashboardComponent {
-  private readonly dashboardService = inject(AdminDashboardService);
-  private readonly noticesService = inject(AdminNoticesService);
-  private readonly refreshNotices$ = new Subject<void>();
+export class AdminDashboardComponent implements OnInit {
+  private readonly store = inject(Store);
 
-  readonly counts$ = this.dashboardService.getDashboardCounts().pipe(
-    startWith<DashboardCounts>({
-      estudiantes: 0,
-      profesores: 0,
-      grupos: 0,
-      solicitudes: 0
-    })
-  );
+  readonly counts$ = this.store.select(selectAdminDashboardCounts);
 
   readonly cards$ = this.counts$.pipe(
     map((counts) => [
@@ -61,15 +55,15 @@ export class AdminDashboardComponent {
     ] as DashboardCard[])
   );
 
-  readonly notices$ = this.refreshNotices$.pipe(
-    startWith(void 0),
-    switchMap(() => this.noticesService.getNotices())
-  );
+  readonly notices$ = this.store.select(selectAdminDashboardNotices);
 
+  ngOnInit(): void {
+    this.store.dispatch(AdminDashboardActions.loadCounts());
+    this.store.dispatch(AdminDashboardActions.loadNotices());
+  }
 
   dismissNotice(id: string): void {
-    this.noticesService.dismissNotice(id);
-    this.refreshNotices$.next();
+    this.store.dispatch(AdminDashboardActions.dismissNotice({ id }));
   }
 
 

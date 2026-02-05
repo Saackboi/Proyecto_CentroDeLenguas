@@ -4,8 +4,13 @@ import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../../../environments/environment';
 import { ApiResponseDto } from '../../../../core/models/api-response.dto';
-import { ADMIN_API_PATHS } from '../constants/admin-dashboard.const';
 import { SolicitudUbicacionDto, SolicitudUbicacionView } from '../models/admin-solicitudes.model';
+
+const ADMIN_SOLICITUDES_API_PATHS = {
+  solicitudesUbicacion: '/admin/solicitudes/ubicacion',
+  solicitudesVerano: '/admin/solicitudes/verano',
+  solicitudesAbonos: '/admin/solicitudes/abonos'
+} as const;
 
 @Injectable({ providedIn: 'root' })
 export class AdminSolicitudesService {
@@ -16,7 +21,7 @@ export class AdminSolicitudesService {
   getUbicacion(): Observable<SolicitudUbicacionView[]> {
     return this.http
       .get<ApiResponseDto<SolicitudUbicacionDto[]>>(
-        `${this.baseUrl}${ADMIN_API_PATHS.solicitudesUbicacion}`
+        `${this.baseUrl}${ADMIN_SOLICITUDES_API_PATHS.solicitudesUbicacion}`
       )
       .pipe(
         map((response) => response.data ?? []),

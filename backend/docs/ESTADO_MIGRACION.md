@@ -54,6 +54,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
     - `GET /api/admin/dashboard/estudiantes`
     - `GET /api/admin/dashboard/profesores`
     - `GET /api/admin/dashboard/grupos`
+    - `GET /api/admin/dashboard/resumen`
     - Soporte server-side DataTables (params draw/start/length/search/order).
   - Detalles para modales:
     - `GET /api/admin/estudiantes/{id}?tipo=regular|verano`
@@ -105,6 +106,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 ## TODO (refactor AdminSolicitudes)
 - Verificacion funcional realizada en entorno local con token admin.
 - Pendiente validar aprobar/rechazar ubicacion y verano (sin solicitudes en entorno local).
+- Pendiente revalidar rutas admin tras separar controladores (route:list + smoke test endpoints).
 
 ## Refactor servicios
 - Controllers delgados con delegacion a servicios.
@@ -112,7 +114,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Saldo/movimientos centralizados en `SaldoService`.
 - Reportes/DataTables centralizados en `AdminReportService`.
 - Auth en `AuthService`.
-- Admin en `AdminSolicitudesService`.
+- Admin por dominio con controladores y servicios separados (dashboard/solicitudes/grupos/estudiantes/profesores/reportes).
 - Abonos admin extraidos a `app/Services/AdminSolicitudes/AbonosService`.
 - Ubicacion admin extraido a `app/Services/AdminSolicitudes/UbicacionService`.
 - Verano admin extraido a `app/Services/AdminSolicitudes/VeranoService`.
@@ -122,7 +124,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Dashboards admin extraido a `app/Services/AdminSolicitudes/DashboardsService`.
 - Reportes admin extraido a `app/Services/AdminSolicitudes/ReportesService`.
 - Rutas y servicios de notificaciones admin manuales eliminados (queda solo notificacion automatica por acciones).
-- `AdminSolicitudesService` fue dividido por modulo en `app/Services/AdminSolicitudes` (sin cambiar endpoints).
+- Servicios admin divididos por modulo en `app/Services/AdminSolicitudes` (sin cambiar endpoints).
 - Estudiante en `EstudianteNotificacionesService` y `EstudiantePasswordService`.
 - Profesor (cursos, notas, password) en `ProfesorCursoService`.
 - Password reset en `PasswordResetService`.
@@ -206,6 +208,8 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - 2026-02-03: Verificacion funcional admin OK (`/api/admin/solicitudes/verano`, `/api/admin/solicitudes/abonos`).
 - 2026-02-03: Abono aprobado con token admin (`/api/admin/abono/aprobar`).
 - 2026-02-03: Fix crearCuentaEstudiante en UbicacionService/VeranoService (firma de helper actual).
+- 2026-02-05: Se agrego endpoint resumen de dashboard admin (`/api/admin/dashboard/resumen`).
+- 2026-02-05: Admin controllers separados por dominio (dashboard/solicitudes/grupos/estudiantes/profesores/reportes).
 
 ## Checkpoint 2026-01-29 (para continuidad)
 - AdminReportService fue reescrito para el esquema normalizado (reports con `students/people`, saldos por `balance_movements`, y profesores por `group_sessions`).

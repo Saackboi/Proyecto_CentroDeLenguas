@@ -71,3 +71,6 @@ Registro de cambios
 - 2026-01-31: Footer global ahora soporta modo compacto para admin.
 - 2026-01-31: Se ajusto clase de gradiente en dashboard para warning de Tailwind.
 - 2026-01-31: Se habilito locale es_ES para NG-ZORRO y se fijo datepicker de solicitudes.
+- 2026-02-05: Admin dashboard migro a NgRx (actions/reducer/effects/selectors) y se removio estado local redundante.
+- 2026-02-05: Se habilito NgRx Store Devtools en `app.config.ts` para visualizar acciones en Redux DevTools.
+- 2026-02-05: Admin dashboard ahora usa endpoint resumen para contadores (una sola llamada).

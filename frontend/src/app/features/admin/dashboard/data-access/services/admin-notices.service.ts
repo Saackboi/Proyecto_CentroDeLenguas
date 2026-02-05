@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 
-import { environment } from '../../../../../environments/environment';
-import { ApiResponseDto } from '../../../../core/models/api-response.dto';
+import { environment } from '../../../../../../environments/environment';
+import { ApiResponseDto } from '../../../../../core/models/api-response.dto';
 import {
   ADMIN_API_PATHS,
   ADMIN_NOTICE_LABELS,

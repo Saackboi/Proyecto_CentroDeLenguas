@@ -1,7 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\Admin\SolicitudesController;
+use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\EstudiantesController;
+use App\Http\Controllers\Api\Admin\GruposController;
+use App\Http\Controllers\Api\Admin\ProfesoresController;
+use App\Http\Controllers\Api\Admin\ReportesController;
+use App\Http\Controllers\Api\Admin\SolicitudesAdminController;
 use App\Http\Controllers\Api\Admin\PromocionesController;
 use App\Http\Controllers\Api\Estudiante\PasswordController as EstudiantePasswordController;
 use App\Http\Controllers\Api\Estudiante\NotificacionesController as EstudianteNotificacionesController;
@@ -24,42 +29,43 @@ Route::middleware('auth:api')->prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:api')->prefix('admin')->group(function () {
-    Route::get('solicitudes/ubicacion', [SolicitudesController::class, 'listarUbicacion']);
-    Route::get('solicitudes/verano', [SolicitudesController::class, 'listarVerano']);
-    Route::get('solicitudes/abonos', [SolicitudesController::class, 'listarAbonos']);
+    Route::get('solicitudes/ubicacion', [SolicitudesAdminController::class, 'listarUbicacion']);
+    Route::get('solicitudes/verano', [SolicitudesAdminController::class, 'listarVerano']);
+    Route::get('solicitudes/abonos', [SolicitudesAdminController::class, 'listarAbonos']);
 
-    Route::post('ubicacion/aprobar', [SolicitudesController::class, 'aprobarUbicacion']);
-    Route::post('ubicacion/rechazar', [SolicitudesController::class, 'rechazarUbicacion']);
+    Route::post('ubicacion/aprobar', [SolicitudesAdminController::class, 'aprobarUbicacion']);
+    Route::post('ubicacion/rechazar', [SolicitudesAdminController::class, 'rechazarUbicacion']);
 
-    Route::post('verano/aprobar', [SolicitudesController::class, 'aprobarVerano']);
-    Route::post('verano/rechazar', [SolicitudesController::class, 'rechazarVerano']);
+    Route::post('verano/aprobar', [SolicitudesAdminController::class, 'aprobarVerano']);
+    Route::post('verano/rechazar', [SolicitudesAdminController::class, 'rechazarVerano']);
 
-    Route::post('abono/aprobar', [SolicitudesController::class, 'aprobarAbono']);
-    Route::post('abono/rechazar', [SolicitudesController::class, 'rechazarAbono']);
+    Route::post('abono/aprobar', [SolicitudesAdminController::class, 'aprobarAbono']);
+    Route::post('abono/rechazar', [SolicitudesAdminController::class, 'rechazarAbono']);
 
-    Route::post('profesores', [SolicitudesController::class, 'crearProfesor']);
-    Route::patch('profesores/{id}', [SolicitudesController::class, 'actualizarProfesor']);
+    Route::post('profesores', [ProfesoresController::class, 'crearProfesor']);
+    Route::patch('profesores/{id}', [ProfesoresController::class, 'actualizarProfesor']);
+    Route::get('profesores/{id}', [ProfesoresController::class, 'detalleProfesor']);
 
-    Route::post('grupos', [SolicitudesController::class, 'crearGrupo']);
-    Route::patch('grupos/{id}', [SolicitudesController::class, 'actualizarGrupo']);
-    Route::post('grupos/{id}/retiro/preview', [SolicitudesController::class, 'previsualizarAjusteRetiro']);
-    Route::post('grupos/{id}/retiro/confirm', [SolicitudesController::class, 'confirmarAjusteRetiro']);
-    Route::get('grupos', [SolicitudesController::class, 'listarGrupos']);
-    Route::get('grupos/{id}', [SolicitudesController::class, 'detalleGrupo']);
-    Route::get('grupos/{id}/estudiantes', [SolicitudesController::class, 'listarEstudiantesGrupo']);
-    Route::get('estudiantes/disponibles', [SolicitudesController::class, 'listarEstudiantesDisponibles']);
-    Route::patch('estudiantes/{id}', [SolicitudesController::class, 'actualizarEstudiante']);
-    Route::patch('estudiantes-verano/{id}', [SolicitudesController::class, 'actualizarEstudianteVerano']);
+    Route::post('grupos', [GruposController::class, 'crearGrupo']);
+    Route::patch('grupos/{id}', [GruposController::class, 'actualizarGrupo']);
+    Route::post('grupos/{id}/retiro/preview', [GruposController::class, 'previsualizarAjusteRetiro']);
+    Route::post('grupos/{id}/retiro/confirm', [GruposController::class, 'confirmarAjusteRetiro']);
+    Route::get('grupos', [GruposController::class, 'listarGrupos']);
+    Route::get('grupos/{id}', [GruposController::class, 'detalleGrupo']);
+    Route::get('grupos/{id}/estudiantes', [GruposController::class, 'listarEstudiantesGrupo']);
+    Route::get('estudiantes/disponibles', [GruposController::class, 'listarEstudiantesDisponibles']);
 
-    Route::get('dashboard/estudiantes', [SolicitudesController::class, 'dashboardEstudiantes']);
-    Route::get('dashboard/profesores', [SolicitudesController::class, 'dashboardProfesores']);
-    Route::get('dashboard/grupos', [SolicitudesController::class, 'dashboardGrupos']);
+    Route::patch('estudiantes/{id}', [EstudiantesController::class, 'actualizarEstudiante']);
+    Route::patch('estudiantes-verano/{id}', [EstudiantesController::class, 'actualizarEstudianteVerano']);
+    Route::get('estudiantes/{id}', [EstudiantesController::class, 'detalleEstudiante']);
 
-    Route::get('estudiantes/{id}', [SolicitudesController::class, 'detalleEstudiante']);
-    Route::get('profesores/{id}', [SolicitudesController::class, 'detalleProfesor']);
+    Route::get('dashboard/estudiantes', [DashboardController::class, 'dashboardEstudiantes']);
+    Route::get('dashboard/profesores', [DashboardController::class, 'dashboardProfesores']);
+    Route::get('dashboard/grupos', [DashboardController::class, 'dashboardGrupos']);
+    Route::get('dashboard/resumen', [DashboardController::class, 'dashboardResumen']);
 
-    Route::get('reportes', [SolicitudesController::class, 'reportes']);
-    Route::get('reportes/export', [SolicitudesController::class, 'exportarReportePdf']);
+    Route::get('reportes', [ReportesController::class, 'reportes']);
+    Route::get('reportes/export', [ReportesController::class, 'exportarReportePdf']);
 
     Route::get('promociones/elegibles', [PromocionesController::class, 'elegibles']);
     Route::post('promociones/aplicar', [PromocionesController::class, 'aplicar']);
