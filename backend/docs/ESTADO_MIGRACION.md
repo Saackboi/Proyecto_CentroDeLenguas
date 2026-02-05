@@ -11,9 +11,9 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 ## Backend listo
 - Autenticacion JWT funcionando (admin y estudiante).
 - Login estudiante.
-- Base de datos `celdb_v2` migrada con tablas del esquema original.
-- Tabla nueva: `movimientos_saldo` para cargos/abonos/ajustes.
-- Tabla nueva: `promociones` para auditoria y revertir.
+- Base de datos `celdb_v2` con esquema normalizado.
+- Tabla: `balance_movements` para cargos/abonos/ajustes.
+- Tabla: `promotions` para auditoria y revertir.
 - Reportes admin con exportacion PDF.
 - Promociones admin implementadas (elegibles, aplicar, revertir).
 - Endpoints publicos:
@@ -65,11 +65,8 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
     - `GET /api/admin/promociones/elegibles?tipo=regular|verano`
     - `POST /api/admin/promociones/aplicar`
     - `POST /api/admin/promociones/revertir`
-- Notificaciones:
-  - Admin: `POST /api/admin/notificaciones`
-  - Admin: `GET /api/admin/notificaciones`
-  - Admin: `PATCH /api/admin/notificaciones/{id}/leer`
-  - Estudiante: `GET/PATCH/DELETE /api/estudiante/notificaciones`
+- Notificaciones (estudiante):
+  - `GET/PATCH/DELETE /api/estudiante/notificaciones`
   - Auto borrado de leidas despues de 30 dias (al listar).
 - Cuentas de estudiantes:
   - Se crean automaticamente al aprobar ubicacion o verano.
@@ -92,6 +89,9 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Plantillas:
   - `resources/views/emails/estudiante_credenciales.blade.php`
   - `resources/views/emails/estudiante_credenciales_text.blade.php`
+  - `resources/views/emails/estudiante_reset_password.blade.php`
+  - `resources/views/emails/estudiante_reset_password_text.blade.php`
+- Reset profesor reutiliza las mismas plantillas con ruta/contexto de profesor.
 
 ## Ajustes especiales
 - En aprobacion de ubicacion, prioridad de correo: `correo_utp` si existe, si no `correo_personal`.
@@ -112,7 +112,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - Saldo/movimientos centralizados en `SaldoService`.
 - Reportes/DataTables centralizados en `AdminReportService`.
 - Auth en `AuthService`.
-- Admin en `AdminSolicitudesService` y `AdminNotificacionesService`.
+- Admin en `AdminSolicitudesService`.
 - Abonos admin extraidos a `app/Services/AdminSolicitudes/AbonosService`.
 - Ubicacion admin extraido a `app/Services/AdminSolicitudes/UbicacionService`.
 - Verano admin extraido a `app/Services/AdminSolicitudes/VeranoService`.
@@ -154,9 +154,6 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
     - `POST /api/admin/verano/rechazar`
     - `POST /api/admin/abono/aprobar`
     - `POST /api/admin/abono/rechazar`
-    - `POST /api/admin/notificaciones`
-    - `GET /api/admin/notificaciones`
-    - `PATCH /api/admin/notificaciones/{id}/leer`
     - `GET /api/admin/dashboard/estudiantes`
     - `GET /api/admin/dashboard/profesores`
     - `GET /api/admin/dashboard/grupos`
@@ -212,9 +209,9 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 
 ## Checkpoint 2026-01-29 (para continuidad)
 - AdminReportService fue reescrito para el esquema normalizado (reports con `students/people`, saldos por `balance_movements`, y profesores por `group_sessions`).
-- AdminNotificacionesService se actualizo a `notifications` y a `role = Admin` (antes usaba `tipo_usuario`).
+- AdminNotificacionesService fue removido; no hay endpoints admin de notificaciones.
 - AuthService acepta `correo/contrasena` o `email/password` para login.
-- Endpoints admin probados con JWT en dev; `/api/admin/notificaciones` ya responde 200 (antes 403).
+- Endpoints admin de notificaciones fueron removidos (no existen en rutas actuales).
 - Migracion ejecutada con `php artisan migrate:fresh` en entorno local (dev).
 
 ### Pendiente real (schema normalizado)
@@ -235,7 +232,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - En rechazos (ubicacion, verano, abono) el motivo es obligatorio y se incluye en la notificacion.
 - Promociones de nivel se aplican por admin masivo, no automatico por profesor.
 - Regla de aprobacion: nota >= 75; para regulares, saldo pendiente = 0; verano no tiene control de pagos.
-- Saldos se calculan por `movimientos_saldo`; al aprobar abonos se registra movimiento con `id_pago`.
+- Saldos se calculan por `balance_movements`; al aprobar abonos se registra movimiento con `id_pago`.
 - Retiro de grupo regular requiere aplicar ajuste con confirmacion.
 
 ## Promociones (implementado)
