@@ -20,8 +20,6 @@ import {
   ADMIN_SOLICITUDES_FEATURE_KEY,
   adminSolicitudesReducer
 } from './features/admin/solicitudes/data-access/store/admin-solicitudes.reducer';
-import { UsersEffects } from './features/users/data-access/store/users.effects';
-import { USERS_FEATURE_KEY, usersReducer } from './features/users/data-access/store/users.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,7 +35,6 @@ export const appConfig: ApplicationConfig = {
     provideState(AUTH_FEATURE_KEY, authReducer),
     provideState(ADMIN_DASHBOARD_FEATURE_KEY, adminDashboardReducer),
     provideState(ADMIN_SOLICITUDES_FEATURE_KEY, adminSolicitudesReducer),
-    provideState(USERS_FEATURE_KEY, usersReducer),
-    provideEffects(AuthEffects, AdminDashboardEffects, AdminSolicitudesEffects, UsersEffects)
+    provideEffects(AuthEffects, AdminDashboardEffects, AdminSolicitudesEffects)
   ]
 };

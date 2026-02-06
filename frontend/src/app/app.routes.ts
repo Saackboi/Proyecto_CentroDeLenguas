@@ -8,7 +8,6 @@ import { AdminSolicitudesComponent } from './features/admin/pages/admin-solicitu
 import { AdminLayoutComponent } from './features/admin/layout/admin-layout/admin-layout.component';
 import { ContactoPageComponent } from './features/contacto/pages/contacto-page/contacto-page.component';
 import { InicioPageComponent } from './features/inicio/pages/inicio-page/inicio-page.component';
-import { UsersPageComponent } from './features/users/pages/users-page/users-page.component';
 import { PublicLayout } from './layout/public-layout/public-layout';
 
 export const routes: Routes = [
@@ -48,7 +47,7 @@ export const routes: Routes = [
   },
   {
     path: 'usuarios',
-    component: UsersPageComponent,
-    canActivate: [authGuard]
+    redirectTo: '',
+    pathMatch: 'full'
   }
 ];
