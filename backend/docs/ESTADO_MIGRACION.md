@@ -105,8 +105,8 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 
 ## TODO (refactor AdminSolicitudes)
 - Verificacion funcional realizada en entorno local con token admin.
-- Pendiente validar aprobar/rechazar ubicacion y verano (sin solicitudes en entorno local).
-- Pendiente revalidar rutas admin tras separar controladores (route:list + smoke test endpoints).
+- Aprobacion/rechazo ubicacion y verano verificados con datos seed (smoke test 200).
+- Rutas admin revalidadas con route:list.
 
 ## Refactor servicios
 - Controllers delgados con delegacion a servicios.
@@ -210,6 +210,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - 2026-02-03: Fix crearCuentaEstudiante en UbicacionService/VeranoService (firma de helper actual).
 - 2026-02-05: Se agrego endpoint resumen de dashboard admin (`/api/admin/dashboard/resumen`).
 - 2026-02-05: Admin controllers separados por dominio (dashboard/solicitudes/grupos/estudiantes/profesores/reportes).
+- 2026-02-06: Smoke tests admin OK (listar/aprobar/rechazar ubicacion y verano) con datos seed.
 
 ## Checkpoint 2026-01-29 (para continuidad)
 - AdminReportService fue reescrito para el esquema normalizado (reports con `students/people`, saldos por `balance_movements`, y profesores por `group_sessions`).

@@ -16,5 +16,15 @@ class CursosIdiomasSeeder extends Seeder
             ['id' => 'ING-1'],
             ['name' => 'Ingles']
         );
+
+        DB::table('languages')->updateOrInsert(
+            ['id' => 'FRA-1'],
+            ['name' => 'Frances']
+        );
+
+        DB::table('languages')->updateOrInsert(
+            ['id' => 'POR-1'],
+            ['name' => 'Portugues']
+        );
     }
 }
