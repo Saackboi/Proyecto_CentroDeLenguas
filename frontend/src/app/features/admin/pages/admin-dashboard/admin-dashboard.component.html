@@ -1,4 +1,11 @@
-<section class="admin-dashboard">
+<section
+  class="admin-dashboard"
+  [class.admin-dashboard--loading]="(isLoading$ | async) ?? false"
+>
+  <app-loading-overlay
+    [isLoading]="(isLoading$ | async) ?? false"
+    text="Cargando dashboard..."
+  ></app-loading-overlay>
   <header class="admin-hero">
     <div class="admin-hero__pattern"></div>
     <div class="admin-hero__content">
@@ -104,17 +111,6 @@
           </div>
           <h3>Gestion de Reportes</h3>
           <p>Consulta reportes y exporta informacion institucional.</p>
-          <div>
-            <span>Acceder</span>
-            <span class="material-icons-round">arrow_forward</span>
-          </div>
-        </a>
-        <a class="admin-module" routerLink="/admin/notificaciones">
-          <div class="admin-module__icon admin-module__icon--primary">
-            <span class="material-icons-round">notifications</span>
-          </div>
-          <h3>Gestion de Notificaciones</h3>
-          <p>Envia avisos directos a estudiantes y grupos.</p>
           <div>
             <span>Acceder</span>
             <span class="material-icons-round">arrow_forward</span>

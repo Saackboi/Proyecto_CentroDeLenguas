@@ -211,8 +211,9 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - 2026-02-05: Se agrego endpoint resumen de dashboard admin (`/api/admin/dashboard/resumen`).
 - 2026-02-05: Admin controllers separados por dominio (dashboard/solicitudes/grupos/estudiantes/profesores/reportes).
 - 2026-02-06: Smoke tests admin OK (listar/aprobar/rechazar ubicacion y verano) con datos seed.
+- 2026-02-06: Seeder demo ampliado con mas registros (personas, estudiantes, pagos, solicitudes de ubicacion).
 
-## Checkpoint 2026-01-29 (para continuidad)
+## Checkpoint 2026-01-29 (resuelto)
 - AdminReportService fue reescrito para el esquema normalizado (reports con `students/people`, saldos por `balance_movements`, y profesores por `group_sessions`).
 - AdminNotificacionesService fue removido; no hay endpoints admin de notificaciones.
 - AuthService acepta `correo/contrasena` o `email/password` para login.

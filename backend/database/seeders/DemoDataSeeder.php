@@ -177,6 +177,38 @@ class DemoDataSeeder extends Seeder
             ->value('id');
 
         DB::table('people')->updateOrInsert(
+            ['email_personal' => 'karla@gmail.com'],
+            [
+                'first_name' => 'Karla',
+                'last_name' => 'Mendez',
+                'phone' => '6000-1007',
+                'email_institucional' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        $studentPersonId7 = DB::table('people')
+            ->where('email_personal', 'karla@gmail.com')
+            ->value('id');
+
+        DB::table('people')->updateOrInsert(
+            ['email_personal' => 'hector@gmail.com'],
+            [
+                'first_name' => 'Hector',
+                'last_name' => 'Vargas',
+                'phone' => '6000-1008',
+                'email_institucional' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        $studentPersonId8 = DB::table('people')
+            ->where('email_personal', 'hector@gmail.com')
+            ->value('id');
+
+        DB::table('people')->updateOrInsert(
             ['email_personal' => 'paula@gmail.com'],
             [
                 'first_name' => 'Paula',
@@ -397,6 +429,26 @@ class DemoDataSeeder extends Seeder
                 'type' => 'verano',
                 'status' => 'En proceso',
                 'level' => '2',
+                'is_utp' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 'ST-007',
+                'person_id' => $studentPersonId7,
+                'type' => 'regular',
+                'status' => 'En proceso',
+                'level' => null,
+                'is_utp' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 'ST-008',
+                'person_id' => $studentPersonId8,
+                'type' => 'regular',
+                'status' => 'En prueba',
+                'level' => null,
                 'is_utp' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -882,6 +934,32 @@ class DemoDataSeeder extends Seeder
                 'receipt_path' => 'uploads/ubicacion/pb_demo3.jpg',
                 'amount' => 10.00,
                 'paid_at' => now()->subDays(1),
+                'status' => 'Pendiente',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'student_id' => 'ST-007',
+                'payment_type' => 'PruebaUbicacion',
+                'method' => 'Caja',
+                'bank' => null,
+                'account_owner' => null,
+                'receipt_path' => 'uploads/ubicacion/pb_demo4.jpg',
+                'amount' => 10.00,
+                'paid_at' => now()->subDays(3),
+                'status' => 'Pendiente',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'student_id' => 'ST-008',
+                'payment_type' => 'PruebaUbicacion',
+                'method' => 'Banca en Linea',
+                'bank' => 'Banco Demo',
+                'account_owner' => 'Hector Vargas',
+                'receipt_path' => 'uploads/ubicacion/pb_demo5.jpg',
+                'amount' => 10.00,
+                'paid_at' => now()->subDays(4),
                 'status' => 'Pendiente',
                 'created_at' => now(),
                 'updated_at' => now(),

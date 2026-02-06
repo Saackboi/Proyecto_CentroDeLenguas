@@ -39,67 +39,217 @@
   <!--[nzGetPopupContainer]="getPopupContainer"-->
   <nz-tabs class="admin-solicitudes__tabs" nzType="card">
     <nz-tab nzTitle="Ubicacion">
-      <div class="admin-solicitudes__table" *ngIf="ubicacionFiltrada$ | async as ubicacion">
-        <nz-table
-          [nzData]="ubicacion"
-          [nzFrontPagination]="true"
-          [nzShowPagination]="true"
-          [nzPageSize]="8"
-        >
-          <thead>
-            <tr>
-              <th>Estudiante</th>
-              <th>Telefono</th>
-              <th>Fecha registro</th>
-              <th>Estado pago</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of ubicacion">
-              <td>
-                <div class="admin-solicitudes__student">
-                  <span>{{ item.nombreCompleto }}</span>
-                  <small>{{ item.correo }}</small>
-                </div>
-              </td>
-              <td>{{ item.telefono }}</td>
-              <td>{{ item.fechaRegistro }}</td>
-              <td>
-                <nz-tag [nzColor]="item.estadoPago === 'Pendiente' ? 'orange' : item.estadoPago === 'Aceptado' ? 'green' : item.estadoPago === 'Rechazado' ? 'red' : 'default'">
-                  {{ item.estadoPago }}
-                </nz-tag>
-              </td>
-              <td>
-                <div class="admin-solicitudes__actions">
-                  <button nz-button nzType="default" (click)="onVerComprobante(item)">
-                    <span class="material-icons-round">visibility</span>
-                    Ver
-                  </button>
-                  <button nz-button nzType="primary" (click)="onAprobar(item)">
-                    <span class="material-icons-round">check_circle</span>
-                    Aprobar
-                  </button>
-                  <button nz-button nzType="default" class="admin-solicitudes__reject" (click)="onRechazar(item)">
-                    <span class="material-icons-round">cancel</span>
-                    Rechazar
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </div>
+      @if (ubicacionLoading$ | async) {
+        <div class="admin-solicitudes__loading">
+          <nz-spin nzSize="large"></nz-spin>
+          <p>Cargando solicitudes...</p>
+        </div>
+      } @else if (ubicacionError$ | async; as error) {
+        <div class="admin-solicitudes__error">
+          <span class="material-icons-round">error_outline</span>
+          <p>{{ error }}</p>
+        </div>
+      } @else if (ubicacionFiltrada$ | async; as ubicacion) {
+        @if (ubicacion.length) {
+          <div class="admin-solicitudes__table">
+            <nz-table
+              [nzData]="ubicacion"
+              [nzFrontPagination]="true"
+              [nzShowPagination]="true"
+              [nzPageSize]="8"
+            >
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Telefono</th>
+                  <th>Fecha registro</th>
+                  <th>Estado pago</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of ubicacion">
+                  <td>
+                    <div class="admin-solicitudes__student">
+                      <span>{{ item.nombreCompleto }}</span>
+                      <small>{{ item.correo }}</small>
+                    </div>
+                  </td>
+                  <td>{{ item.telefono }}</td>
+                  <td>{{ item.fechaRegistro }}</td>
+                  <td>
+                    <nz-tag [nzColor]="item.estadoPago === 'Pendiente' ? 'orange' : item.estadoPago === 'Aceptado' ? 'green' : item.estadoPago === 'Rechazado' ? 'red' : 'default'">
+                      {{ item.estadoPago }}
+                    </nz-tag>
+                  </td>
+                  <td>
+                    <div class="admin-solicitudes__actions">
+                      <button nz-button nzType="default" (click)="onVerComprobante(item)">
+                        <span class="material-icons-round">visibility</span>
+                        Ver
+                      </button>
+                      <button nz-button nzType="primary" (click)="onAprobar(item)">
+                        <span class="material-icons-round">check_circle</span>
+                        Aprobar
+                      </button>
+                      <button nz-button nzType="default" class="admin-solicitudes__reject" (click)="onRechazar(item)">
+                        <span class="material-icons-round">cancel</span>
+                        Rechazar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        } @else {
+          <div class="admin-solicitudes__placeholder">
+            <p>No hay solicitudes de ubicacion.</p>
+          </div>
+        }
+      }
     </nz-tab>
     <nz-tab nzTitle="Abonos">
-      <div class="admin-solicitudes__placeholder">
-        <p>Modulo de abonos en preparacion.</p>
-      </div>
+      @if (abonosLoading$ | async) {
+        <div class="admin-solicitudes__loading">
+          <nz-spin nzSize="large"></nz-spin>
+          <p>Cargando abonos...</p>
+        </div>
+      } @else if (abonosError$ | async; as error) {
+        <div class="admin-solicitudes__error">
+          <span class="material-icons-round">error_outline</span>
+          <p>{{ error }}</p>
+        </div>
+      } @else if (abonosFiltrados$ | async; as abonos) {
+        @if (abonos.length) {
+          <div class="admin-solicitudes__table">
+            <nz-table
+              [nzData]="abonos"
+              [nzFrontPagination]="true"
+              [nzShowPagination]="true"
+              [nzPageSize]="8"
+            >
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Monto</th>
+                  <th>Metodo</th>
+                  <th>Fecha pago</th>
+                  <th>Estado pago</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of abonos">
+                  <td>
+                    <div class="admin-solicitudes__student">
+                      <span>{{ item.nombreCompleto }}</span>
+                      <small>{{ item.correo }}</small>
+                    </div>
+                  </td>
+                  <td>{{ item.monto }}</td>
+                  <td>{{ item.metodoPago }}</td>
+                  <td>{{ item.fechaPago }}</td>
+                  <td>
+                    <nz-tag [nzColor]="item.estadoPago === 'Pendiente' ? 'orange' : item.estadoPago === 'Aceptado' ? 'green' : item.estadoPago === 'Rechazado' ? 'red' : 'default'">
+                      {{ item.estadoPago }}
+                    </nz-tag>
+                  </td>
+                  <td>
+                    <div class="admin-solicitudes__actions">
+                      <button nz-button nzType="default" (click)="onVerComprobanteAbono(item)">
+                        <span class="material-icons-round">visibility</span>
+                        Ver
+                      </button>
+                      <button nz-button nzType="primary" (click)="onAprobarAbono(item)">
+                        <span class="material-icons-round">check_circle</span>
+                        Aprobar
+                      </button>
+                      <button nz-button nzType="default" class="admin-solicitudes__reject" (click)="onRechazarAbono(item)">
+                        <span class="material-icons-round">cancel</span>
+                        Rechazar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        } @else {
+          <div class="admin-solicitudes__placeholder">
+            <p>No hay abonos pendientes.</p>
+          </div>
+        }
+      }
     </nz-tab>
     <nz-tab nzTitle="Verano">
-      <div class="admin-solicitudes__placeholder">
-        <p>Modulo de verano en preparacion.</p>
-      </div>
+      @if (veranoLoading$ | async) {
+        <div class="admin-solicitudes__loading">
+          <nz-spin nzSize="large"></nz-spin>
+          <p>Cargando verano...</p>
+        </div>
+      } @else if (veranoError$ | async; as error) {
+        <div class="admin-solicitudes__error">
+          <span class="material-icons-round">error_outline</span>
+          <p>{{ error }}</p>
+        </div>
+      } @else if (veranoFiltrado$ | async; as verano) {
+        @if (verano.length) {
+          <div class="admin-solicitudes__table">
+            <nz-table
+              [nzData]="verano"
+              [nzFrontPagination]="true"
+              [nzShowPagination]="true"
+              [nzPageSize]="8"
+            >
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Telefono</th>
+                  <th>Fecha registro</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of verano">
+                  <td>
+                    <div class="admin-solicitudes__student">
+                      <span>{{ item.nombreCompleto }}</span>
+                      <small>{{ item.correo }}</small>
+                    </div>
+                  </td>
+                  <td>{{ item.telefono }}</td>
+                  <td>{{ item.fechaRegistro }}</td>
+                  <td>
+                    <nz-tag nzColor="default">{{ item.estado }}</nz-tag>
+                  </td>
+                  <td>
+                    <div class="admin-solicitudes__actions">
+                      <button nz-button nzType="default" (click)="onVerComprobanteVerano(item)">
+                        <span class="material-icons-round">visibility</span>
+                        Ver
+                      </button>
+                      <button nz-button nzType="primary" (click)="onAprobarVerano(item)">
+                        <span class="material-icons-round">check_circle</span>
+                        Aprobar
+                      </button>
+                      <button nz-button nzType="default" class="admin-solicitudes__reject" (click)="onRechazarVerano(item)">
+                        <span class="material-icons-round">cancel</span>
+                        Rechazar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        } @else {
+          <div class="admin-solicitudes__placeholder">
+            <p>No hay solicitudes de verano.</p>
+          </div>
+        }
+      }
     </nz-tab>
   </nz-tabs>
 </section>

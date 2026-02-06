@@ -5,10 +5,12 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
+import { LoadingOverlayComponent } from '../../../../shared/components/loading-overlay/loading-overlay';
 import { AdminNoticeType } from '../../dashboard/data-access/models/admin-notice.model';
 import { AdminDashboardActions } from '../../dashboard/data-access/store/admin-dashboard.actions';
 import {
   selectAdminDashboardCounts,
+  selectAdminDashboardLoading,
   selectAdminDashboardNotices
 } from '../../dashboard/data-access/store/admin-dashboard.selectors';
 
@@ -20,7 +22,7 @@ interface DashboardCard {
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [CommonModule, RouterModule, NzTooltipModule],
+  imports: [CommonModule, RouterModule, NzTooltipModule, LoadingOverlayComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,6 +31,7 @@ export class AdminDashboardComponent implements OnInit {
   private readonly store = inject(Store);
 
   readonly counts$ = this.store.select(selectAdminDashboardCounts);
+  readonly isLoading$ = this.store.select(selectAdminDashboardLoading);
 
   readonly cards$ = this.counts$.pipe(
     map((counts) => [

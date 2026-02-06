@@ -5,7 +5,11 @@
 }
 
 .admin-dashboard {
-  @apply flex min-h-screen flex-col;
+  @apply relative flex min-h-screen flex-col;
+}
+
+.admin-dashboard--loading {
+  @apply max-h-screen overflow-hidden;
 }
 
 .admin-hero {

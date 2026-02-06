@@ -74,3 +74,5 @@ Registro de cambios
 - 2026-02-05: Admin dashboard migro a NgRx (actions/reducer/effects/selectors) y se removio estado local redundante.
 - 2026-02-05: Se habilito NgRx Store Devtools en `app.config.ts` para visualizar acciones en Redux DevTools.
 - 2026-02-05: Admin dashboard ahora usa endpoint resumen para contadores (una sola llamada).
+- 2026-02-06: Dashboard admin agrega overlay de carga reutilizable con Ng Zorro y bloqueo de scroll durante carga.
+- 2026-02-06: Admin solicitudes migro a NgRx Store (ubicacion, abonos, verano) con loading/error y filtros reactivos.

@@ -27,6 +27,11 @@ export const selectAdminDashboardLoadingNotices = createSelector(
   (state) => state.isLoadingNotices
 );
 
+export const selectAdminDashboardLoading = createSelector(
+  selectAdminDashboardState,
+  (state) => state.isLoadingCounts || state.isLoadingNotices
+);
+
 export const selectAdminDashboardCountsError = createSelector(
   selectAdminDashboardState,
   (state) => state.errorCounts

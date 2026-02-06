@@ -1,0 +1,16 @@
+@if (isLoading) {
+  <div
+    class="absolute inset-0 z-50 grid place-items-center bg-white/60 backdrop-blur-sm"
+    aria-live="polite"
+    aria-busy="true"
+  >
+    <div class="flex flex-col items-center gap-3">
+      <nz-spin nzSize="large"></nz-spin>
+      @if (text) {
+        <p class="text-xs font-semibold uppercase tracking-widest text-slate-600">
+          {{ text }}
+        </p>
+      }
+    </div>
+  </div>
+}
