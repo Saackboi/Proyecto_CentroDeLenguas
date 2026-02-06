@@ -8,4 +8,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './inicio-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InicioPageComponent {}
+export class InicioPageComponent {
+}
