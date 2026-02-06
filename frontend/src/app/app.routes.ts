@@ -9,16 +9,27 @@ import { AdminLayoutComponent } from './features/admin/layout/admin-layout/admin
 import { ContactoPageComponent } from './features/contacto/pages/contacto-page/contacto-page.component';
 import { InicioPageComponent } from './features/inicio/pages/inicio-page/inicio-page.component';
 import { UsersPageComponent } from './features/users/pages/users-page/users-page.component';
+import { PublicLayout } from './layout/public-layout/public-layout';
 
 export const routes: Routes = [
   {
     path: '',
-    component: InicioPageComponent
-  },
-  {
-    path: 'login',
-    component: LoginPageComponent,
-    canActivate: [guestGuard]
+    component: PublicLayout,
+    children: [
+      {
+        path: '',
+        component: InicioPageComponent
+      },
+      {
+        path: 'contacto',
+        component: ContactoPageComponent
+      },
+      {
+        path: 'login',
+        component: LoginPageComponent,
+        canActivate: [guestGuard]
+      }
+    ]
   },
   {
     path: 'admin',
@@ -34,10 +45,6 @@ export const routes: Routes = [
         component: AdminSolicitudesComponent
       }
     ]
-  },
-  {
-    path: 'contacto',
-    component: ContactoPageComponent
   },
   {
     path: 'usuarios',

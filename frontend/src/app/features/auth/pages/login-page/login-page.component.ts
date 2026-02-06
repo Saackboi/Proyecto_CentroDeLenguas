@@ -11,8 +11,6 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { AuthActions } from '../../../../core/store/auth/auth.actions';
 import { selectAuthError, selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { TopbarComponent, TopbarLink } from '../../../../shared/components/topbar/topbar.component';
 import {
   LOGIN_QUERY_PARAMS,
   LOGIN_STATUS,
@@ -32,8 +30,6 @@ interface LoginState {
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    TopbarComponent,
-    FooterComponent,
     NzAlertModule,
     NzButtonModule,
     NzFormModule,
@@ -47,12 +43,6 @@ export class LoginPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly store = inject(Store);
-
-  readonly navLinks: TopbarLink[] = [
-    { id: 'inicio', label: 'Inicio', path: '/', fragment: 'inicio' },
-    { id: 'cursos', label: 'Cursos', path: '/', fragment: 'cursos' },
-    { id: 'contacto', label: 'Contacto', path: '/contacto' }
-  ];
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     correo: ['', [Validators.required, Validators.email]],

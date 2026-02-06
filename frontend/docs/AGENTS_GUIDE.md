@@ -78,3 +78,6 @@ Registro de cambios
 - 2026-02-06: Admin solicitudes migro a NgRx Store (ubicacion, abonos, verano) con loading/error y filtros reactivos.
 - 2026-02-06: Auth centralizado en NgRx Store (loadSession/login/logout) para Topbar reactivo.
 - 2026-02-06: Topbar muestra dropdown "Mi perfil" y acceso rapido a notificaciones (admin: solicitudes).
+- 2026-02-06: PublicLayout separa Topbar/Footer del router outlet (solo vistas publicas).
+- 2026-02-06: Transiciones de vistas con View Transitions API (sin Angular animations).
+- 2026-02-06: Logo del Topbar usa assets locales y se creo carpeta `src/assets/logos`.

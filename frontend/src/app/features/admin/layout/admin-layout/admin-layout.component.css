@@ -12,6 +12,7 @@
   @apply ml-64 flex min-h-screen flex-1 flex-col;
 }
 
+
 .admin-sidebar {
   @apply fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-slate-900 text-white;
 }

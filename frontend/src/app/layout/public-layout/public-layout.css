@@ -3,3 +3,7 @@
 :host {
   @apply block min-h-screen;
 }
+
+.public-shell {
+  @apply relative min-h-screen;
+}
