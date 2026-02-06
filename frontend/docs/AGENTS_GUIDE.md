@@ -76,3 +76,5 @@ Registro de cambios
 - 2026-02-05: Admin dashboard ahora usa endpoint resumen para contadores (una sola llamada).
 - 2026-02-06: Dashboard admin agrega overlay de carga reutilizable con Ng Zorro y bloqueo de scroll durante carga.
 - 2026-02-06: Admin solicitudes migro a NgRx Store (ubicacion, abonos, verano) con loading/error y filtros reactivos.
+- 2026-02-06: Auth centralizado en NgRx Store (loadSession/login/logout) para Topbar reactivo.
+- 2026-02-06: Topbar muestra dropdown "Mi perfil" y acceso rapido a notificaciones (admin: solicitudes).

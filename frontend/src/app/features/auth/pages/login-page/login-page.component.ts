@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
-import { Subject, catchError, filter, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { combineLatest, map, shareReplay, startWith, tap } from 'rxjs';
 
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { AUTH_ROLE_ROUTES } from '../../../../core/constants/auth.const';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthActions } from '../../../../core/store/auth/auth.actions';
+import { selectAuthError, selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 import { TopbarComponent, TopbarLink } from '../../../../shared/components/topbar/topbar.component';
 import {
-  LOGIN_ERROR_MESSAGES,
   LOGIN_QUERY_PARAMS,
   LOGIN_STATUS,
   LOGIN_STATUS_MESSAGES
@@ -43,13 +43,10 @@ interface LoginState {
   styleUrl: './login-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoginPageComponent implements OnDestroy {
-  private readonly authService = inject(AuthService);
+export class LoginPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-
-  private readonly submit$ = new Subject<void>();
+  private readonly store = inject(Store);
 
   readonly navLinks: TopbarLink[] = [
     { id: 'inicio', label: 'Inicio', path: '/', fragment: 'inicio' },
@@ -62,23 +59,20 @@ export class LoginPageComponent implements OnDestroy {
     contrasena: ['', [Validators.required]]
   });
 
-  readonly loginState$ = this.submit$.pipe(
-    tap(() => this.loginForm.markAllAsTouched()),
-    filter(() => this.loginForm.valid),
-    switchMap(() =>
-      this.authService.login(this.loginForm.getRawValue()).pipe(
-        switchMap(() => this.authService.me()),
-        switchMap((user) => this.handleRoleRedirect(user.role)),
-        catchError((error) => of<LoginState>(this.mapError(error))),
-        startWith<LoginState>({ status: 'loading' })
-      )
-    ),
-    startWith<LoginState>({ status: 'idle' }),
-    tap((state) => {
-      if (state.status === 'error') {
-        this.openAlert();
+  readonly isLoading$ = this.store.select(selectAuthLoading);
+  readonly error$ = this.store.select(selectAuthError);
+
+  readonly loginState$ = combineLatest([this.isLoading$, this.error$]).pipe(
+    map(([isLoading, error]) => {
+      if (isLoading) {
+        return { status: 'loading' } as LoginState;
       }
+      if (error) {
+        return { status: 'error', error } as LoginState;
+      }
+      return { status: 'idle' } as LoginState;
     }),
+    startWith<LoginState>({ status: 'idle' }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -117,40 +111,18 @@ export class LoginPageComponent implements OnDestroy {
     this.isAlertVisible = true;
   }
 
-  private handleRoleRedirect(role: string) {
-    const target = AUTH_ROLE_ROUTES[role as keyof typeof AUTH_ROLE_ROUTES];
-    if (!target) {
-      return of<LoginState>({ status: 'error', error: LOGIN_STATUS_MESSAGES.roleUnavailable });
-    }
-
-    if (!this.router.config.some((route) => `/${route.path}` === target)) {
-      return of<LoginState>({ status: 'error', error: LOGIN_STATUS_MESSAGES.roleUnavailable });
-    }
-
-    this.router.navigate([target]);
-    return of<LoginState>({ status: 'success' });
-  }
-
-  private mapError(error: unknown): LoginState {
-    const message =
-      (error as { error?: { message?: string } })?.error?.message ??
-      LOGIN_ERROR_MESSAGES.invalidCredentials;
-    return {
-      status: 'error',
-      error: message
-    };
-  }
-
   onSubmit(): void {
-    this.submit$.next();
+    this.loginForm.markAllAsTouched();
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    this.openAlert();
+    this.store.dispatch(AuthActions.login({ credentials: this.loginForm.getRawValue() }));
   }
 
   isInvalid(controlName: 'correo' | 'contrasena'): boolean {
     const control = this.loginForm.get(controlName);
     return Boolean(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  ngOnDestroy(): void {
-    this.submit$.complete();
   }
 }

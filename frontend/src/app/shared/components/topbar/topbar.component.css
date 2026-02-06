@@ -1,11 +1,11 @@
 @reference "tailwindcss";
 
 :host {
-  @apply block;
+  @apply sticky top-0 z-50 block;
 }
 
 .inicio-nav {
-  @apply sticky top-0 z-50 border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur-md;
+  @apply border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur-md;
 }
 
 .inicio-nav__container {
@@ -21,8 +21,11 @@
 }
 
 .inicio-nav__logo {
-  @apply flex h-10 w-10 items-center justify-center rounded-full text-xl font-bold text-white shadow-lg;
-  background-color: var(--color-primary);
+  @apply flex items-center justify-center;
+}
+
+.inicio-nav__logo img {
+  @apply h-20 w-auto object-contain;
 }
 
 .inicio-nav__brand-text {
@@ -62,6 +65,35 @@
   @apply relative;
 }
 
+.inicio-nav__notifications {
+  @apply relative;
+}
+
+.inicio-nav__icon-button {
+  @apply flex items-center justify-center rounded-full border border-gray-200 bg-white/90 p-2 text-gray-600 shadow-sm transition hover:-translate-y-0.5 hover:text-gray-900 hover:shadow-md;
+}
+
+.inicio-nav__badge {
+  @apply absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white;
+  background-color: var(--color-primary);
+}
+
+.inicio-nav__badge--hidden {
+  @apply hidden;
+}
+
+.inicio-nav__profile {
+  @apply relative;
+}
+
+.inicio-nav__profile-button {
+  @apply flex items-center gap-2 rounded-full border border-gray-200 bg-white/90 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:-translate-y-0.5 hover:text-gray-900 hover:shadow-md;
+}
+
+.inicio-nav__profile-icon {
+  @apply text-sm transition-transform duration-200;
+}
+
 .inicio-nav__cta {
   @apply flex items-center gap-1 rounded-full px-6 py-2.5 font-bold text-gray-900 shadow-md transition transform hover:-translate-y-0.5 hover:bg-yellow-400 hover:shadow-lg;
   background-color: var(--color-accent);
@@ -73,6 +105,54 @@
 
 .inicio-nav__cta-menu {
   @apply invisible absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white opacity-0 shadow-xl ring-1 ring-black/5 transition-all duration-200;
+}
+
+.inicio-nav__dropdown {
+  @apply invisible absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white opacity-0 shadow-xl ring-1 ring-black/5 transition-all duration-200;
+}
+
+.inicio-nav__dropdown--wide {
+  @apply w-72;
+}
+
+.inicio-nav__dropdown-header {
+  @apply flex items-center justify-between border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-700;
+}
+
+.inicio-nav__dropdown-header a {
+  @apply text-xs font-semibold text-blue-600 transition hover:text-blue-700;
+}
+
+.inicio-nav__dropdown-list {
+  @apply max-h-64 overflow-auto;
+}
+
+.inicio-nav__dropdown-item {
+  @apply flex flex-col gap-1 border-b border-gray-100 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50;
+}
+
+.inicio-nav__dropdown-item--disabled {
+  @apply cursor-not-allowed text-gray-400 hover:bg-white;
+}
+
+.inicio-nav__dropdown-item--danger {
+  @apply text-red-600 hover:bg-red-50 hover:text-red-700;
+}
+
+.inicio-nav__dropdown-item-title {
+  @apply font-semibold;
+}
+
+.inicio-nav__dropdown-item-sub {
+  @apply text-xs text-gray-500;
+}
+
+.inicio-nav__dropdown-item-time {
+  @apply text-xs text-gray-400;
+}
+
+.inicio-nav__dropdown-empty {
+  @apply px-4 py-4 text-sm text-gray-500;
 }
 
 .inicio-nav__cta-menu-inner {
@@ -96,6 +176,18 @@
 }
 
 .inicio-nav__cta-group:hover .inicio-nav__cta-icon {
+  @apply rotate-180;
+}
+
+.inicio-nav__notifications:hover .inicio-nav__dropdown {
+  @apply visible opacity-100;
+}
+
+.inicio-nav__profile:hover .inicio-nav__dropdown {
+  @apply visible opacity-100;
+}
+
+.inicio-nav__profile:hover .inicio-nav__profile-icon {
   @apply rotate-180;
 }
 

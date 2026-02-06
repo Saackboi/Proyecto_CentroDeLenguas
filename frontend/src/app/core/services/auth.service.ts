@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, of, switchMap, tap, throwError } from 'rxjs';
 
@@ -32,8 +32,9 @@ export class AuthService {
     );
   }
 
-  logout(): Observable<void> {
-    return this.http.post<ApiResponseDto<null>>(this.logoutUrl, {}).pipe(
+  logout(token?: string): Observable<void> {
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+    return this.http.post<ApiResponseDto<null>>(this.logoutUrl, {}, { headers }).pipe(
       map(() => undefined)
     );
   }

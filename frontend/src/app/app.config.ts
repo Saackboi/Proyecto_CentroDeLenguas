@@ -8,6 +8,8 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { AuthEffects } from './core/store/auth/auth.effects';
+import { AUTH_FEATURE_KEY, authReducer } from './core/store/auth/auth.reducer';
 import { AdminDashboardEffects } from './features/admin/dashboard/data-access/store/admin-dashboard.effects';
 import {
   ADMIN_DASHBOARD_FEATURE_KEY,
@@ -32,9 +34,10 @@ export const appConfig: ApplicationConfig = {
       maxAge: 50,
       logOnly: !isDevMode()
     }),
+    provideState(AUTH_FEATURE_KEY, authReducer),
     provideState(ADMIN_DASHBOARD_FEATURE_KEY, adminDashboardReducer),
     provideState(ADMIN_SOLICITUDES_FEATURE_KEY, adminSolicitudesReducer),
     provideState(USERS_FEATURE_KEY, usersReducer),
-    provideEffects(AdminDashboardEffects, AdminSolicitudesEffects, UsersEffects)
+    provideEffects(AuthEffects, AdminDashboardEffects, AdminSolicitudesEffects, UsersEffects)
   ]
 };

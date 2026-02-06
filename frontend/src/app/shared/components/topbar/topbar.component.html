@@ -3,11 +3,7 @@
     <div class="inicio-nav__content">
       <div class="inicio-nav__brand">
         <div class="inicio-nav__logo">
-          <span class="material-icons-round">school</span>
-        </div>
-        <div class="inicio-nav__brand-text">
-          <span class="inicio-nav__brand-title">CEL</span>
-          <span class="inicio-nav__brand-subtitle">Centro Especializado de Lenguas</span>
+          <img src="assets/logos/cel_logoCompleto2.png" alt="CEL"/>
         </div>
       </div>
       <div class="inicio-nav__links">
@@ -42,10 +38,81 @@
             </div>
           </div>
         </div>
-        <a class="inicio-nav__link inicio-nav__link--login" routerLink="/login">
-          <span class="material-icons-round">login</span>
-          Login
-        </a>
+        @if (showAuthControls$ | async) {
+          @if (notificationsState$ | async; as noticesState) {
+            <div class="inicio-nav__notifications">
+              <button class="inicio-nav__icon-button" type="button">
+                <span class="material-icons-round">notifications</span>
+                @if (notificationsCount$ | async; as count) {
+                  <span class="inicio-nav__badge" [class.inicio-nav__badge--hidden]="count === 0">
+                    {{ count }}
+                  </span>
+                }
+              </button>
+              <div class="inicio-nav__dropdown inicio-nav__dropdown--wide">
+                <div class="inicio-nav__dropdown-header">
+                  <span>Notificaciones</span>
+                  @if (noticesState.status === 'admin') {
+                    <a routerLink="/admin/solicitudes">Ver todas</a>
+                  }
+                </div>
+                @if (noticesState.items.length) {
+                  <div class="inicio-nav__dropdown-list">
+                    <a
+                      class="inicio-nav__dropdown-item"
+                      *ngFor="let notice of (noticesState.items | slice: 0:5)"
+                      routerLink="/admin/solicitudes"
+                    >
+                      <div class="inicio-nav__dropdown-item-title">{{ notice.title }}</div>
+                      <div class="inicio-nav__dropdown-item-sub">{{ notice.subtitle }}</div>
+                      <div class="inicio-nav__dropdown-item-time">{{ notice.timeLabel }}</div>
+                    </a>
+                  </div>
+                } @else {
+                  <div class="inicio-nav__dropdown-empty">
+                    @if (noticesState.status === 'loading') {
+                      Cargando notificaciones...
+                    } @else {
+                      Sin notificaciones disponibles.
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+
+        @if (showAuthControls$ | async) {
+          <div class="inicio-nav__profile">
+            <button class="inicio-nav__profile-button" type="button">
+              Mi perfil
+              <span class="material-icons-round inicio-nav__profile-icon">expand_more</span>
+            </button>
+            <div class="inicio-nav__dropdown">
+              @if (dashboardRoute$ | async; as dashboardRoute) {
+                <a class="inicio-nav__dropdown-item" [routerLink]="dashboardRoute">
+                  Ir a mi dashboard
+                </a>
+              } @else {
+                <span class="inicio-nav__dropdown-item inicio-nav__dropdown-item--disabled">
+                  Cargando perfil...
+                </span>
+              }
+              <button
+                class="inicio-nav__dropdown-item inicio-nav__dropdown-item--danger"
+                type="button"
+                (click)="onLogout()"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        } @else if (showLogin$ | async) {
+          <a class="inicio-nav__link inicio-nav__link--login" routerLink="/login">
+            <span class="material-icons-round">login</span>
+            Login
+          </a>
+        }
       </div>
       <div class="inicio-nav__mobile">
         <button class="inicio-nav__mobile-button">

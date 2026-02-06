@@ -72,12 +72,12 @@
 }
 
 .admin-sidebar__user-card {
-  @apply grid gap-2 rounded-xl bg-white/5 p-3;
-  grid-template-columns: auto 1fr;
+  @apply grid gap-2 rounded-xl bg-white/5 p-3 text-center;
+  grid-template-columns: 1fr;
 }
 
 .admin-sidebar__user-avatar {
-  @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border;
+  @apply mx-auto flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border;
   border-color: rgba(0, 96, 156, 0.2);
   color: var(--color-primary);
   background-color: rgba(0, 96, 156, 0.2);
@@ -96,7 +96,22 @@
 }
 
 .admin-sidebar__user-actions {
-  @apply col-span-2 pt-1;
+  @apply col-span-1 pt-1;
+}
+
+.admin-sidebar__home {
+  @apply mb-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-200 transition;
+}
+
+.admin-sidebar__home:hover {
+  @apply bg-white/10 text-white;
+}
+
+.admin-sidebar__home-icon {
+  @apply text-base leading-none;
+  text-transform: none;
+  font-variant-ligatures: normal;
+  font-feature-settings: 'liga' 1;
 }
 
 .admin-sidebar__logout {

@@ -13,3 +13,7 @@ export const AUTH_ROLE_ROUTES = {
   Profesor: '/profesor',
   Estudiante: '/estudiante'
 } as const;
+
+export const AUTH_ERROR_MESSAGES = {
+  invalidCredentials: 'Credenciales invalidas'
+} as const;
