@@ -258,6 +258,8 @@
   [visible]="isUbicacionModalOpen"
   [solicitud]="selectedUbicacion"
   [isSubmitting]="(approveUbicacionLoading$ | async) ?? false"
+  [approveError]="approveUbicacionError$ | async"
+  [rejectError]="rejectUbicacionError$ | async"
   (cancel)="onCloseUbicacionModal()"
   (confirm)="onConfirmUbicacionApproval($event)"
 ></app-solicitud-approve-ubicacion-modal>
@@ -268,6 +270,8 @@
   [saldoPendiente]="abonoSaldo$ | async"
   [isSubmitting]="(approveAbonoLoading$ | async) ?? false"
   [isLoadingSaldo]="(abonoSaldoLoading$ | async) ?? false"
+  [saldoError]="abonoSaldoError$ | async"
+  [approveError]="approveAbonoError$ | async"
   (cancel)="onCloseAbonoModal()"
   (confirm)="onConfirmAbonoApproval($event)"
 ></app-solicitud-approve-abono-modal>
@@ -276,6 +280,8 @@
   [visible]="isVeranoModalOpen"
   [solicitud]="selectedVerano"
   [isSubmitting]="(approveVeranoLoading$ | async) ?? false"
+  [approveError]="approveVeranoError$ | async"
+  [rejectError]="rejectVeranoError$ | async"
   (cancel)="onCloseVeranoModal()"
   (confirm)="onConfirmVeranoApproval($event)"
 ></app-solicitud-approve-verano-modal>
@@ -285,6 +291,7 @@
   [title]="rejectTitle"
   [description]="rejectDescription"
   [isSubmitting]="((rejectUbicacionLoading$ | async) ?? false) || ((rejectAbonoLoading$ | async) ?? false) || ((rejectVeranoLoading$ | async) ?? false)"
+  [errorMessage]="(rejectUbicacionError$ | async) ?? (rejectAbonoError$ | async) ?? (rejectVeranoError$ | async)"
   (cancel)="onCloseRejectModal()"
   (confirm)="onConfirmRechazo($event)"
 ></app-solicitud-reject-modal>

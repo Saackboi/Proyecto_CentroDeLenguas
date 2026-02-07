@@ -28,12 +28,19 @@ import {
   selectAdminSolicitudesAbonosError,
   selectAdminSolicitudesAbonosLoading,
   selectAdminSolicitudesAbonoSaldo,
+  selectAdminSolicitudesAbonoSaldoError,
   selectAdminSolicitudesAbonoSaldoLoading,
+  selectAdminSolicitudesApproveAbonoError,
   selectAdminSolicitudesApproveAbonoLoading,
+  selectAdminSolicitudesApproveUbicacionError,
   selectAdminSolicitudesApproveUbicacionLoading,
+  selectAdminSolicitudesApproveVeranoError,
   selectAdminSolicitudesApproveVeranoLoading,
+  selectAdminSolicitudesRejectAbonoError,
   selectAdminSolicitudesRejectAbonoLoading,
+  selectAdminSolicitudesRejectUbicacionError,
   selectAdminSolicitudesRejectUbicacionLoading,
+  selectAdminSolicitudesRejectVeranoError,
   selectAdminSolicitudesRejectVeranoLoading,
   selectAdminSolicitudesUbicacion,
   selectAdminSolicitudesUbicacionError,
@@ -114,6 +121,13 @@ export class AdminSolicitudesComponent implements OnInit {
   readonly rejectVeranoLoading$ = this.store.select(selectAdminSolicitudesRejectVeranoLoading);
   readonly abonoSaldo$ = this.store.select(selectAdminSolicitudesAbonoSaldo);
   readonly abonoSaldoLoading$ = this.store.select(selectAdminSolicitudesAbonoSaldoLoading);
+  readonly abonoSaldoError$ = this.store.select(selectAdminSolicitudesAbonoSaldoError);
+  readonly approveUbicacionError$ = this.store.select(selectAdminSolicitudesApproveUbicacionError);
+  readonly rejectUbicacionError$ = this.store.select(selectAdminSolicitudesRejectUbicacionError);
+  readonly approveAbonoError$ = this.store.select(selectAdminSolicitudesApproveAbonoError);
+  readonly rejectAbonoError$ = this.store.select(selectAdminSolicitudesRejectAbonoError);
+  readonly approveVeranoError$ = this.store.select(selectAdminSolicitudesApproveVeranoError);
+  readonly rejectVeranoError$ = this.store.select(selectAdminSolicitudesRejectVeranoError);
 
   selectedUbicacion: SolicitudUbicacionView | null = null;
   selectedAbono: SolicitudAbonoView | null = null;
@@ -172,6 +186,7 @@ export class AdminSolicitudesComponent implements OnInit {
   }
 
   onVerComprobante(solicitud: SolicitudUbicacionView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearUbicacionErrors());
     this.comprobanteTitle = `Comprobante ubicacion · ${solicitud.nombreCompleto}`;
     this.comprobanteImages = [
       {
@@ -183,11 +198,13 @@ export class AdminSolicitudesComponent implements OnInit {
   }
 
   onAprobar(solicitud: SolicitudUbicacionView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearUbicacionErrors());
     this.selectedUbicacion = solicitud;
     this.isUbicacionModalOpen = true;
   }
 
   onRechazar(solicitud: SolicitudUbicacionView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearUbicacionErrors());
     this.rejectContext = { type: 'ubicacion', id: solicitud.id };
     this.rejectTitle = `Rechazar ubicacion · ${solicitud.nombreCompleto}`;
     this.rejectDescription = 'Indica el motivo para rechazar esta solicitud de ubicacion.';
@@ -195,6 +212,7 @@ export class AdminSolicitudesComponent implements OnInit {
   }
 
   onVerComprobanteAbono(solicitud: SolicitudAbonoView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearAbonoErrors());
     this.comprobanteTitle = `Comprobante abono · ${solicitud.nombreCompleto}`;
     this.comprobanteImages = [
       {
@@ -206,12 +224,14 @@ export class AdminSolicitudesComponent implements OnInit {
   }
 
   onAprobarAbono(solicitud: SolicitudAbonoView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearAbonoErrors());
     this.selectedAbono = solicitud;
     this.isAbonoModalOpen = true;
     this.store.dispatch(AdminSolicitudesActions.loadAbonoSaldo({ idEstudiante: solicitud.idEstudiante }));
   }
 
   onRechazarAbono(solicitud: SolicitudAbonoView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearAbonoErrors());
     this.rejectContext = { type: 'abono', id: solicitud.idEstudiante };
     this.rejectTitle = `Rechazar abono · ${solicitud.nombreCompleto}`;
     this.rejectDescription = 'Indica el motivo para rechazar este abono.';
@@ -219,6 +239,7 @@ export class AdminSolicitudesComponent implements OnInit {
   }
 
   onVerComprobanteVerano(solicitud: SolicitudVeranoView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearVeranoErrors());
     this.comprobanteTitle = `Documentos verano · ${solicitud.nombreCompleto}`;
     this.comprobanteImages = [
       {
@@ -238,11 +259,13 @@ export class AdminSolicitudesComponent implements OnInit {
   }
 
   onAprobarVerano(solicitud: SolicitudVeranoView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearVeranoErrors());
     this.selectedVerano = solicitud;
     this.isVeranoModalOpen = true;
   }
 
   onRechazarVerano(solicitud: SolicitudVeranoView): void {
+    this.store.dispatch(AdminSolicitudesActions.clearVeranoErrors());
     this.rejectContext = { type: 'verano', id: solicitud.id };
     this.rejectTitle = `Rechazar verano · ${solicitud.nombreCompleto}`;
     this.rejectDescription = 'Indica el motivo para rechazar esta solicitud de verano.';
@@ -252,22 +275,28 @@ export class AdminSolicitudesComponent implements OnInit {
   onCloseUbicacionModal(): void {
     this.isUbicacionModalOpen = false;
     this.selectedUbicacion = null;
+    this.store.dispatch(AdminSolicitudesActions.clearUbicacionErrors());
   }
 
   onCloseAbonoModal(): void {
     this.isAbonoModalOpen = false;
     this.selectedAbono = null;
     this.store.dispatch(AdminSolicitudesActions.clearAbonoSaldo());
+    this.store.dispatch(AdminSolicitudesActions.clearAbonoErrors());
   }
 
   onCloseVeranoModal(): void {
     this.isVeranoModalOpen = false;
     this.selectedVerano = null;
+    this.store.dispatch(AdminSolicitudesActions.clearVeranoErrors());
   }
 
   onCloseRejectModal(): void {
     this.isRejectModalOpen = false;
     this.rejectContext = null;
+    this.store.dispatch(AdminSolicitudesActions.clearUbicacionErrors());
+    this.store.dispatch(AdminSolicitudesActions.clearAbonoErrors());
+    this.store.dispatch(AdminSolicitudesActions.clearVeranoErrors());
   }
 
   onCloseComprobanteModal(): void {
