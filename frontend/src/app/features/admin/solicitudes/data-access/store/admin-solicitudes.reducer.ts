@@ -54,5 +54,102 @@ export const adminSolicitudesReducer = createReducer(
     ...state,
     isLoadingVerano: false,
     errorVerano: error
+  })),
+  on(AdminSolicitudesActions.approveUbicacion, (state) => ({
+    ...state,
+    isApprovingUbicacion: true
+  })),
+  on(AdminSolicitudesActions.approveUbicacionSuccess, (state) => ({
+    ...state,
+    isApprovingUbicacion: false
+  })),
+  on(AdminSolicitudesActions.approveUbicacionFailure, (state) => ({
+    ...state,
+    isApprovingUbicacion: false
+  })),
+  on(AdminSolicitudesActions.rejectUbicacion, (state) => ({
+    ...state,
+    isRejectingUbicacion: true
+  })),
+  on(AdminSolicitudesActions.rejectUbicacionSuccess, (state) => ({
+    ...state,
+    isRejectingUbicacion: false
+  })),
+  on(AdminSolicitudesActions.rejectUbicacionFailure, (state) => ({
+    ...state,
+    isRejectingUbicacion: false
+  })),
+  on(AdminSolicitudesActions.approveAbono, (state) => ({
+    ...state,
+    isApprovingAbono: true
+  })),
+  on(AdminSolicitudesActions.approveAbonoSuccess, (state) => ({
+    ...state,
+    isApprovingAbono: false
+  })),
+  on(AdminSolicitudesActions.approveAbonoFailure, (state) => ({
+    ...state,
+    isApprovingAbono: false
+  })),
+  on(AdminSolicitudesActions.rejectAbono, (state) => ({
+    ...state,
+    isRejectingAbono: true
+  })),
+  on(AdminSolicitudesActions.rejectAbonoSuccess, (state) => ({
+    ...state,
+    isRejectingAbono: false
+  })),
+  on(AdminSolicitudesActions.rejectAbonoFailure, (state) => ({
+    ...state,
+    isRejectingAbono: false
+  })),
+  on(AdminSolicitudesActions.approveVerano, (state) => ({
+    ...state,
+    isApprovingVerano: true
+  })),
+  on(AdminSolicitudesActions.approveVeranoSuccess, (state) => ({
+    ...state,
+    isApprovingVerano: false
+  })),
+  on(AdminSolicitudesActions.approveVeranoFailure, (state) => ({
+    ...state,
+    isApprovingVerano: false
+  })),
+  on(AdminSolicitudesActions.rejectVerano, (state) => ({
+    ...state,
+    isRejectingVerano: true
+  })),
+  on(AdminSolicitudesActions.rejectVeranoSuccess, (state) => ({
+    ...state,
+    isRejectingVerano: false
+  })),
+  on(AdminSolicitudesActions.rejectVeranoFailure, (state) => ({
+    ...state,
+    isRejectingVerano: false
+  })),
+  on(AdminSolicitudesActions.loadAbonoSaldo, (state, { idEstudiante }) => ({
+    ...state,
+    isLoadingAbonoSaldo: true,
+    abonoSaldoId: idEstudiante,
+    errorAbonoSaldo: null
+  })),
+  on(AdminSolicitudesActions.loadAbonoSaldoSuccess, (state, { idEstudiante, saldoPendiente }) => ({
+    ...state,
+    isLoadingAbonoSaldo: false,
+    abonoSaldoId: idEstudiante,
+    abonoSaldo: saldoPendiente,
+    errorAbonoSaldo: null
+  })),
+  on(AdminSolicitudesActions.loadAbonoSaldoFailure, (state, { error }) => ({
+    ...state,
+    isLoadingAbonoSaldo: false,
+    errorAbonoSaldo: error
+  })),
+  on(AdminSolicitudesActions.clearAbonoSaldo, (state) => ({
+    ...state,
+    abonoSaldo: null,
+    abonoSaldoId: null,
+    errorAbonoSaldo: null,
+    isLoadingAbonoSaldo: false
   }))
 );
