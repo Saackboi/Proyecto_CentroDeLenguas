@@ -1,0 +1,29 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.comprobante-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+
+.comprobante-card {
+  @apply flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-3;
+}
+
+.comprobante-card span {
+  @apply text-xs font-semibold text-slate-600;
+}
+
+.comprobante-card img {
+  @apply w-full rounded-md border border-slate-100 object-contain;
+}
+
+.comprobante-empty {
+  @apply text-sm text-slate-500;
+}
+
+.modal-footer {
+  @apply flex justify-end;
+}

@@ -1,0 +1,13 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.modal-description {
+  @apply mb-4 text-sm text-slate-500;
+}
+
+.modal-footer {
+  @apply flex justify-end gap-2;
+}

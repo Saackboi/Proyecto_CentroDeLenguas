@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.modal-form {
+  @apply grid gap-4;
+}
+
+.modal-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+
+.saldo-info {
+  @apply mt-3 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
+}
+
+.saldo-info strong {
+  @apply text-slate-900;
+}
+
+.modal-footer {
+  @apply flex justify-end gap-2;
+}

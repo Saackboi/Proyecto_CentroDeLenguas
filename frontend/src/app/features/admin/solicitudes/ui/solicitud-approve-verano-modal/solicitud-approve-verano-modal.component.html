@@ -1,0 +1,178 @@
+<nz-modal
+  [nzVisible]="visible"
+  nzTitle="Aprobar solicitud de verano"
+  (nzOnCancel)="onCancel()"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="form" class="modal-form">
+    <div class="modal-grid">
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">ID</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="idEstudiante">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Estado</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="estado">
+            <nz-option nzLabel="En proceso" nzValue="En proceso"></nz-option>
+            <nz-option nzLabel="Activo" nzValue="Activo"></nz-option>
+            <nz-option nzLabel="Inactivo" nzValue="Inactivo"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Nivel</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="nivel">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Nombre completo</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="nombreCompleto">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Celular</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="celular">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Fecha nacimiento</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <nz-date-picker formControlName="fechaNacimiento" nzFormat="yyyy-MM-dd"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Numero casa</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="numeroCasa">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="full">
+        <nz-form-label [nzRequired]="true">Domicilio</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="domicilio">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Sexo</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="sexo">
+            <nz-option nzLabel="Masculino" nzValue="Masculino"></nz-option>
+            <nz-option nzLabel="Femenino" nzValue="Femenino"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Correo</nz-form-label>
+        <nz-form-control nzErrorTip="Correo invalido">
+          <input nz-input formControlName="correo" type="email">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Colegio</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="colegio">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Tipo de sangre</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="tipoSangre">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div class="modal-section">
+      <h4>Contactos familiares</h4>
+      <div class="modal-grid">
+        <nz-form-item>
+          <nz-form-label>Nombre madre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="nombreMadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Lugar trabajo madre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="lugarTrabajoMadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Telefono trabajo madre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="telefonoTrabajoMadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Celular madre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="celularMadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Nombre padre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="nombrePadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Lugar trabajo padre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="lugarTrabajoPadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Telefono trabajo padre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="telefonoTrabajoPadre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Celular padre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="celularPadre">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <h4>Contacto de emergencia</h4>
+      <div class="modal-grid">
+        <nz-form-item>
+          <nz-form-label>Nombre contacto</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="contactoNombre">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Telefono contacto</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="contactoTelefono">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item class="full">
+          <nz-form-label>Alergias</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="alergias">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    </form>
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <div class="modal-footer">
+      <button nz-button nzType="default" (click)="onCancel()">Cancelar</button>
+      <button nz-button nzType="primary" [nzLoading]="isSubmitting" (click)="onSubmit()">
+        Aprobar
+      </button>
+    </div>
+  </ng-container>
+</nz-modal>

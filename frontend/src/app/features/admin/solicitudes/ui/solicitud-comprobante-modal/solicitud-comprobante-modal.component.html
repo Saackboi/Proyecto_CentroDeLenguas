@@ -1,0 +1,28 @@
+<nz-modal
+  [nzVisible]="visible"
+  [nzTitle]="title"
+  (nzOnCancel)="onClose()"
+>
+  <ng-container *nzModalContent>
+    @if (hasImages) {
+      <div class="comprobante-grid">
+        @for (image of images; track image.label) {
+          @if (image.url) {
+            <div class="comprobante-card">
+              <span>{{ image.label }}</span>
+              <img [src]="image.url" [alt]="image.label">
+            </div>
+          }
+        }
+      </div>
+    } @else {
+      <p class="comprobante-empty">No hay comprobantes disponibles.</p>
+    }
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <div class="modal-footer">
+      <button nz-button nzType="primary" (click)="onClose()">Cerrar</button>
+    </div>
+  </ng-container>
+</nz-modal>

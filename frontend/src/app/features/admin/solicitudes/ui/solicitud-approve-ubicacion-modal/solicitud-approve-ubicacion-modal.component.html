@@ -1,0 +1,93 @@
+<nz-modal
+  [nzVisible]="visible"
+  nzTitle="Aprobar solicitud de ubicacion"
+  (nzOnCancel)="onCancel()"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="form" class="modal-form">
+    <div class="modal-grid">
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">ID</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="idEstudiante">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Tipo ID</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="tipoId" placeholder="Cedula o pasaporte">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Nombre</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="nombre">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Apellido</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="apellido">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Correo personal</nz-form-label>
+        <nz-form-control nzErrorTip="Correo invalido">
+          <input nz-input formControlName="correoPersonal" type="email">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Correo UTP</nz-form-label>
+        <nz-form-control nzErrorTip="Correo invalido">
+          <input nz-input formControlName="correoUtp" type="email">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Telefono</nz-form-label>
+        <nz-form-control nzErrorTip="Campo obligatorio">
+          <input nz-input formControlName="telefono">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Nivel</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nivel" placeholder="Ej: 3">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Estado</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="estado">
+            <nz-option nzLabel="Activo" nzValue="Activo"></nz-option>
+            <nz-option nzLabel="Inactivo" nzValue="Inactivo"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzRequired]="true">Es estudiante UTP</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="esEstudiante">
+            <nz-option nzLabel="SI" nzValue="SI"></nz-option>
+            <nz-option nzLabel="NO" nzValue="NO"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Saldo pendiente</nz-form-label>
+        <nz-form-control>
+          <input nz-input type="number" formControlName="saldoPendiente" placeholder="0.00">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    </form>
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <div class="modal-footer">
+      <button nz-button nzType="default" (click)="onCancel()">Cancelar</button>
+      <button nz-button nzType="primary" [nzLoading]="isSubmitting" (click)="onSubmit()">
+        Aprobar
+      </button>
+    </div>
+  </ng-container>
+</nz-modal>
