@@ -81,3 +81,4 @@ Registro de cambios
 - 2026-02-06: PublicLayout separa Topbar/Footer del router outlet (solo vistas publicas).
 - 2026-02-06: Transiciones de vistas con View Transitions API (sin Angular animations).
 - 2026-02-06: Logo del Topbar usa assets locales y se creo carpeta `src/assets/logos`.
+- 2026-02-07: Solicitudes admin ahora incluyen modales de aprobar/rechazar/ver comprobantes, con NgRx para acciones y saldo de abonos.
