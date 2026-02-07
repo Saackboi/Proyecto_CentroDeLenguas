@@ -4,6 +4,14 @@
   (nzOnCancel)="onCancel()"
 >
   <ng-container *nzModalContent>
+    @if (saldoError || approveError) {
+      <nz-alert
+        nzType="error"
+        nzShowIcon
+        [nzMessage]="saldoError || approveError"
+        class="modal-alert"
+      ></nz-alert>
+    }
     <form nz-form [formGroup]="form" class="modal-form">
     <div class="modal-grid">
       <nz-form-item>

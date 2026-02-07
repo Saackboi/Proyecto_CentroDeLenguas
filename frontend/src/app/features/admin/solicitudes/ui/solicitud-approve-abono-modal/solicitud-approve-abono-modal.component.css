@@ -8,6 +8,10 @@
   @apply grid gap-4;
 }
 
+.modal-alert {
+  @apply mb-4;
+}
+
 .modal-grid {
   @apply grid gap-4 sm:grid-cols-2;
 }

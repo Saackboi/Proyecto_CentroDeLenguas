@@ -5,6 +5,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 
 import {
@@ -22,6 +23,7 @@ type EstadoAprobacion = 'Activo' | 'Inactivo';
     CommonModule,
     ReactiveFormsModule,
     NzButtonModule,
+    NzAlertModule,
     NzFormModule,
     NzInputModule,
     NzModalModule,
@@ -37,6 +39,8 @@ export class SolicitudApproveUbicacionModalComponent implements OnChanges {
   @Input() visible = false;
   @Input() solicitud: SolicitudUbicacionView | null = null;
   @Input() isSubmitting = false;
+  @Input() approveError: string | null = null;
+  @Input() rejectError: string | null = null;
 
   @Output() cancel = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<SolicitudUbicacionApprovalPayload>();

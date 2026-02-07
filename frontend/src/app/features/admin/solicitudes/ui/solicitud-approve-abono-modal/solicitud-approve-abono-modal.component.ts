@@ -5,6 +5,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 import {
   SolicitudAbonoApprovalPayload,
@@ -18,6 +19,7 @@ import {
     CommonModule,
     ReactiveFormsModule,
     NzButtonModule,
+    NzAlertModule,
     NzFormModule,
     NzInputModule,
     NzModalModule
@@ -34,6 +36,8 @@ export class SolicitudApproveAbonoModalComponent implements OnChanges {
   @Input() saldoPendiente: number | null = null;
   @Input() isSubmitting = false;
   @Input() isLoadingSaldo = false;
+  @Input() saldoError: string | null = null;
+  @Input() approveError: string | null = null;
 
   @Output() cancel = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<SolicitudAbonoApprovalPayload>();

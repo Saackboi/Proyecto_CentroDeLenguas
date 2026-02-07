@@ -4,6 +4,14 @@
   (nzOnCancel)="onCancel()"
 >
   <ng-container *nzModalContent>
+    @if (errorMessage) {
+      <nz-alert
+        nzType="error"
+        nzShowIcon
+        [nzMessage]="errorMessage"
+        class="modal-alert"
+      ></nz-alert>
+    }
     <p class="modal-description">{{ description }}</p>
     <form nz-form [formGroup]="form">
       <nz-form-item>

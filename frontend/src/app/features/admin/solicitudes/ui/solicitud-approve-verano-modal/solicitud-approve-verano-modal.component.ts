@@ -6,6 +6,7 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 
 import {
@@ -24,6 +25,7 @@ type EstadoVerano = 'Activo' | 'Inactivo' | 'En proceso';
     ReactiveFormsModule,
     NzButtonModule,
     NzDatePickerModule,
+    NzAlertModule,
     NzFormModule,
     NzInputModule,
     NzModalModule,
@@ -39,6 +41,8 @@ export class SolicitudApproveVeranoModalComponent implements OnChanges {
   @Input() visible = false;
   @Input() solicitud: SolicitudVeranoView | null = null;
   @Input() isSubmitting = false;
+  @Input() approveError: string | null = null;
+  @Input() rejectError: string | null = null;
 
   @Output() cancel = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<SolicitudVeranoApprovalPayload>();

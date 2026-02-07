@@ -8,6 +8,10 @@
   @apply max-h-[65vh] overflow-y-auto pr-1;
 }
 
+.modal-alert {
+  @apply mb-4;
+}
+
 .modal-grid {
   @apply grid gap-4 sm:grid-cols-2;
 }
