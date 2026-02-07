@@ -24,6 +24,12 @@ export interface AdminSolicitudesState {
   errorUbicacion: string | null;
   errorAbonos: string | null;
   errorVerano: string | null;
+  errorApproveUbicacion: string | null;
+  errorRejectUbicacion: string | null;
+  errorApproveAbono: string | null;
+  errorRejectAbono: string | null;
+  errorApproveVerano: string | null;
+  errorRejectVerano: string | null;
 }
 
 export const initialAdminSolicitudesState: AdminSolicitudesState = {
@@ -45,5 +51,11 @@ export const initialAdminSolicitudesState: AdminSolicitudesState = {
   errorAbonoSaldo: null,
   errorUbicacion: null,
   errorAbonos: null,
-  errorVerano: null
+  errorVerano: null,
+  errorApproveUbicacion: null,
+  errorRejectUbicacion: null,
+  errorApproveAbono: null,
+  errorRejectAbono: null,
+  errorApproveVerano: null,
+  errorRejectVerano: null
 };

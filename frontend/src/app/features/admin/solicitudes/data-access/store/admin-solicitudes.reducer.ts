@@ -57,75 +57,108 @@ export const adminSolicitudesReducer = createReducer(
   })),
   on(AdminSolicitudesActions.approveUbicacion, (state) => ({
     ...state,
-    isApprovingUbicacion: true
+    isApprovingUbicacion: true,
+    errorApproveUbicacion: null
   })),
   on(AdminSolicitudesActions.approveUbicacionSuccess, (state) => ({
     ...state,
-    isApprovingUbicacion: false
+    isApprovingUbicacion: false,
+    errorApproveUbicacion: null
   })),
-  on(AdminSolicitudesActions.approveUbicacionFailure, (state) => ({
+  on(AdminSolicitudesActions.approveUbicacionFailure, (state, { error }) => ({
     ...state,
-    isApprovingUbicacion: false
+    isApprovingUbicacion: false,
+    errorApproveUbicacion: error
   })),
   on(AdminSolicitudesActions.rejectUbicacion, (state) => ({
     ...state,
-    isRejectingUbicacion: true
+    isRejectingUbicacion: true,
+    errorRejectUbicacion: null
   })),
   on(AdminSolicitudesActions.rejectUbicacionSuccess, (state) => ({
     ...state,
-    isRejectingUbicacion: false
+    isRejectingUbicacion: false,
+    errorRejectUbicacion: null
   })),
-  on(AdminSolicitudesActions.rejectUbicacionFailure, (state) => ({
+  on(AdminSolicitudesActions.rejectUbicacionFailure, (state, { error }) => ({
     ...state,
-    isRejectingUbicacion: false
+    isRejectingUbicacion: false,
+    errorRejectUbicacion: error
+  })),
+  on(AdminSolicitudesActions.clearUbicacionErrors, (state) => ({
+    ...state,
+    errorApproveUbicacion: null,
+    errorRejectUbicacion: null
   })),
   on(AdminSolicitudesActions.approveAbono, (state) => ({
     ...state,
-    isApprovingAbono: true
+    isApprovingAbono: true,
+    errorApproveAbono: null
   })),
   on(AdminSolicitudesActions.approveAbonoSuccess, (state) => ({
     ...state,
-    isApprovingAbono: false
+    isApprovingAbono: false,
+    errorApproveAbono: null
   })),
-  on(AdminSolicitudesActions.approveAbonoFailure, (state) => ({
+  on(AdminSolicitudesActions.approveAbonoFailure, (state, { error }) => ({
     ...state,
-    isApprovingAbono: false
+    isApprovingAbono: false,
+    errorApproveAbono: error
   })),
   on(AdminSolicitudesActions.rejectAbono, (state) => ({
     ...state,
-    isRejectingAbono: true
+    isRejectingAbono: true,
+    errorRejectAbono: null
   })),
   on(AdminSolicitudesActions.rejectAbonoSuccess, (state) => ({
     ...state,
-    isRejectingAbono: false
+    isRejectingAbono: false,
+    errorRejectAbono: null
   })),
-  on(AdminSolicitudesActions.rejectAbonoFailure, (state) => ({
+  on(AdminSolicitudesActions.rejectAbonoFailure, (state, { error }) => ({
     ...state,
-    isRejectingAbono: false
+    isRejectingAbono: false,
+    errorRejectAbono: error
+  })),
+  on(AdminSolicitudesActions.clearAbonoErrors, (state) => ({
+    ...state,
+    errorApproveAbono: null,
+    errorRejectAbono: null
   })),
   on(AdminSolicitudesActions.approveVerano, (state) => ({
     ...state,
-    isApprovingVerano: true
+    isApprovingVerano: true,
+    errorApproveVerano: null
   })),
   on(AdminSolicitudesActions.approveVeranoSuccess, (state) => ({
     ...state,
-    isApprovingVerano: false
+    isApprovingVerano: false,
+    errorApproveVerano: null
   })),
-  on(AdminSolicitudesActions.approveVeranoFailure, (state) => ({
+  on(AdminSolicitudesActions.approveVeranoFailure, (state, { error }) => ({
     ...state,
-    isApprovingVerano: false
+    isApprovingVerano: false,
+    errorApproveVerano: error
   })),
   on(AdminSolicitudesActions.rejectVerano, (state) => ({
     ...state,
-    isRejectingVerano: true
+    isRejectingVerano: true,
+    errorRejectVerano: null
   })),
   on(AdminSolicitudesActions.rejectVeranoSuccess, (state) => ({
     ...state,
-    isRejectingVerano: false
+    isRejectingVerano: false,
+    errorRejectVerano: null
   })),
-  on(AdminSolicitudesActions.rejectVeranoFailure, (state) => ({
+  on(AdminSolicitudesActions.rejectVeranoFailure, (state, { error }) => ({
     ...state,
-    isRejectingVerano: false
+    isRejectingVerano: false,
+    errorRejectVerano: error
+  })),
+  on(AdminSolicitudesActions.clearVeranoErrors, (state) => ({
+    ...state,
+    errorApproveVerano: null,
+    errorRejectVerano: null
   })),
   on(AdminSolicitudesActions.loadAbonoSaldo, (state, { idEstudiante }) => ({
     ...state,

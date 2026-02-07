@@ -101,3 +101,33 @@ export const selectAdminSolicitudesAbonoSaldoError = createSelector(
   selectAdminSolicitudesState,
   (state) => state.errorAbonoSaldo
 );
+
+export const selectAdminSolicitudesApproveUbicacionError = createSelector(
+  selectAdminSolicitudesState,
+  (state) => state.errorApproveUbicacion
+);
+
+export const selectAdminSolicitudesRejectUbicacionError = createSelector(
+  selectAdminSolicitudesState,
+  (state) => state.errorRejectUbicacion
+);
+
+export const selectAdminSolicitudesApproveAbonoError = createSelector(
+  selectAdminSolicitudesState,
+  (state) => state.errorApproveAbono
+);
+
+export const selectAdminSolicitudesRejectAbonoError = createSelector(
+  selectAdminSolicitudesState,
+  (state) => state.errorRejectAbono
+);
+
+export const selectAdminSolicitudesApproveVeranoError = createSelector(
+  selectAdminSolicitudesState,
+  (state) => state.errorApproveVerano
+);
+
+export const selectAdminSolicitudesRejectVeranoError = createSelector(
+  selectAdminSolicitudesState,
+  (state) => state.errorRejectVerano
+);
