@@ -253,3 +253,45 @@
     </nz-tab>
   </nz-tabs>
 </section>
+
+<app-solicitud-approve-ubicacion-modal
+  [visible]="isUbicacionModalOpen"
+  [solicitud]="selectedUbicacion"
+  [isSubmitting]="(approveUbicacionLoading$ | async) ?? false"
+  (cancel)="onCloseUbicacionModal()"
+  (confirm)="onConfirmUbicacionApproval($event)"
+></app-solicitud-approve-ubicacion-modal>
+
+<app-solicitud-approve-abono-modal
+  [visible]="isAbonoModalOpen"
+  [solicitud]="selectedAbono"
+  [saldoPendiente]="abonoSaldo$ | async"
+  [isSubmitting]="(approveAbonoLoading$ | async) ?? false"
+  [isLoadingSaldo]="(abonoSaldoLoading$ | async) ?? false"
+  (cancel)="onCloseAbonoModal()"
+  (confirm)="onConfirmAbonoApproval($event)"
+></app-solicitud-approve-abono-modal>
+
+<app-solicitud-approve-verano-modal
+  [visible]="isVeranoModalOpen"
+  [solicitud]="selectedVerano"
+  [isSubmitting]="(approveVeranoLoading$ | async) ?? false"
+  (cancel)="onCloseVeranoModal()"
+  (confirm)="onConfirmVeranoApproval($event)"
+></app-solicitud-approve-verano-modal>
+
+<app-solicitud-reject-modal
+  [visible]="isRejectModalOpen"
+  [title]="rejectTitle"
+  [description]="rejectDescription"
+  [isSubmitting]="((rejectUbicacionLoading$ | async) ?? false) || ((rejectAbonoLoading$ | async) ?? false) || ((rejectVeranoLoading$ | async) ?? false)"
+  (cancel)="onCloseRejectModal()"
+  (confirm)="onConfirmRechazo($event)"
+></app-solicitud-reject-modal>
+
+<app-solicitud-comprobante-modal
+  [visible]="isComprobanteModalOpen"
+  [title]="comprobanteTitle"
+  [images]="comprobanteImages"
+  (close)="onCloseComprobanteModal()"
+></app-solicitud-comprobante-modal>

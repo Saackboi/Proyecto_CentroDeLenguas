@@ -15,7 +15,11 @@ import { combineLatest, map, startWith } from 'rxjs';
 
 import {
   SolicitudAbonoView,
+  SolicitudAbonoApprovalPayload,
+  SolicitudRechazoPayload,
+  SolicitudUbicacionApprovalPayload,
   SolicitudUbicacionView,
+  SolicitudVeranoApprovalPayload,
   SolicitudVeranoView
 } from '../../data-access/models/admin-solicitudes.model';
 import { AdminSolicitudesActions } from '../../solicitudes/data-access/store/admin-solicitudes.actions';
@@ -23,6 +27,14 @@ import {
   selectAdminSolicitudesAbonos,
   selectAdminSolicitudesAbonosError,
   selectAdminSolicitudesAbonosLoading,
+  selectAdminSolicitudesAbonoSaldo,
+  selectAdminSolicitudesAbonoSaldoLoading,
+  selectAdminSolicitudesApproveAbonoLoading,
+  selectAdminSolicitudesApproveUbicacionLoading,
+  selectAdminSolicitudesApproveVeranoLoading,
+  selectAdminSolicitudesRejectAbonoLoading,
+  selectAdminSolicitudesRejectUbicacionLoading,
+  selectAdminSolicitudesRejectVeranoLoading,
   selectAdminSolicitudesUbicacion,
   selectAdminSolicitudesUbicacionError,
   selectAdminSolicitudesUbicacionLoading,
@@ -30,6 +42,14 @@ import {
   selectAdminSolicitudesVeranoError,
   selectAdminSolicitudesVeranoLoading
 } from '../../solicitudes/data-access/store/admin-solicitudes.selectors';
+import { SolicitudApproveAbonoModalComponent } from '../../solicitudes/ui/solicitud-approve-abono-modal/solicitud-approve-abono-modal.component';
+import { SolicitudApproveUbicacionModalComponent } from '../../solicitudes/ui/solicitud-approve-ubicacion-modal/solicitud-approve-ubicacion-modal.component';
+import { SolicitudApproveVeranoModalComponent } from '../../solicitudes/ui/solicitud-approve-verano-modal/solicitud-approve-verano-modal.component';
+import {
+  ComprobanteImagen,
+  SolicitudComprobanteModalComponent
+} from '../../solicitudes/ui/solicitud-comprobante-modal/solicitud-comprobante-modal.component';
+import { SolicitudRejectModalComponent } from '../../solicitudes/ui/solicitud-reject-modal/solicitud-reject-modal.component';
 
 type SolicitudEstadoFiltro = '' | 'Pendiente' | 'Aceptado' | 'Rechazado' | 'Sin estado';
 
@@ -46,7 +66,12 @@ type SolicitudEstadoFiltro = '' | 'Pendiente' | 'Aceptado' | 'Rechazado' | 'Sin 
     NzSpinModule,
     NzTableModule,
     NzTabsModule,
-    NzTagModule
+    NzTagModule,
+    SolicitudApproveAbonoModalComponent,
+    SolicitudApproveUbicacionModalComponent,
+    SolicitudApproveVeranoModalComponent,
+    SolicitudComprobanteModalComponent,
+    SolicitudRejectModalComponent
   ],
   templateUrl: './admin-solicitudes.component.html',
   styleUrl: './admin-solicitudes.component.css',
@@ -76,6 +101,36 @@ export class AdminSolicitudesComponent implements OnInit {
   readonly verano$ = this.store.select(selectAdminSolicitudesVerano);
   readonly veranoLoading$ = this.store.select(selectAdminSolicitudesVeranoLoading);
   readonly veranoError$ = this.store.select(selectAdminSolicitudesVeranoError);
+
+  readonly approveUbicacionLoading$ = this.store.select(
+    selectAdminSolicitudesApproveUbicacionLoading
+  );
+  readonly rejectUbicacionLoading$ = this.store.select(
+    selectAdminSolicitudesRejectUbicacionLoading
+  );
+  readonly approveAbonoLoading$ = this.store.select(selectAdminSolicitudesApproveAbonoLoading);
+  readonly rejectAbonoLoading$ = this.store.select(selectAdminSolicitudesRejectAbonoLoading);
+  readonly approveVeranoLoading$ = this.store.select(selectAdminSolicitudesApproveVeranoLoading);
+  readonly rejectVeranoLoading$ = this.store.select(selectAdminSolicitudesRejectVeranoLoading);
+  readonly abonoSaldo$ = this.store.select(selectAdminSolicitudesAbonoSaldo);
+  readonly abonoSaldoLoading$ = this.store.select(selectAdminSolicitudesAbonoSaldoLoading);
+
+  selectedUbicacion: SolicitudUbicacionView | null = null;
+  selectedAbono: SolicitudAbonoView | null = null;
+  selectedVerano: SolicitudVeranoView | null = null;
+
+  isUbicacionModalOpen = false;
+  isAbonoModalOpen = false;
+  isVeranoModalOpen = false;
+  isRejectModalOpen = false;
+  isComprobanteModalOpen = false;
+
+  rejectContext: { type: 'ubicacion' | 'abono' | 'verano'; id: string } | null = null;
+  rejectTitle = 'Rechazar solicitud';
+  rejectDescription = 'Indica el motivo del rechazo.';
+
+  comprobanteTitle = 'Comprobante';
+  comprobanteImages: ComprobanteImagen[] = [];
 
   readonly ubicacionFiltrada$ = combineLatest([
     this.ubicacion$,
@@ -116,40 +171,144 @@ export class AdminSolicitudesComponent implements OnInit {
     this.store.dispatch(AdminSolicitudesActions.loadVerano());
   }
 
-  onVerComprobante(_solicitud: SolicitudUbicacionView): void {
-    return;
+  onVerComprobante(solicitud: SolicitudUbicacionView): void {
+    this.comprobanteTitle = `Comprobante ubicacion · ${solicitud.nombreCompleto}`;
+    this.comprobanteImages = [
+      {
+        label: 'Comprobante de ubicacion',
+        url: solicitud.comprobanteUrl
+      }
+    ];
+    this.isComprobanteModalOpen = true;
   }
 
-  onAprobar(_solicitud: SolicitudUbicacionView): void {
-    return;
+  onAprobar(solicitud: SolicitudUbicacionView): void {
+    this.selectedUbicacion = solicitud;
+    this.isUbicacionModalOpen = true;
   }
 
-  onRechazar(_solicitud: SolicitudUbicacionView): void {
-    return;
+  onRechazar(solicitud: SolicitudUbicacionView): void {
+    this.rejectContext = { type: 'ubicacion', id: solicitud.id };
+    this.rejectTitle = `Rechazar ubicacion · ${solicitud.nombreCompleto}`;
+    this.rejectDescription = 'Indica el motivo para rechazar esta solicitud de ubicacion.';
+    this.isRejectModalOpen = true;
   }
 
-  onVerComprobanteAbono(_solicitud: SolicitudAbonoView): void {
-    return;
+  onVerComprobanteAbono(solicitud: SolicitudAbonoView): void {
+    this.comprobanteTitle = `Comprobante abono · ${solicitud.nombreCompleto}`;
+    this.comprobanteImages = [
+      {
+        label: 'Comprobante de abono',
+        url: solicitud.comprobanteUrl
+      }
+    ];
+    this.isComprobanteModalOpen = true;
   }
 
-  onAprobarAbono(_solicitud: SolicitudAbonoView): void {
-    return;
+  onAprobarAbono(solicitud: SolicitudAbonoView): void {
+    this.selectedAbono = solicitud;
+    this.isAbonoModalOpen = true;
+    this.store.dispatch(AdminSolicitudesActions.loadAbonoSaldo({ idEstudiante: solicitud.idEstudiante }));
   }
 
-  onRechazarAbono(_solicitud: SolicitudAbonoView): void {
-    return;
+  onRechazarAbono(solicitud: SolicitudAbonoView): void {
+    this.rejectContext = { type: 'abono', id: solicitud.idEstudiante };
+    this.rejectTitle = `Rechazar abono · ${solicitud.nombreCompleto}`;
+    this.rejectDescription = 'Indica el motivo para rechazar este abono.';
+    this.isRejectModalOpen = true;
   }
 
-  onVerComprobanteVerano(_solicitud: SolicitudVeranoView): void {
-    return;
+  onVerComprobanteVerano(solicitud: SolicitudVeranoView): void {
+    this.comprobanteTitle = `Documentos verano · ${solicitud.nombreCompleto}`;
+    this.comprobanteImages = [
+      {
+        label: 'Firma familiar',
+        url: solicitud.firmaFamiliarUrl
+      },
+      {
+        label: 'Cedula familiar',
+        url: solicitud.cedulaFamiliarUrl
+      },
+      {
+        label: 'Cedula estudiante',
+        url: solicitud.cedulaEstudianteUrl
+      }
+    ];
+    this.isComprobanteModalOpen = true;
   }
 
-  onAprobarVerano(_solicitud: SolicitudVeranoView): void {
-    return;
+  onAprobarVerano(solicitud: SolicitudVeranoView): void {
+    this.selectedVerano = solicitud;
+    this.isVeranoModalOpen = true;
   }
 
-  onRechazarVerano(_solicitud: SolicitudVeranoView): void {
-    return;
+  onRechazarVerano(solicitud: SolicitudVeranoView): void {
+    this.rejectContext = { type: 'verano', id: solicitud.id };
+    this.rejectTitle = `Rechazar verano · ${solicitud.nombreCompleto}`;
+    this.rejectDescription = 'Indica el motivo para rechazar esta solicitud de verano.';
+    this.isRejectModalOpen = true;
+  }
+
+  onCloseUbicacionModal(): void {
+    this.isUbicacionModalOpen = false;
+    this.selectedUbicacion = null;
+  }
+
+  onCloseAbonoModal(): void {
+    this.isAbonoModalOpen = false;
+    this.selectedAbono = null;
+    this.store.dispatch(AdminSolicitudesActions.clearAbonoSaldo());
+  }
+
+  onCloseVeranoModal(): void {
+    this.isVeranoModalOpen = false;
+    this.selectedVerano = null;
+  }
+
+  onCloseRejectModal(): void {
+    this.isRejectModalOpen = false;
+    this.rejectContext = null;
+  }
+
+  onCloseComprobanteModal(): void {
+    this.isComprobanteModalOpen = false;
+    this.comprobanteImages = [];
+  }
+
+  onConfirmUbicacionApproval(payload: SolicitudUbicacionApprovalPayload): void {
+    this.store.dispatch(AdminSolicitudesActions.approveUbicacion({ payload }));
+    this.onCloseUbicacionModal();
+  }
+
+  onConfirmVeranoApproval(payload: SolicitudVeranoApprovalPayload): void {
+    this.store.dispatch(AdminSolicitudesActions.approveVerano({ payload }));
+    this.onCloseVeranoModal();
+  }
+
+  onConfirmAbonoApproval(payload: SolicitudAbonoApprovalPayload): void {
+    this.store.dispatch(AdminSolicitudesActions.approveAbono({ payload }));
+    this.onCloseAbonoModal();
+  }
+
+  onConfirmRechazo(motivo: string): void {
+    if (!this.rejectContext) {
+      return;
+    }
+
+    const payload: SolicitudRechazoPayload = {
+      id_estudiante: this.rejectContext.id,
+      motivo
+    };
+
+    if (this.rejectContext.type === 'ubicacion') {
+      this.store.dispatch(AdminSolicitudesActions.rejectUbicacion({ payload }));
+    } else if (this.rejectContext.type === 'abono') {
+      this.store.dispatch(AdminSolicitudesActions.rejectAbono({ payload }));
+    } else {
+      this.store.dispatch(AdminSolicitudesActions.rejectVerano({ payload }));
+    }
+
+    this.onCloseRejectModal();
   }
 
   private filterUbicacion(
