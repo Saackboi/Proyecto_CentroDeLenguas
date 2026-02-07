@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, isDevMode, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideNzI18n, es_ES } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { provideEffects } from '@ngrx/effects';
@@ -26,6 +26,9 @@ import {
   ADMIN_SOLICITUDES_FEATURE_KEY,
   adminSolicitudesReducer
 } from './features/admin/solicitudes/data-access/store/admin-solicitudes.reducer';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+registerLocaleData(localeEs);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,6 +36,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideNzI18n(es_ES),
+    { provide: LOCALE_ID, useValue: 'es' },
     NzMessageService,
     provideStore(),
     provideStoreDevtools({
