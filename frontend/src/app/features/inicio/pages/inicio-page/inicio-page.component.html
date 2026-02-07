@@ -23,21 +23,37 @@
           <a class="inicio-hero__secondary" href="#">Contáctanos</a>
         </div>
       </div>
-      <div class="inicio-hero__card">
-        <div class="inicio-hero__card-header">
-          <div class="inicio-hero__card-icon">
-            <span class="material-icons-round">translate</span>
+      @if (announcement$ | async; as announcement) {
+        <div class="inicio-hero__card" [ngClass]="announcement.cardClass">
+          <div class="inicio-hero__card-header">
+            <div class="inicio-hero__card-icon">
+              <span class="material-icons-round">{{ announcement.icon }}</span>
+            </div>
+            <div>
+              <h3>{{ announcement.title }}</h3>
+              <p>{{ announcement.subtitle }}</p>
+            </div>
           </div>
-          <div>
-            <h3>Próximo Inicio</h3>
-            <p>Matrículas Abiertas</p>
+          <div class="inicio-hero__card-bars">
+            <div></div>
+            <div></div>
           </div>
         </div>
-        <div class="inicio-hero__card-bars">
-          <div></div>
-          <div></div>
+      } @else {
+        <div class="inicio-hero__card inicio-hero__card--skeleton">
+          <div class="inicio-hero__card-header">
+            <div class="inicio-hero__card-icon"></div>
+            <div class="inicio-hero__card-text">
+              <div class="inicio-hero__card-line inicio-hero__card-line--title"></div>
+              <div class="inicio-hero__card-line inicio-hero__card-line--subtitle"></div>
+            </div>
+          </div>
+          <div class="inicio-hero__card-bars">
+            <div></div>
+            <div></div>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </section>
 

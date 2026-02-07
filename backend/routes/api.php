@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\EstudiantesController;
 use App\Http\Controllers\Api\Admin\GruposController;
+use App\Http\Controllers\Api\Admin\LandingAnnouncementController as AdminLandingAnnouncementController;
 use App\Http\Controllers\Api\Admin\ProfesoresController;
 use App\Http\Controllers\Api\Admin\ReportesController;
 use App\Http\Controllers\Api\Admin\SolicitudesAdminController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\Estudiante\NotificacionesController as EstudianteNo
 use App\Http\Controllers\Api\Profesor\CursoController as ProfesorCursoController;
 use App\Http\Controllers\Api\Public\AbonoController;
 use App\Http\Controllers\Api\Public\EstudiantePasswordResetController;
+use App\Http\Controllers\Api\Public\LandingAnnouncementController as PublicLandingAnnouncementController;
 use App\Http\Controllers\Api\Public\PruebaUbicacionController;
 use App\Http\Controllers\Api\Public\RegistroEstudianteController;
 use App\Http\Controllers\Api\Public\VeranoController;
@@ -41,6 +43,8 @@ Route::middleware('auth:api')->prefix('admin')->group(function () {
 
     Route::post('abono/aprobar', [SolicitudesAdminController::class, 'aprobarAbono']);
     Route::post('abono/rechazar', [SolicitudesAdminController::class, 'rechazarAbono']);
+
+    Route::patch('landing/announcement', [AdminLandingAnnouncementController::class, 'update']);
 
     Route::post('profesores', [ProfesoresController::class, 'crearProfesor']);
     Route::patch('profesores/{id}', [ProfesoresController::class, 'actualizarProfesor']);
@@ -89,6 +93,7 @@ Route::middleware('auth:api')->prefix('profesor')->group(function () {
 });
 
 Route::prefix('public')->group(function () {
+    Route::get('landing/announcement', [PublicLandingAnnouncementController::class, 'get']);
     Route::post('inscripcion/ubicacion', [PruebaUbicacionController::class, 'store']);
     Route::post('abono', [AbonoController::class, 'store']);
     Route::post('inscripcion/verano', [VeranoController::class, 'store']);

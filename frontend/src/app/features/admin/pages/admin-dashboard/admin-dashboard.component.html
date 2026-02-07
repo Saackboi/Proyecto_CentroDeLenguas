@@ -120,7 +120,26 @@
     </div>
 
     <aside class="admin-content__side">
-      @if (notices$ | async; as notices) {
+      @if (noticesLoading$ | async) {
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h3>
+              <span class="material-icons-round">notifications</span>
+              Avisos recientes
+            </h3>
+          </div>
+          <div class="admin-panel__skeleton">
+            <div class="admin-panel__skeleton-item" *ngFor="let _ of [1, 2, 3]">
+              <span class="admin-panel__skeleton-dot"></span>
+              <div class="admin-panel__skeleton-lines">
+                <div class="admin-panel__skeleton-line admin-panel__skeleton-line--title"></div>
+                <div class="admin-panel__skeleton-line admin-panel__skeleton-line--subtitle"></div>
+                <div class="admin-panel__skeleton-line admin-panel__skeleton-line--time"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else if (notices$ | async; as notices) {
         <div class="admin-panel">
           <div class="admin-panel__header">
             <h3>
@@ -148,6 +167,49 @@
           }
         </div>
       }
+
+      <div class="admin-panel">
+        <div class="admin-panel__header">
+          <h3>
+            <span class="material-icons-round">campaign</span>
+            Anuncio Landing
+          </h3>
+        </div>
+        @if (landingLoading$ | async) {
+          <div class="admin-panel__empty">
+            <nz-spin nzSize="small"></nz-spin>
+            <span>Cargando anuncio...</span>
+          </div>
+        } @else if (landingAnnouncement$ | async; as announcement) {
+          <div class="admin-panel__content">
+            <p>{{ announcement.title }}</p>
+            <span>{{ announcement.subtitle }}</span>
+          </div>
+          <div class="admin-panel__actions">
+            <nz-select
+              class="admin-panel__select"
+              [ngModel]="selectedLandingStatus ?? announcement.statusCode"
+              (ngModelChange)="onLandingStatusChange($event)"
+              nzPlaceHolder="Estado"
+            >
+              @for (option of landingStatusOptions; track option.value) {
+                <nz-option [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+              }
+            </nz-select>
+            <button
+              nz-button
+              nzType="primary"
+              [nzLoading]="(landingUpdating$ | async) ?? false"
+              [disabled]="((landingUpdating$ | async) ?? false) || (selectedLandingStatus ?? announcement.statusCode) === announcement.statusCode"
+              (click)="onSaveLandingStatus(selectedLandingStatus ?? announcement.statusCode)"
+            >
+              Guardar
+            </button>
+          </div>
+        } @else {
+          <p class="admin-panel__empty">No hay anuncio configurado.</p>
+        }
+      </div>
 
       <div class="admin-panel admin-panel--support">
         <div class="admin-panel__support-icon">

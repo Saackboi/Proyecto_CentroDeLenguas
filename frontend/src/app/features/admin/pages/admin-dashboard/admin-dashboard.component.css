@@ -226,7 +226,47 @@
 }
 
 .admin-panel__empty {
-  @apply text-xs text-slate-500;
+  @apply flex items-center gap-2 text-xs text-slate-500;
+}
+
+.admin-panel__actions {
+  @apply mt-4 flex flex-col gap-2;
+}
+
+.admin-panel__select {
+  @apply w-full;
+}
+
+.admin-panel__skeleton {
+  @apply mt-3 space-y-4 animate-pulse;
+}
+
+.admin-panel__skeleton-item {
+  @apply flex items-start gap-3;
+}
+
+.admin-panel__skeleton-dot {
+  @apply mt-1.5 h-1.5 w-1.5 rounded-full bg-slate-200;
+}
+
+.admin-panel__skeleton-lines {
+  @apply flex-1 space-y-2;
+}
+
+.admin-panel__skeleton-line {
+  @apply h-2 rounded-full bg-slate-200;
+}
+
+.admin-panel__skeleton-line--title {
+  @apply w-3/4;
+}
+
+.admin-panel__skeleton-line--subtitle {
+  @apply w-2/3;
+}
+
+.admin-panel__skeleton-line--time {
+  @apply w-1/3;
 }
 
 .admin-panel__dot {

@@ -200,9 +200,49 @@
   @apply mb-4 flex items-center gap-4;
 }
 
+.inicio-hero__card-text {
+  @apply flex flex-col gap-2;
+}
+
 .inicio-hero__card-icon {
   @apply flex h-12 w-12 items-center justify-center rounded-full text-gray-900;
   background-color: var(--color-accent);
+}
+
+.inicio-hero__card--skeleton {
+  @apply animate-pulse;
+}
+
+.inicio-hero__card--skeleton .inicio-hero__card-icon {
+  @apply bg-white/20;
+}
+
+.inicio-hero__card-line {
+  @apply h-3 rounded-full bg-white/20;
+}
+
+.inicio-hero__card-line--title {
+  @apply w-32;
+}
+
+.inicio-hero__card-line--subtitle {
+  @apply w-40;
+}
+
+.inicio-hero__card--open .inicio-hero__card-icon {
+  @apply bg-green-400 text-white;
+}
+
+.inicio-hero__card--closed .inicio-hero__card-icon {
+  @apply bg-red-400 text-white;
+}
+
+.inicio-hero__card--soon .inicio-hero__card-icon {
+  @apply bg-yellow-400 text-slate-900;
+}
+
+.inicio-hero__card--notice .inicio-hero__card-icon {
+  @apply bg-indigo-400 text-white;
 }
 
 .inicio-hero__card-header h3 {
