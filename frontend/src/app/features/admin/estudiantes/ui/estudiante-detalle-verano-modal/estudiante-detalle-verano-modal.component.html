@@ -1,0 +1,136 @@
+<nz-modal
+  [nzVisible]="visible"
+  nzTitle="Detalle estudiante verano"
+  [nzWidth]="'1000px'"
+  (nzOnCancel)="onClose()"
+>
+  <ng-container *nzModalContent>
+    @if (errorMessage) {
+      <nz-alert nzType="error" nzShowIcon [nzMessage]="errorMessage" class="modal-alert"></nz-alert>
+    }
+
+    @if (isLoading) {
+      <div class="modal-loading">
+        <nz-spin nzSize="large"></nz-spin>
+        <p>Cargando detalle...</p>
+      </div>
+    } @else if (detalle) {
+      <div class="modal-grid">
+        <div>
+          <span>ID</span>
+          <strong>{{ detalle.id }}</strong>
+        </div>
+        <div>
+          <span>Nombre completo</span>
+          <strong>{{ detalle.nombreCompleto }}</strong>
+        </div>
+        <div>
+          <span>Estado</span>
+          <strong>{{ detalle.estado }}</strong>
+        </div>
+        <div>
+          <span>Nivel</span>
+          <strong>{{ detalle.nivel || '--' }}</strong>
+        </div>
+        <div>
+          <span>Celular</span>
+          <strong>{{ detalle.celular }}</strong>
+        </div>
+        <div>
+          <span>Fecha nacimiento</span>
+          <strong>{{ detalle.fechaNacimiento }}</strong>
+        </div>
+        <div>
+          <span>Domicilio</span>
+          <strong>{{ detalle.domicilio }}</strong>
+        </div>
+        <div>
+          <span>Sexo</span>
+          <strong>{{ detalle.sexo || '--' }}</strong>
+        </div>
+        <div>
+          <span>Correo</span>
+          <strong>{{ detalle.correo }}</strong>
+        </div>
+        <div>
+          <span>Colegio</span>
+          <strong>{{ detalle.colegio }}</strong>
+        </div>
+        <div>
+          <span>Tipo sangre</span>
+          <strong>{{ detalle.tipoSangre }}</strong>
+        </div>
+        <div>
+          <span>Alergias</span>
+          <strong>{{ detalle.alergias || 'No' }}</strong>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Contacto de emergencia</h4>
+        <div class="modal-grid">
+          <div>
+            <span>Nombre</span>
+            <strong>{{ detalle.contactoNombre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Telefono</span>
+            <strong>{{ detalle.contactoTelefono || '--' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Padre</h4>
+        <div class="modal-grid">
+          <div>
+            <span>Nombre</span>
+            <strong>{{ detalle.nombrePadre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Lugar trabajo</span>
+            <strong>{{ detalle.lugarTrabajoPadre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Telefono trabajo</span>
+            <strong>{{ detalle.telefonoTrabajoPadre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Celular</span>
+            <strong>{{ detalle.celularPadre || '--' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Madre</h4>
+        <div class="modal-grid">
+          <div>
+            <span>Nombre</span>
+            <strong>{{ detalle.nombreMadre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Lugar trabajo</span>
+            <strong>{{ detalle.lugarTrabajoMadre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Telefono trabajo</span>
+            <strong>{{ detalle.telefonoTrabajoMadre || '--' }}</strong>
+          </div>
+          <div>
+            <span>Celular</span>
+            <strong>{{ detalle.celularMadre || '--' }}</strong>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <p class="modal-empty">No hay detalle disponible.</p>
+    }
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <div class="modal-footer">
+      <button nz-button nzType="primary" (click)="onClose()">Cerrar</button>
+    </div>
+  </ng-container>
+</nz-modal>

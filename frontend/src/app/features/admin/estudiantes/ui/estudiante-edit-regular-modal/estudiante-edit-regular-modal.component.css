@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.modal-alert {
+  @apply mb-4;
+}
+
+.modal-form {
+  @apply max-h-[65vh] overflow-y-auto pr-1;
+}
+
+.modal-loading {
+  @apply flex flex-col items-center gap-3 py-4 text-sm text-slate-500;
+}
+
+.modal-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+
+.modal-footer {
+  @apply flex justify-end gap-2;
+}

@@ -1,0 +1,78 @@
+<nz-modal
+  [nzVisible]="visible"
+  nzTitle="Detalle estudiante regular"
+  [nzWidth]="'1000px'"
+  (nzOnCancel)="onClose()"
+>
+  <ng-container *nzModalContent>
+    @if (errorMessage) {
+      <nz-alert nzType="error" nzShowIcon [nzMessage]="errorMessage" class="modal-alert"></nz-alert>
+    }
+
+    @if (isLoading) {
+      <div class="modal-loading">
+        <nz-spin nzSize="large"></nz-spin>
+        <p>Cargando detalle...</p>
+      </div>
+    } @else if (detalle) {
+      <div class="modal-grid">
+        <div>
+          <span>ID</span>
+          <strong>{{ detalle.id }}</strong>
+        </div>
+        <div>
+          <span>Tipo ID</span>
+          <strong>{{ detalle.tipoId || 'Sin dato' }}</strong>
+        </div>
+        <div>
+          <span>Nombre</span>
+          <strong>{{ detalle.nombre }}</strong>
+        </div>
+        <div>
+          <span>Apellido</span>
+          <strong>{{ detalle.apellido }}</strong>
+        </div>
+        <div>
+          <span>Correo personal</span>
+          <strong>{{ detalle.correoPersonal }}</strong>
+        </div>
+        <div>
+          <span>Correo UTP</span>
+          <strong>{{ detalle.correoUtp || 'Sin correo' }}</strong>
+        </div>
+        <div>
+          <span>Telefono</span>
+          <strong>{{ detalle.telefono }}</strong>
+        </div>
+        <div>
+          <span>Nivel</span>
+          <strong>{{ detalle.nivel || '--' }}</strong>
+        </div>
+        <div>
+          <span>Estado</span>
+          <strong>{{ detalle.estado }}</strong>
+        </div>
+        <div>
+          <span>Es estudiante UTP</span>
+          <strong>{{ detalle.esEstudiante }}</strong>
+        </div>
+        <div>
+          <span>Saldo pendiente</span>
+          <strong>{{ detalle.saldoPendiente | number: '1.2-2' }}</strong>
+        </div>
+        <div>
+          <span>Deuda total</span>
+          <strong>{{ detalle.deudaTotal | number: '1.2-2' }}</strong>
+        </div>
+      </div>
+    } @else {
+      <p class="modal-empty">No hay detalle disponible.</p>
+    }
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <div class="modal-footer">
+      <button nz-button nzType="primary" (click)="onClose()">Cerrar</button>
+    </div>
+  </ng-container>
+</nz-modal>

@@ -1,0 +1,79 @@
+<nz-modal
+  [nzVisible]="visible"
+  nzTitle="Historial financiero"
+  [nzWidth]="'1000px'"
+  (nzOnCancel)="onClose()"
+>
+  <ng-container *nzModalContent>
+    @if (errorMessage) {
+      <nz-alert nzType="error" nzShowIcon [nzMessage]="errorMessage" class="modal-alert"></nz-alert>
+    }
+
+    @if (isLoading) {
+      <div class="modal-loading">
+        <nz-spin nzSize="large"></nz-spin>
+        <p>Cargando historial...</p>
+      </div>
+    } @else if (historial) {
+      <div class="modal-section">
+        <h4>Movimientos</h4>
+        <nz-table #movTable [nzData]="historial.movimientos" nzSize="small">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Motivo</th>
+              <th>Monto</th>
+              <th>Fecha</th>
+              <th>Referencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of movTable.data">
+              <td>{{ item.tipo }}</td>
+              <td>{{ item.motivo }}</td>
+              <td>{{ item.monto }}</td>
+              <td>{{ item.fecha }}</td>
+              <td>{{ item.referencia }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+
+      <div class="modal-section">
+        <h4>Pagos</h4>
+        <nz-table #payTable [nzData]="historial.pagos" nzSize="small">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Metodo</th>
+              <th>Banco</th>
+              <th>Propietario</th>
+              <th>Monto</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of payTable.data">
+              <td>{{ item.tipo }}</td>
+              <td>{{ item.metodo }}</td>
+              <td>{{ item.banco }}</td>
+              <td>{{ item.propietario }}</td>
+              <td>{{ item.monto }}</td>
+              <td>{{ item.fechaPago }}</td>
+              <td>{{ item.estado }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    } @else {
+      <p class="modal-empty">No hay historial disponible.</p>
+    }
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <div class="modal-footer">
+      <button nz-button nzType="primary" (click)="onClose()">Cerrar</button>
+    </div>
+  </ng-container>
+</nz-modal>

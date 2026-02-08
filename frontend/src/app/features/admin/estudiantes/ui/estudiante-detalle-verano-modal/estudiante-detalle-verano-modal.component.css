@@ -1,0 +1,41 @@
+@reference "tailwindcss";
+
+:host {
+  @apply block;
+}
+
+.modal-alert {
+  @apply mb-4;
+}
+
+.modal-loading {
+  @apply flex flex-col items-center gap-3 py-6 text-sm text-slate-500;
+}
+
+.modal-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+
+.modal-grid span {
+  @apply text-xs uppercase tracking-wide text-slate-400;
+}
+
+.modal-grid strong {
+  @apply block text-sm text-slate-800;
+}
+
+.modal-section {
+  @apply mt-6 border-t border-slate-100 pt-4;
+}
+
+.modal-section h4 {
+  @apply text-sm font-semibold text-slate-700 mb-3;
+}
+
+.modal-empty {
+  @apply text-sm text-slate-500;
+}
+
+.modal-footer {
+  @apply flex justify-end;
+}
