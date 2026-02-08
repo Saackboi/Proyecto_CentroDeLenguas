@@ -62,6 +62,7 @@ Route::middleware('auth:api')->prefix('admin')->group(function () {
     Route::patch('estudiantes/{id}', [EstudiantesController::class, 'actualizarEstudiante']);
     Route::patch('estudiantes-verano/{id}', [EstudiantesController::class, 'actualizarEstudianteVerano']);
     Route::get('estudiantes/{id}', [EstudiantesController::class, 'detalleEstudiante']);
+    Route::get('estudiantes/{id}/historial', [EstudiantesController::class, 'historialFinanciero']);
 
     Route::get('dashboard/estudiantes', [DashboardController::class, 'dashboardEstudiantes']);
     Route::get('dashboard/profesores', [DashboardController::class, 'dashboardProfesores']);

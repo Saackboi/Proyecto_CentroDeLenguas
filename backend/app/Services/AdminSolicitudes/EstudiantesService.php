@@ -328,4 +328,56 @@ class EstudiantesService
 
         return ApiResponse::success(null, 'Estudiante actualizado.');
     }
+
+    public function historialFinanciero(Request $request, string $id)
+    {
+        if ($response = $this->asegurarAdmin()) {
+            return $response;
+        }
+
+        $existe = DB::table('students')
+            ->where('id', $id)
+            ->exists();
+
+        if (!$existe) {
+            return ApiResponse::notFound('Estudiante no encontrado.');
+        }
+
+        $movimientos = DB::table('balance_movements')
+            ->where('student_id', $id)
+            ->select(
+                'id',
+                'movement_type',
+                'amount',
+                'reason',
+                'payment_id',
+                'group_session_id',
+                'created_at'
+            )
+            ->orderByDesc('created_at')
+            ->get();
+
+        $pagos = DB::table('payments')
+            ->where('student_id', $id)
+            ->select(
+                'id as id_pago',
+                'payment_type',
+                'method',
+                'bank',
+                'account_owner',
+                'receipt_path',
+                'amount',
+                'paid_at',
+                'status',
+                'created_at'
+            )
+            ->orderByDesc('paid_at')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return ApiResponse::success([
+            'movimientos' => $movimientos,
+            'pagos' => $pagos,
+        ]);
+    }
 }

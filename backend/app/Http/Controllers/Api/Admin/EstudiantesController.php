@@ -26,4 +26,9 @@ class EstudiantesController extends Controller
     {
         return $this->estudiantesService->actualizarEstudianteVerano($request, $id);
     }
+
+    public function historialFinanciero(Request $request, string $id)
+    {
+        return $this->estudiantesService->historialFinanciero($request, $id);
+    }
 }
