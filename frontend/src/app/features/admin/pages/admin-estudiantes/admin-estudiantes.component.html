@@ -1,0 +1,162 @@
+<section class="admin-estudiantes" [class.admin-estudiantes--loading]="(listadoLoading$ | async) ?? false">
+  <header class="admin-estudiantes__header">
+    <div>
+      <h1>Gestion de estudiantes</h1>
+      <p>Consulta perfiles, estado academico y movimientos financieros.</p>
+    </div>
+    <button nz-button nzType="default" (click)="filtrosForm.reset({ search: '', estado: '', tipo: filtrosForm.controls.tipo.value })">
+      Limpiar filtros
+    </button>
+  </header>
+
+  <form class="admin-estudiantes__filters" [formGroup]="filtrosForm">
+    <nz-input-group nzPrefixIcon="search">
+      <input nz-input placeholder="Buscar por nombre o ID" formControlName="search">
+    </nz-input-group>
+
+    <nz-select class="admin-estudiantes__select" formControlName="estado" nzPlaceHolder="Estado">
+      <nz-option nzLabel="Todos" nzValue=""></nz-option>
+      @if (tipo$ | async; as tipo) {
+        @if (tipo === 'regular') {
+          @for (option of estadoRegularOptions; track option) {
+            <nz-option [nzLabel]="option" [nzValue]="option"></nz-option>
+          }
+        } @else {
+          @for (option of estadoVeranoOptions; track option) {
+            <nz-option [nzLabel]="option" [nzValue]="option"></nz-option>
+          }
+        }
+      }
+    </nz-select>
+  </form>
+
+  @if (listadoError$ | async; as error) {
+    <div class="admin-estudiantes__error">
+      <span class="material-icons-round">error</span>
+      <p>{{ error }}</p>
+    </div>
+  }
+
+  <nz-tabs class="admin-estudiantes__tabs" (nzSelectedIndexChange)="onTabChange($event)">
+    <nz-tab nzTitle="Regular">
+      @if (listadoFiltrado$ | async; as listado) {
+        @if (listado.length) {
+          <nz-table #regularTable [nzData]="listado" nzSize="middle" [nzLoading]="(listadoLoading$ | async) ?? false">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Estudiante</th>
+                <th>Nivel</th>
+                <th>Profesor</th>
+                <th>Estado</th>
+                <th class="actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of regularTable.data">
+                <td>{{ item.id }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.nivel }}</td>
+                <td>{{ item.profesor }}</td>
+                <td>
+                  <nz-tag nzColor="blue">{{ item.estado }}</nz-tag>
+                </td>
+                <td class="actions">
+                  <button nz-button nzType="link" (click)="onVerDetalle(item)">Ver</button>
+                  <button nz-button nzType="link" (click)="onEditar(item)">Editar</button>
+                  <button nz-button nzType="link" (click)="onVerHistorial(item)">Historial</button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        } @else {
+          <div class="admin-estudiantes__placeholder">
+            <p>No hay estudiantes regulares para mostrar.</p>
+          </div>
+        }
+      }
+    </nz-tab>
+
+    <nz-tab nzTitle="Verano">
+      @if (listadoFiltrado$ | async; as listado) {
+        @if (listado.length) {
+          <nz-table #veranoTable [nzData]="listado" nzSize="middle" [nzLoading]="(listadoLoading$ | async) ?? false">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Estudiante</th>
+                <th>Nivel</th>
+                <th>Profesor</th>
+                <th>Estado</th>
+                <th class="actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of veranoTable.data">
+                <td>{{ item.id }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.nivel }}</td>
+                <td>{{ item.profesor }}</td>
+                <td>
+                  <nz-tag nzColor="green">{{ item.estado }}</nz-tag>
+                </td>
+                <td class="actions">
+                  <button nz-button nzType="link" (click)="onVerDetalle(item)">Ver</button>
+                  <button nz-button nzType="link" (click)="onEditar(item)">Editar</button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        } @else {
+          <div class="admin-estudiantes__placeholder">
+            <p>No hay estudiantes de verano para mostrar.</p>
+          </div>
+        }
+      }
+    </nz-tab>
+  </nz-tabs>
+</section>
+
+<app-estudiante-detalle-regular-modal
+  [visible]="isDetalleRegularOpen"
+  [detalle]="detalleRegular$ | async"
+  [isLoading]="(detalleLoading$ | async) ?? false"
+  [errorMessage]="detalleError$ | async"
+  (close)="onCloseDetalle()"
+></app-estudiante-detalle-regular-modal>
+
+<app-estudiante-detalle-verano-modal
+  [visible]="isDetalleVeranoOpen"
+  [detalle]="detalleVerano$ | async"
+  [isLoading]="(detalleLoading$ | async) ?? false"
+  [errorMessage]="detalleError$ | async"
+  (close)="onCloseDetalle()"
+></app-estudiante-detalle-verano-modal>
+
+<app-estudiante-edit-regular-modal
+  [visible]="isEditRegularOpen"
+  [detalle]="detalleRegular$ | async"
+  [isLoading]="(detalleLoading$ | async) ?? false"
+  [isSubmitting]="(updateRegularLoading$ | async) ?? false"
+  [errorMessage]="updateRegularError$ | async"
+  (cancel)="onCloseEdit()"
+  (confirm)="onConfirmEditRegular($event)"
+></app-estudiante-edit-regular-modal>
+
+<app-estudiante-edit-verano-modal
+  [visible]="isEditVeranoOpen"
+  [detalle]="detalleVerano$ | async"
+  [isLoading]="(detalleLoading$ | async) ?? false"
+  [isSubmitting]="(updateVeranoLoading$ | async) ?? false"
+  [errorMessage]="updateVeranoError$ | async"
+  (cancel)="onCloseEdit()"
+  (confirm)="onConfirmEditVerano($event)"
+></app-estudiante-edit-verano-modal>
+
+<app-estudiante-historial-modal
+  [visible]="isHistorialOpen"
+  [historial]="historial$ | async"
+  [isLoading]="(historialLoading$ | async) ?? false"
+  [errorMessage]="historialError$ | async"
+  (close)="onCloseHistorial()"
+></app-estudiante-historial-modal>

@@ -26,6 +26,11 @@ import {
   ADMIN_SOLICITUDES_FEATURE_KEY,
   adminSolicitudesReducer
 } from './features/admin/solicitudes/data-access/store/admin-solicitudes.reducer';
+import { AdminEstudiantesEffects } from './features/admin/estudiantes/data-access/store/admin-estudiantes.effects';
+import {
+  ADMIN_ESTUDIANTES_FEATURE_KEY,
+  adminEstudiantesReducer
+} from './features/admin/estudiantes/data-access/store/admin-estudiantes.reducer';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 registerLocaleData(localeEs);
@@ -47,6 +52,13 @@ export const appConfig: ApplicationConfig = {
     provideState(ADMIN_DASHBOARD_FEATURE_KEY, adminDashboardReducer),
     provideState(ADMIN_LANDING_FEATURE_KEY, adminLandingReducer),
     provideState(ADMIN_SOLICITUDES_FEATURE_KEY, adminSolicitudesReducer),
-    provideEffects(AuthEffects, AdminDashboardEffects, AdminLandingEffects, AdminSolicitudesEffects)
+    provideState(ADMIN_ESTUDIANTES_FEATURE_KEY, adminEstudiantesReducer),
+    provideEffects(
+      AuthEffects,
+      AdminDashboardEffects,
+      AdminLandingEffects,
+      AdminSolicitudesEffects,
+      AdminEstudiantesEffects
+    )
   ]
 };

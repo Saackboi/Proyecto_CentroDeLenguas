@@ -4,6 +4,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 import { LoginPageComponent } from './features/auth/pages/login-page/login-page.component';
 import { AdminDashboardComponent } from './features/admin/pages/admin-dashboard/admin-dashboard.component';
+import { AdminEstudiantesComponent } from './features/admin/pages/admin-estudiantes/admin-estudiantes.component';
 import { AdminSolicitudesComponent } from './features/admin/pages/admin-solicitudes/admin-solicitudes.component';
 import { AdminLayoutComponent } from './features/admin/layout/admin-layout/admin-layout.component';
 import { ContactoPageComponent } from './features/contacto/pages/contacto-page/contacto-page.component';
@@ -42,6 +43,10 @@ export const routes: Routes = [
       {
         path: 'solicitudes',
         component: AdminSolicitudesComponent
+      },
+      {
+        path: 'estudiantes',
+        component: AdminEstudiantesComponent
       }
     ]
   },

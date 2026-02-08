@@ -1,0 +1,45 @@
+@reference "tailwindcss";
+
+.admin-estudiantes {
+  @apply space-y-6;
+}
+
+.admin-estudiantes__header {
+  @apply flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between;
+}
+
+.admin-estudiantes__header h1 {
+  @apply text-2xl font-semibold text-slate-900;
+}
+
+.admin-estudiantes__header p {
+  @apply text-sm text-slate-500;
+}
+
+.admin-estudiantes__filters {
+  @apply grid gap-4 rounded-2xl bg-white p-4 shadow-sm sm:grid-cols-[1fr_220px];
+}
+
+.admin-estudiantes__select {
+  @apply w-full;
+}
+
+.admin-estudiantes__tabs {
+  @apply rounded-2xl bg-white p-4 shadow-sm;
+}
+
+.admin-estudiantes__placeholder {
+  @apply flex items-center justify-center rounded-xl border border-dashed border-slate-200 p-8 text-sm text-slate-500;
+}
+
+.admin-estudiantes__error {
+  @apply flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600;
+}
+
+.admin-estudiantes__error span {
+  @apply text-base;
+}
+
+.actions {
+  @apply text-right;
+}
