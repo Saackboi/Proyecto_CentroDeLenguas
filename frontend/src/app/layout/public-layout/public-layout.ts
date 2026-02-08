@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterModule, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Subject, filter, takeUntil } from 'rxjs';
 
@@ -12,7 +12,7 @@ import { TopbarComponent, TopbarLink } from '../../shared/components/topbar/topb
   templateUrl: './public-layout.html',
   styleUrl: './public-layout.css'
 })
-export class PublicLayout implements AfterViewInit, OnDestroy {
+export class PublicLayout implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
@@ -25,7 +25,7 @@ export class PublicLayout implements AfterViewInit, OnDestroy {
 
   activeSection = 'inicio';
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.syncActiveSection();
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd), takeUntil(this.destroy$))
