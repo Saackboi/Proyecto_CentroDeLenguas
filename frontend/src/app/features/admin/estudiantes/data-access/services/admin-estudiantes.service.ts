@@ -101,7 +101,7 @@ export class AdminEstudiantesService {
   private mapDetalleRegular(data: EstudianteDetalleRegularDto): EstudianteDetalleRegularView {
     return {
       id: data.id_estudiante,
-      tipoId: data.tipo_id ?? '',
+      tipoId: data.id_type ?? '',
       nombre: data.nombre ?? '',
       apellido: data.apellido ?? '',
       correoPersonal: data.correo_personal ?? '',

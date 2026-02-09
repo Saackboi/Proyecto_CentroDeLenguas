@@ -210,6 +210,7 @@ Backend en `C:\Users\Práctica Profesional\Documents\PP\Proyectos Apartes\Proyec
 - 2026-02-03: Fix crearCuentaEstudiante en UbicacionService/VeranoService (firma de helper actual).
 - 2026-02-05: Se agrego endpoint resumen de dashboard admin (`/api/admin/dashboard/resumen`).
 - 2026-02-05: Admin controllers separados por dominio (dashboard/solicitudes/grupos/estudiantes/profesores/reportes).
+- 2026-02-09: Se agrego `students.id_type` para regulares (cedula/pasaporte) y se persiste en ubicacion/actualizar/detalle.
 - 2026-02-06: Smoke tests admin OK (listar/aprobar/rechazar ubicacion y verano) con datos seed.
 - 2026-02-06: Seeder demo ampliado con mas registros (personas, estudiantes, pagos, solicitudes de ubicacion).
 

@@ -97,7 +97,7 @@ class EstudiantesService
             ->where('s.type', 'regular')
             ->select(
                 's.id as id_estudiante',
-                DB::raw('null as tipo_id'),
+                's.id_type as id_type',
                 'p.first_name as nombre',
                 'p.last_name as apellido',
                 'p.email_personal as correo_personal',
@@ -118,7 +118,7 @@ class EstudiantesService
         }
 
         $validated = $request->validate([
-            'tipo_id' => ['required', 'string', 'max:15'],
+            'id_type' => ['required', 'string', 'in:cedula,pasaporte'],
             'nombre' => ['required', 'string', 'max:50'],
             'apellido' => ['required', 'string', 'max:50'],
             'correo_personal' => ['required', 'email', 'max:100'],
@@ -162,6 +162,7 @@ class EstudiantesService
             DB::table('students')
                 ->where('id', $id)
                 ->update([
+                    'id_type' => $validated['id_type'],
                     'level' => $validated['nivel'],
                     'status' => $validated['estado'],
                     'is_utp' => $isUtp,

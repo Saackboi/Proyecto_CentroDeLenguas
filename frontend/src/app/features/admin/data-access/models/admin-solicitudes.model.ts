@@ -5,7 +5,7 @@ export type SolicitudSexo = 'Masculino' | 'Femenino';
 
 export interface SolicitudUbicacionDto {
   id_estudiante: string;
-  tipo_id: string | null;
+  id_type: string | null;
   nombre: string;
   apellido: string;
   correo_personal: string | null;
@@ -139,7 +139,7 @@ export interface SolicitudVeranoView {
 export interface SolicitudUbicacionApprovalPayload {
   id_estudiante: string;
   nivel: string | null;
-  tipo_id: string;
+  id_type: string;
   nombre: string;
   apellido: string;
   correo_personal: string;

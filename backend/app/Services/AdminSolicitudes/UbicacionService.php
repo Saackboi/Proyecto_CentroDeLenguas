@@ -28,7 +28,7 @@ class UbicacionService
         $validated = $request->validate([
             'id_estudiante' => ['required', 'string', 'max:30'],
             'nivel' => ['nullable', 'string', 'max:10'],
-            'tipo_id' => ['required', 'string', 'max:15'],
+            'id_type' => ['required', 'string', 'in:cedula,pasaporte'],
             'nombre' => ['required', 'string', 'max:50'],
             'apellido' => ['required', 'string', 'max:50'],
             'correo_personal' => ['required', 'email', 'max:100'],
@@ -154,7 +154,7 @@ class UbicacionService
             ->whereIn('s.status', ['En proceso', 'En prueba'])
             ->select(
                 's.id as id_estudiante',
-                DB::raw('null as tipo_id'),
+                's.id_type as id_type',
                 'p.first_name as nombre',
                 'p.last_name as apellido',
                 'p.email_personal as correo_personal',

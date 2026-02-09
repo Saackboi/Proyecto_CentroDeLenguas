@@ -138,7 +138,7 @@ export class AdminSolicitudesService {
     const nombreCompleto = `${item.nombre ?? ''} ${item.apellido ?? ''}`.trim();
     return {
       id: item.id_estudiante,
-      tipoId: item.tipo_id,
+      tipoId: item.id_type,
       nombre: item.nombre ?? '',
       apellido: item.apellido ?? '',
       nombreCompleto: nombreCompleto || `ID ${item.id_estudiante}`,

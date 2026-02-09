@@ -124,7 +124,7 @@ export class SolicitudApproveUbicacionModalComponent implements OnChanges {
     this.confirm.emit({
       id_estudiante: idEstudiante,
       nivel,
-      tipo_id: tipoId,
+      id_type: tipoId,
       nombre,
       apellido,
       correo_personal: correoPersonal,

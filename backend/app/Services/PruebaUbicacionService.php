@@ -76,6 +76,7 @@ class PruebaUbicacionService
                 DB::table('students')
                     ->where('id', $idEstudiante)
                     ->update([
+                        'id_type' => $validated['id_type'],
                         'type' => 'regular',
                         'status' => 'En proceso',
                         'is_utp' => !empty($validated['correo_utp']),
@@ -95,6 +96,7 @@ class PruebaUbicacionService
                 DB::table('students')->insert([
                     'id' => $idEstudiante,
                     'person_id' => $personId,
+                    'id_type' => $validated['id_type'],
                     'type' => 'regular',
                     'status' => 'En proceso',
                     'level' => null,

@@ -24,7 +24,7 @@ export interface AdminEstudianteListadoView {
 
 export interface EstudianteDetalleRegularDto {
   id_estudiante: string;
-  tipo_id: string | null;
+  id_type: string | null;
   nombre: string;
   apellido: string;
   correo_personal: string | null;
@@ -110,7 +110,7 @@ export interface EstudianteDetalleResponseDto {
 }
 
 export interface EstudianteRegularUpdatePayload {
-  tipo_id: string;
+  id_type: string;
   nombre: string;
   apellido: string;
   correo_personal: string;

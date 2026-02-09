@@ -114,7 +114,7 @@ export class EstudianteEditRegularModalComponent implements OnChanges {
       : Number(raw.saldoPendiente);
 
     this.confirm.emit({
-      tipo_id: raw.tipoId.trim(),
+      id_type: raw.tipoId.trim(),
       nombre: raw.nombre.trim(),
       apellido: raw.apellido.trim(),
       correo_personal: raw.correoPersonal.trim(),
