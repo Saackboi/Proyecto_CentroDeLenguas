@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PruebaUbicacionService
@@ -55,8 +57,7 @@ class PruebaUbicacionService
         $extension = $archivo->getClientOriginalExtension();
         $fechaActual = now()->format('Ymd_His');
         $nombreArchivo = 'pb_' . $idEstudiante . '_' . $fechaActual . '_' . Str::random(6) . '.' . $extension;
-        $rutaDestino = public_path('uploads');
-        $rutaWeb = '/uploads/' . $nombreArchivo;
+        $rutaWeb = '/storage/uploads/' . $nombreArchivo;
 
         DB::beginTransaction();
 
@@ -124,11 +125,18 @@ class PruebaUbicacionService
                 'updated_at' => now(),
             ]);
 
-            $archivo->move($rutaDestino, $nombreArchivo);
+            Storage::disk('public')->putFileAs('uploads', $archivo, $nombreArchivo);
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+
+            Log::error('PruebaUbicacionService error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return ApiResponse::serverError('Error al enviar datos del estudiante. Inténtelo nuevamente.');
         }

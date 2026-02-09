@@ -8,6 +8,7 @@ namespace App\Services\Public;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AbonoService
@@ -64,8 +65,7 @@ class AbonoService
         $extension = $archivo->getClientOriginalExtension();
         $fechaActual = now()->format('Ymd_His');
         $nombreArchivo = 'ab_' . $idEstudiante . '_' . $fechaActual . '_' . Str::random(6) . '.' . $extension;
-        $rutaDestino = public_path('uploads/abonos');
-        $rutaWeb = '/uploads/abonos/' . $nombreArchivo;
+        $rutaWeb = '/storage/uploads/abonos/' . $nombreArchivo;
 
         DB::beginTransaction();
 
@@ -88,7 +88,7 @@ class AbonoService
                 'updated_at' => now(),
             ]);
 
-            $archivo->move($rutaDestino, $nombreArchivo);
+            Storage::disk('public')->putFileAs('uploads/abonos', $archivo, $nombreArchivo);
 
             DB::commit();
         } catch (\Throwable $e) {

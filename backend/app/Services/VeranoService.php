@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class VeranoService
@@ -64,7 +65,7 @@ class VeranoService
         $archivoCedEst = $request->file('ced_est');
 
         $fechaActual = now()->format('Ymd_His');
-        $rutaDestino = public_path('uploads/verano');
+        $rutaDestino = 'verano';
 
         $nombreFirma = 'firma_familiar_' . $idEstudiante . '_' . $fechaActual . '_' . Str::random(6) . '.' . $archivoFirma->getClientOriginalExtension();
         $nombreCedFamiliar = 'ced_familiar_' . $idEstudiante . '_' . $fechaActual . '_' . Str::random(6) . '.' . $archivoCedFamiliar->getClientOriginalExtension();
@@ -74,9 +75,9 @@ class VeranoService
             $nombreCedEst = 'ced_est_' . $idEstudiante . '_' . $fechaActual . '_' . Str::random(6) . '.' . $archivoCedEst->getClientOriginalExtension();
         }
 
-        $rutaFirma = '/uploads/verano/' . $nombreFirma;
-        $rutaCedFamiliar = '/uploads/verano/' . $nombreCedFamiliar;
-        $rutaCedEst = $nombreCedEst ? '/uploads/verano/' . $nombreCedEst : null;
+        $rutaFirma = '/storage/verano/' . $nombreFirma;
+        $rutaCedFamiliar = '/storage/verano/' . $nombreCedFamiliar;
+        $rutaCedEst = $nombreCedEst ? '/storage/verano/' . $nombreCedEst : null;
 
         DB::beginTransaction();
 
@@ -140,10 +141,10 @@ class VeranoService
                 'updated_at' => now(),
             ]);
 
-            $archivoFirma->move($rutaDestino, $nombreFirma);
-            $archivoCedFamiliar->move($rutaDestino, $nombreCedFamiliar);
+            Storage::disk('public')->putFileAs($rutaDestino, $archivoFirma, $nombreFirma);
+            Storage::disk('public')->putFileAs($rutaDestino, $archivoCedFamiliar, $nombreCedFamiliar);
             if ($archivoCedEst) {
-                $archivoCedEst->move($rutaDestino, $nombreCedEst);
+                Storage::disk('public')->putFileAs($rutaDestino, $archivoCedEst, $nombreCedEst);
             }
 
             DB::commit();
